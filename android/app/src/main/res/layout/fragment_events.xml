@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.events.EventsFragment">
+
+    <TextView
+        android:id="@+id/firstAidCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="452dp"
+        android:layout_marginTop="44dp"
+        android:layout_marginEnd="452dp"
+        android:text="0"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display4"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"  />
+
+    <Button
+        android:id="@+id/firstAidButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="437dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="437dp"
+        android:background="#FFFFFF"
+        android:text="EH-Leistung eintragen"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="@id/firstAidCount"
+        app:layout_constraintRight_toRightOf="@id/firstAidCount"
+        app:layout_constraintTop_toBottomOf="@id/firstAidCount" />
+
+    <Button
+        android:id="@+id/undoButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="rückgänig"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="@id/firstAidButton"
+        app:layout_constraintRight_toRightOf="@id/firstAidButton"
+        app:layout_constraintTop_toBottomOf="@id/firstAidButton" />
+</androidx.constraintlayout.widget.ConstraintLayout>

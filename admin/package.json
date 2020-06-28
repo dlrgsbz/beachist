@@ -1,0 +1,52 @@
+{
+  "name": "client",
+  "version": "0.1.0",
+  "private": true,
+  "proxy": "http://localhost:8000",
+  "dependencies": {
+    "axios": "^0.19.2",
+    "i18next": "^19.5.1",
+    "mobx": "^5.15.4",
+    "mobx-react-lite": "latest",
+    "moment": "^2.24.0",
+    "node-sass": "^4.14.1",
+    "react": "^16.9.0",
+    "react-dates": "^21.8.0",
+    "react-dom": "^16.9.0",
+    "react-i18next": "^11.7.0",
+    "react-redux": "^7.1.0",
+    "react-router-dom": "^5.0.1",
+    "react-scripts": "^3.3.1",
+    "typescript": "^3.7",
+    "uuid": "^3.3.2"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@types/react-redux": "^7.1.2",
+    "@types/react": "^16.9.2",
+    "@types/react-dom": "^16.8.5",
+    "@types/react-router-dom": "^4.3.4",
+    "@types/react-dates": "^17.1.7",
+    "@types/uuid": "^3.4.5"
+  }
+}
