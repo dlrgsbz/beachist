@@ -25,20 +25,9 @@ class EntryRepository extends EntityRepository implements EntryReader, EntryWrit
         $rsm = new ResultSetMappingBuilder($this->_em);
         $rsm->addRootEntityFromClassMetadata('App\Entity\Entry', 'e');
 
-        return $this->_em->createNativeQuery(<<<__SQL__
-SELECT * FROM (
-    SELECT e.*, 
-        @row_number:=CASE
-        WHEN @station_id = station_id AND @field_id = field_id 
-			THEN @row_number + 1
-        ELSE 1
-    END AS rn,
-    @field_id:=field_id FieldId,
-    @station_id:=station_id StationId
-    FROM entry AS e
-) ranked_entries WHERE date BETWEEN :startDate AND :endDate AND rn = 1;
-__SQL__
-            , $rsm)
+        return $this->_em->createNativeQuery(
+            "SELECT DISTINCT ON (station_id, field_id) * FROM entry WHERE date BETWEEN :startDate AND :endDate ORDER BY date DESC;",
+            $rsm)
             ->setParameter('startDate', $date->format('Y-m-d') . 'T00:00:00Z')
             ->setParameter('endDate', $date->format('Y-m-d') . 'T23:59:59Z')
             ->execute();
@@ -48,19 +37,8 @@ __SQL__
         $rsm = new ResultSetMappingBuilder($this->_em);
         $rsm->addRootEntityFromClassMetadata('App\Entity\Entry', 'e');
 
-        return $this->_em->createNativeQuery(<<<__SQL__
-SELECT * FROM (
-    SELECT e.*, 
-        @row_number:=CASE
-        WHEN @station_id = station_id AND @field_id = field_id 
-			THEN @row_number + 1
-        ELSE 1
-    END AS rn,
-    @field_id:=field_id FieldId,
-    @station_id:=station_id StationId
-    FROM entry AS e
-) ranked_entries WHERE date BETWEEN :startDate AND :endDate AND station_id = :stationId AND rn = 1;
-__SQL__
+        return $this->_em->createNativeQuery(
+            "SELECT DISTINCT ON (station_id, field_id) * FROM entry WHERE station_id = :stationId AND date BETWEEN :startDate AND :endDate ORDER BY date DESC;"
             , $rsm)
             ->setParameter('startDate', $date->format('Y-m-d') . 'T00:00:00Z')
             ->setParameter('endDate', $date->format('Y-m-d') . 'T23:59:59Z')
