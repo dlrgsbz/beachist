@@ -43,7 +43,8 @@ class EntryService {
         bool $state,
         StateKind $stateKind = null,
         int $amount = null,
-        string $note = null
+        string $note = null,
+        string $crew = null
     ): string {
         $field = $this->fieldReader->get($fieldId);
         if (!$field) {
@@ -55,7 +56,7 @@ class EntryService {
             throw new StationNotFoundException();
         }
 
-        $entry = new Entry($field, $station, $state, $stateKind, null, $amount, $note);
+        $entry = new Entry($field, $station, $state, $stateKind, null, $amount, $note, $crew);
 
         return $this->entryWriter->create($entry);
     }

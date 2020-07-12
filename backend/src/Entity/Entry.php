@@ -58,6 +58,11 @@ class Entry implements JsonSerializable {
     public ?string $note;
 
     /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    public ?string $crew;
+
+    /**
      * @ORM\Column(type="datetime", nullable=false)
      */
     public DateTimeInterface $date;
@@ -69,7 +74,8 @@ class Entry implements JsonSerializable {
         StateKind $stateKind = null,
         DateTimeInterface $date = null,
         int $amount = null,
-        string $note = null
+        string $note = null,
+        string $crew = null
     ) {
         $this->id = Uuid::uuid4();
         $this->field = $field;
@@ -78,6 +84,7 @@ class Entry implements JsonSerializable {
         $this->stateKind = $stateKind;
         $this->amount = $amount;
         $this->note = $note;
+        $this->crew = $crew;
         if (!$date) {
             $date = new DateTime();
         }
@@ -93,7 +100,6 @@ class Entry implements JsonSerializable {
      * @since 5.4.0
      */
     public function jsonSerialize() {
-        // TODO: Implement jsonSerialize() method.
         return [
             'id' => $this->id,
             'field' => $this->field->id,
@@ -102,6 +108,7 @@ class Entry implements JsonSerializable {
             'stateKind' => $this->stateKind ? $this->stateKind->getValue() : null,
             'amount' => $this->amount,
             'note' => $this->note,
+            'crew' => $this->crew,
             'date' => $this->date->format('c'),
         ];
     }

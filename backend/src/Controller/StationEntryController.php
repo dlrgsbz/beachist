@@ -39,9 +39,10 @@ class StationEntryController {
         $amount = $request->request->get('amount');
         $amount = $amount ? (int)$amount : null;
         $note = $request->request->get('note');
+        $crew = $request->request->get('crew');
 
         try {
-            $id = $this->entryService->create($stationId, $fieldId, $state, $stateKind, $amount, $note);
+            $id = $this->entryService->create($stationId, $fieldId, $state, $stateKind, $amount, $note, $crew);
         } catch (FieldNotFoundException $e) {
             return new JsonResponse(['errors' => ['field not found']], 404);
         } catch (StationNotFoundException $e) {
@@ -70,6 +71,10 @@ function validateCreateEntryRequest(InputBag $request): ?Response {
 
     if ($request->get('stateKind') === 'other' || $request->get('stateKind') === 'broken' || $request->get('note')) {
         $constraints['note'] = new Assert\NotBlank();
+    }
+
+    if ($request->get('crew') !== null) {
+        $constraints['crew'] = new Assert\NotBlank();
     }
 
     $constraint = new Assert\Collection($constraints);
