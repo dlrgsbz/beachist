@@ -98,6 +98,12 @@ class StationCheckListAdapter(
         }
 
         if (item.entry == null || item.entry?.state == null) {
+            okayButton.isPressed = false
+            okayButton.text = "In Ordnung"
+            problemButton.isPressed = false
+            problemButton.text = "Problem"
+
+
             return
         }
 
