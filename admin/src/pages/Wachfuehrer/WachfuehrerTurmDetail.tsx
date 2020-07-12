@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
-import { Color } from '../../interfaces/ui'
+import { Color } from 'interfaces'
 
 interface WachfuehrerTurmDetailProps {
   title: string
   color: Color
+  crew?: string
   children?: React.ReactNode
 }
 
@@ -35,32 +36,28 @@ const Title: React.FC<TitleProps> = ({ title, isVisible, setVisible, color }) =>
   return <>✅ {title}</>
 }
 
-export const WachfuehrerTurmDetail: React.FC<WachfuehrerTurmDetailProps> = ({ title, color, children }) => {
+export const WachfuehrerTurmDetail: React.FC<WachfuehrerTurmDetailProps> = ({ title, color, crew,children }) => {
   const [isVisible, setVisible] = useState(false)
-
-  let visible = isVisible
-  if (color === Color.green || color === Color.yellow) {
-    visible = false
-  }
 
   return (
     <div className="card">
       <div className="card-header" id="headerStation1" onClick={() => setVisible(!isVisible)}>
         <h5 className="mb-0">
-          <Title title={title} color={color} isVisible={visible} setVisible={setVisible} />
+          <Title title={title} color={color} isVisible={isVisible} setVisible={setVisible} />
         </h5>
       </div>
       <div
         id="station1"
-        className={'collapse ' + (visible ? 'show' : '')}
+        className={'collapse ' + (isVisible ? 'show' : '')}
         aria-labelledby="headerStation1"
         data-parent="#accordion"
       >
-        {children && (
           <div className="card-body">
-            <ul>{children}</ul>
+            {crew && <p>Besatzung: {crew}</p>}
+            {children && (
+              <ul>{children}</ul>
+            )}
           </div>
-        )}
       </div>
     </div>
   )

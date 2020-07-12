@@ -7,6 +7,7 @@ export interface BaseEntry {
   stateKind?: StateKind
   amount?: number
   note?: string
+  crew?: string
   date: moment.Moment
 }
 

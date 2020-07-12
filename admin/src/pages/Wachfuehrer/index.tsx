@@ -45,7 +45,7 @@ const Wachfuehrer: React.FC = () => {
 
         <div className="accordion">
           {adminStore.stations.map(station => (
-            <WachfuehrerTurmDetail title={station.name} color={adminStore.color(station.id)}>
+            <WachfuehrerTurmDetail title={station.name} color={adminStore.color(station.id)} crew={adminStore.crews.get(station.id)}>
               {adminStore
                 .stationEntries(station.id)
                 .filter(entry => !entry.state)
