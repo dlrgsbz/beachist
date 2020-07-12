@@ -7,6 +7,7 @@ data class PostEntry(
     val state: Boolean,
     val stateKind: StateKind?,
     val amount: Int?,
-    val note: String?
+    val note: String?,
+    val crew: String
 )
 

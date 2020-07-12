@@ -49,9 +49,10 @@ class HTTPRepo {
         stateKind: StateKind?,
         amount: Int?,
         note: String?,
+        crew: String,
         callback: Callback<IdResponse>
     ) {
-        val entry = PostEntry(state, stateKind, amount, note)
+        val entry = PostEntry(state, stateKind, amount, note, crew)
         val call = service.updateEntries(stationId, fieldId, entry)
         call.enqueue(callback)
     }

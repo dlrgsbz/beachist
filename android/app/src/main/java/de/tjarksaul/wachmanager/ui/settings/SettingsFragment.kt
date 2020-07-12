@@ -1,22 +1,18 @@
 package de.tjarksaul.wachmanager.ui.settings
 
-import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
-import android.text.InputType
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView.OnItemClickListener
 import android.widget.ArrayAdapter
-import android.widget.EditText
 import android.widget.ListView
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import de.tjarksaul.wachmanager.R
 import de.tjarksaul.wachmanager.api.HTTPRepo
-import de.tjarksaul.wachmanager.config.configPassword
 import de.tjarksaul.wachmanager.dtos.Station
 import de.tjarksaul.wachmanager.ui.base.BaseFragment
 import retrofit2.Call
@@ -27,7 +23,7 @@ import retrofit2.Response
 class SettingsFragment : BaseFragment() {
     private val httpRepo = HTTPRepo()
 
-    private lateinit var settingsViewModel: SettingsViewModel
+    private val settingsViewModel: SettingsViewModel by viewModels()
     private lateinit var listView: ListView
 
     private val callback = object : Callback<MutableList<Station>> {
@@ -42,8 +38,24 @@ class SettingsFragment : BaseFragment() {
         ) {
             response?.isSuccessful.let {
                 val data = response?.body() ?: emptyList<Station>().toMutableList()
-                settingsViewModel.updateData(data)
+
+                if (data.count() > 0) {
+                    cacheStations(data)
+                }
+
+                updateModel(data)
             }
+        }
+    }
+
+    private fun updateModel(data: List<Station>) {
+        settingsViewModel.updateData(data.toMutableList())
+
+        if (getStoredStationId() != null) {
+            val index =
+                settingsViewModel.stations.value?.indexOfFirst { it.id == getStoredStationId() }
+
+            index?.let { listView.setItemChecked(index, true) }
         }
     }
 
@@ -52,18 +64,20 @@ class SettingsFragment : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        settingsViewModel =
-            ViewModelProviders.of(this).get(SettingsViewModel::class.java)
+        val root = inflater.inflate(R.layout.fragment_settings, container, false)
+        listView = root.findViewById(R.id.settingsList)
+        listView.choiceMode = ListView.CHOICE_MODE_SINGLE
+
+        val cachedStations = cachedStations()
+        if (cachedStations != null) {
+            updateModel(cachedStations)
+        }
 
         if (isNetworkConnected()) {
             httpRepo.getStations(callback)
         } else {
             showInternetConnectionError()
         }
-
-        val root = inflater.inflate(R.layout.fragment_settings, container, false)
-        listView = root.findViewById(R.id.settingsList)
-        listView.choiceMode = ListView.CHOICE_MODE_SINGLE
 
         listView.onItemClickListener =
             OnItemClickListener { adapter, v, position, arg3 ->
@@ -82,31 +96,10 @@ class SettingsFragment : BaseFragment() {
     }
 
     private fun onSelect(value: Station, position: Int) {
-        val builder: AlertDialog.Builder = AlertDialog.Builder(activity!!)
-        builder.setTitle("Bitte Passwort eingeben")
-
-        val input = EditText(activity!!)
-        input.inputType = InputType.TYPE_NUMBER_VARIATION_PASSWORD
-        builder.setView(input)
-
-        builder.setPositiveButton(
-            "OK"
-        ) { _, _ ->
-            if (input.text.toString() == configPassword) {
-                println("correct password")
-                val updateSelectedStation = updateSelectedStation(value)
-                if (updateSelectedStation) {
-                    listView.setItemChecked(position, true)
-                }
-            } else {
-                println("wrong password")
-            }
+        val updateSelectedStation = updateSelectedStation(value)
+        if (updateSelectedStation) {
+            listView.setItemChecked(position, true)
         }
-        builder.setNegativeButton(
-            "Cancel"
-        ) { dialog, _ -> dialog.cancel() }
-
-        builder.show()
     }
 
     private fun updateSelectedStation(

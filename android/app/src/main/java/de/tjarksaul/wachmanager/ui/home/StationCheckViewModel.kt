@@ -1,24 +1,44 @@
 package de.tjarksaul.wachmanager.ui.home
 
 import android.text.format.DateUtils
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import de.tjarksaul.wachmanager.dtos.Entry
 import de.tjarksaul.wachmanager.dtos.Field
 import de.tjarksaul.wachmanager.dtos.StateKind
 import java.util.*
 
-class StationCheckViewModel : ViewModel() {
-    fun updateValue(id: String, state: Boolean, stateKind: StateKind?, amount: Int?, note: String?) {
-        val arr = _entries.value
-        arr?.let {
-            val field = it[id]
-            field?.let { field ->
+class StationCheckViewModel(private val state: SavedStateHandle) : ViewModel() {
+    fun updateValue(
+        id: String,
+        state: Boolean,
+        stateKind: StateKind?,
+        amount: Int?,
+        note: String?
+    ) {
+        _entries.value?.let {
+            it[id]?.let { field ->
                 val newEntry = if (state) {
-                    Entry(field.entry?.id, field.id, "", state, null, null, null, field.entry?.date ?: "")
+                    Entry(
+                        field.entry?.id,
+                        field.id,
+                        "",
+                        state,
+                        null,
+                        null,
+                        null,
+                        field.entry?.date ?: ""
+                    )
                 } else {
-                    Entry(field.entry?.id, field.id, "", state, stateKind, amount, note, field.entry?.date ?: "")
+                    Entry(
+                        field.entry?.id,
+                        field.id,
+                        "",
+                        state,
+                        stateKind,
+                        amount,
+                        note,
+                        field.entry?.date ?: ""
+                    )
                 }
                 it[id] = Field(
                     field.id,
@@ -36,7 +56,8 @@ class StationCheckViewModel : ViewModel() {
 
     fun updateData(list: MutableList<Field>) {
         // todo: sort
-        _lastUpdate.value = Date()
+        val date = Date()
+        _lastUpdate.value = date
         val fields = emptyMap<String, Field>().toMutableMap()
         for (field in list) {
             fields[field.id] = field
@@ -62,24 +83,28 @@ class StationCheckViewModel : ViewModel() {
     }
 
     fun needsRefresh(): Boolean {
-        return _lastUpdate.value == null || !DateUtils.isToday(_lastUpdate.value!!.time)
+        val value = _lastUpdate.value
+        return value == null || !DateUtils.isToday(value.time)
     }
 
-    private fun updateEntries(entries: MutableMap<String, Field>) {
+    private fun updateEntries(entries: MutableMap<String, Field>, save: Boolean = true) {
         _entries.value = entries
-        _entryList.value = entries.values.toMutableList()
     }
 
-    private val _lastUpdate = MutableLiveData<Date?>().apply { }
-
-//    val lastUpdate: LiveData<Date?> = _lastUpdate
-
-    private val _entries = MutableLiveData<MutableMap<String, Field>>().apply {
-        value = emptyMap<String, Field>().toMutableMap()
+    fun saveState() {
+        _entries.value?.let { state.set("entries", it) }
+        _lastUpdate.value?.let { state.set("lastUpdate", it) }
     }
 
-    private val _entryList =
-        MutableLiveData<MutableList<Field>>().apply { value = emptyList<Field>().toMutableList() }
+    private val _lastUpdate = state.getLiveData<Date?>("lastUpdate")
+
+    private val _entries = state.getLiveData<MutableMap<String, Field>>("entries")
+
+    private val _entryList = MediatorLiveData<MutableList<Field>>()
+
+    init {
+        _entryList.addSource(_entries) { _entryList.value = it.values.toMutableList() }
+    }
 
     val entries: LiveData<MutableList<Field>> = _entryList
 }
