@@ -9,86 +9,56 @@ use App\Entity\Entry;
 use App\Interfaces\EntryReader;
 use App\Interfaces\EntryWriter;
 use DateTimeInterface;
-use Doctrine\DBAL\DBALException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
-use Doctrine\ORM\Query\ResultSetMappingBuilder;
 
 class EntryRepository extends EntityRepository implements EntryReader, EntryWriter {
     public function __construct(EntityManagerInterface $em) {
         parent::__construct($em, new ClassMetadata(Entry::class));
     }
 
-    private function isMysql(): bool {
-        try {
-            return $this->_em->getConnection()->getDatabasePlatform()->getName() === 'mysql';
-        } catch (DBALException $e) {
-            return false;
-        }
-    }
-
     function get(DateTimeInterface $date): array {
-        $rsm = new ResultSetMappingBuilder($this->_em);
-        $rsm->addRootEntityFromClassMetadata('App\Entity\Entry', 'e');
-
-        $query = null;
-        if ($this->isMysql()) {
-            $query = $this->_em->createNativeQuery(<<<__SQL__
-SELECT * FROM (
-    SELECT e.*, 
-        @row_number:=CASE
-        WHEN @station_id = station_id AND @field_id = field_id 
-			THEN @row_number + 1
-        ELSE 1
-    END AS rn,
-    @field_id:=field_id FieldId,
-    @station_id:=station_id StationId
-    FROM entry AS e
-) ranked_entries WHERE date BETWEEN :startDate AND :endDate AND rn = 1;
-__SQL__
-                , $rsm);
-        } else {
-            $query = $this->_em->createNativeQuery(
-                "SELECT DISTINCT ON (station_id, field_id) * FROM entry WHERE date BETWEEN :startDate AND :endDate ORDER BY date DESC;",
-                $rsm);
-        }
-        return $query->setParameter('startDate', $date->format('Y-m-d') . 'T00:00:00Z')
+        $results = $this->createQueryBuilder('e')
+            ->where('e.date BETWEEN :startDate AND :endDate')
+            ->orderBy('e.date', 'ASC')
+            ->setParameter('startDate', $date->format('Y-m-d') . 'T00:00:00Z')
             ->setParameter('endDate', $date->format('Y-m-d') . 'T23:59:59Z')
+            ->getQuery()
             ->execute();
+
+        $ret = [];
+        foreach ($results as $result) {
+            /** @var $result Entry */
+            if (!isset($ret[$result->station->id])) {
+                $ret[$result->station->id] = [];
+            }
+            $ret[$result->station->id][$result->field->id] = $result;
+        }
+
+        return array_values(array_merge(...array_values($ret)));
     }
 
     function getByStation(DateTimeInterface $date, string $stationId): array {
-        $rsm = new ResultSetMappingBuilder($this->_em);
-        $rsm->addRootEntityFromClassMetadata('App\Entity\Entry', 'e');
-
-        $query = null;
-        if ($this->isMysql()) {
-            $query = $this->_em->createNativeQuery(<<<__SQL__
-SELECT * FROM (
-    SELECT e.*, 
-        @row_number:=CASE
-        WHEN @station_id = station_id AND @field_id = field_id 
-			THEN @row_number + 1
-        ELSE 1
-    END AS rn,
-    @field_id:=field_id FieldId,
-    @station_id:=station_id StationId
-    FROM entry AS e
-) ranked_entries WHERE date BETWEEN :startDate AND :endDate AND station_id = :stationId AND rn = 1;
-__SQL__
-                , $rsm);
-        } else {
-            $query = $this->_em->createNativeQuery(
-                "SELECT DISTINCT ON (station_id, field_id) * FROM entry WHERE station_id = :stationId AND date BETWEEN :startDate AND :endDate ORDER BY date DESC;"
-                , $rsm);
-        }
-        return $query->setParameter('startDate', $date->format('Y-m-d') . 'T00:00:00Z')
+        $results = $this->createQueryBuilder('e')
+            ->where('e.date BETWEEN :startDate AND :endDate')
+            ->andWhere('e.station = :stationId')
+            ->orderBy('e.date', 'ASC')
+            ->setParameter('startDate', $date->format('Y-m-d') . 'T00:00:00Z')
             ->setParameter('endDate', $date->format('Y-m-d') . 'T23:59:59Z')
             ->setParameter('stationId', $stationId)
+            ->getQuery()
             ->execute();
+
+        $ret = [];
+        foreach ($results as $result) {
+            /** @var $result Entry */
+            $ret[$result->field->id] = $result;
+        }
+
+        return array_values($ret);
     }
 
     /**
