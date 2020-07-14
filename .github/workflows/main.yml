@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  push:
+    branches: [ develop ]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  deploy:
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 2
+
+    - name: install node
+      uses: actions/setup-node@v1
+      with:
+        node-version: '14.x'
+
+    # Runs a single command using the runners shell
+    - name: npm ci
+      run: npm ci
+      working-directory: admin
+
+    - name: npm build
+      run: npm run build
+      working-directory: admin
+    
+    - name: install composer
+      uses: docker://composer:1.9.1
+
+    - name: composer install
+      run: composer install
+      working-directory: backend
+
+    - name: use alpine
+      uses: docker://alpine:latest
+    
+    - name: move files around
+      run: |
+        mkdir dist
+        cp -r admin/build/* dist
+        cp -r backend/config dist
+        cp -r backend/public/* dist
+        cp -r backend/src dist
+        cp -r backend/var dist
+        cp -r backend/vendor dist
+        cp -r backend/composer.* dist
+        cp -r backend/.env dist
+
+    - name: deployment to server
+      uses: SamKirkland/FTP-Deploy-Action@3.1.1
+      with:
+        ftp-server: ${{ secrets.FTP_SERVER }}
+        ftp-username: ${{ secrets.FTP_USERNAME }}
+        ftp-password: ${{ secrets.FTP_PASSWORD }}
+        local-dir: dist
