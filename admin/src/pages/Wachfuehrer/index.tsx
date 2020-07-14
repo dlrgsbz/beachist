@@ -52,7 +52,7 @@ const Wachfuehrer: React.FC = () => {
                 .map(entry => (
                   <li>
                     {entry.field.name}: {entry.stateKind && t('statekind_' + entry.stateKind.toString())} (
-                    {entry.stateKind === 'tooLittle' && entry.amount + ' noch vorhanden'}
+                    {entry.stateKind === 'tooLittle' && (entry.amount ?? 0) + ' noch vorhanden'}
                     {entry.stateKind === 'broken' && entry.note}
                     {entry.stateKind === 'other' && entry.note})
                   </li>
