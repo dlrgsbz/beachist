@@ -38,7 +38,8 @@ class EntryRepository extends EntityRepository implements EntryReader, EntryWrit
             $ret[$result->station->id][$result->field->id] = $result;
         }
 
-        return array_values(array_merge(...array_values($ret)));
+        // this is basically a flatMap
+        return array_merge(...array_values(array_map(fn($v) => array_values($v), $ret)));
     }
 
     function getByStation(DateTimeInterface $date, string $stationId): array {
