@@ -26,14 +26,14 @@ const Title: React.FC<TitleProps> = ({ title, isVisible, setVisible, color }) =>
         aria-controls="station1"
         onClick={() => setVisible(!isVisible)}
       >
-        🔴 {title}
+          <span role="img" aria-label="Not okay">🔴</span> {title}
       </button>
     )
   }
   if (color === Color.yellow) {
-    return <>⚠️ {title}</>
+      return <><span role="img" aria-label="Not checked">⚠️</span> {title}</>
   }
-  return <>✅ {title}</>
+    return <><span role="img" aria-label="Okay">✅</span> {title}</>
 }
 
 export const WachfuehrerTurmDetail: React.FC<WachfuehrerTurmDetailProps> = ({ title, color, crew,children }) => {
