@@ -12,7 +12,6 @@ use App\Interfaces\EventReader;
 use App\Interfaces\EventWriter;
 use App\Interfaces\StationNotFoundException;
 use App\Interfaces\StationReader;
-use DateTime;
 
 class EventService {
     private EventReader $eventReader;
@@ -34,7 +33,7 @@ class EventService {
             throw new StationNotFoundException();
         }
 
-        $event = new Event($station, $type, new DateTime());
+        $event = new Event($station, $type);
 
         return $this->eventWriter->create($event);
     }
