@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next'
 import { WachfuehrerTurmDetail } from './WachfuehrerTurmDetail'
 import { useAdminStore } from 'store'
 import Loading from 'components/Loading'
+import Legend from './Legend'
 
 const Wachfuehrer: React.FC = () => {
   const [isFocused, setFocused] = useState(false)
@@ -27,7 +28,7 @@ const Wachfuehrer: React.FC = () => {
   return useObserver(() => (
     <div>
       <h1>Wachführer</h1>
-      {adminStore.loading && <Loading />}
+      {adminStore.loading && <Loading/>}
       <div>
         <SingleDatePicker
           id="15de9e5a"
@@ -43,9 +44,12 @@ const Wachfuehrer: React.FC = () => {
         <p>EH-Leistungen heute: {adminStore.firstAid}</p>
         <p>Suchmeldungen heute: {adminStore.search}</p>
 
+        <Legend/>
+
         <div className="accordion">
           {adminStore.stations.map(station => (
-            <WachfuehrerTurmDetail title={station.name} color={adminStore.color(station.id)} crew={adminStore.crews.get(station.id)}>
+            <WachfuehrerTurmDetail title={station.name} color={adminStore.color(station.id)}
+                                   crew={adminStore.crews.get(station.id)}>
               {adminStore
                 .stationEntries(station.id)
                 .filter(entry => !entry.state)
