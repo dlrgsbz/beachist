@@ -50,8 +50,8 @@ jobs:
         cp -r backend/config dist
         cp -r backend/public/* dist
         cp -r backend/src dist
-        cp -r backend/var dist
-        cp -r backend/vendor dist
+        mkdir dist/var
+        test -d backend/vendor && cp -r backend/vendor dist
         cp -r backend/composer.* dist
         cp -r backend/.env dist
         sed -i 's/dirname(__DIR__)/__DIR__/' dist/index.php
