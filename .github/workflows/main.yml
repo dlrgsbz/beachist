@@ -35,7 +35,9 @@ jobs:
       uses: docker://composer:1.9.1
 
     - name: composer install
-      run: composer install
+      run: |
+        git diff-tree --no-commit-id --name-only -r ${{ github.sha }} | grep composer > /dev/null || exit 0
+        composer install
       working-directory: backend
 
     - name: use alpine
