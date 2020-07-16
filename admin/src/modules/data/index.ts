@@ -1,5 +1,5 @@
 import moment from 'moment'
-import { EventEntry, Field, NetworkEntry, StationInfo } from 'dtos'
+import { EventEntry, Field, NetworkEntry, NetworkSpecialEvent, StationInfo } from 'dtos'
 import { httpGet } from 'modules/network'
 
 export async function fetchStations(): Promise<StationInfo[]> {
@@ -22,4 +22,10 @@ export async function fetchEvents(date: moment.Moment): Promise<EventEntry> {
   const dateString = date.format('Y-MM-DD')
   const data = await httpGet(`/api/event/${dateString}`)
   return { ...data.data, date: moment(data.data.date) }
+}
+
+export async function fetchSpecialEvents(date: moment.Moment): Promise<NetworkSpecialEvent[]> {
+  const dateString = date.format('Y-MM-DD')
+  const data = await httpGet(`/api/special/${dateString}`)
+  return data.data.map((dt: any) => ({ ...dt, date: moment(dt.date) }))
 }
