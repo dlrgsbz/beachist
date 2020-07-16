@@ -10,6 +10,8 @@ use App\Interfaces\SpecialEventReader;
 use App\Interfaces\SpecialEventWriter;
 use App\Interfaces\StationNotFoundException;
 use App\Interfaces\StationReader;
+use DateTime;
+use DateTimeInterface;
 use Ramsey\Uuid\UuidInterface;
 
 class SpecialEventService {
@@ -24,7 +26,7 @@ class SpecialEventService {
     }
 
     /** @throws */
-    public function create(string $stationId, string $note, \DateTime $date = null): UuidInterface {
+    public function create(string $stationId, string $note, DateTime $date = null): UuidInterface {
         $station = $this->stationReader->getStation($stationId);
         if (!$station) {
             throw new StationNotFoundException();
@@ -33,5 +35,19 @@ class SpecialEventService {
         $event = new SpecialEvent($station, $note, $date);
 
         return $this->specialEventWriter->create($event);
+    }
+
+    public function get(DateTimeInterface $date): array {
+        return $this->specialEventReader->get($date);
+    }
+
+    /** @throws */
+    public function getByStation(DateTimeInterface $date, string $stationId): array {
+        $station = $this->stationReader->getStation($stationId);
+        if (!$station) {
+            throw new StationNotFoundException();
+        }
+
+        return $this->specialEventReader->getByStation($date, $stationId);
     }
 }
