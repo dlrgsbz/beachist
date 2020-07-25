@@ -48,9 +48,11 @@ class AdminStore {
       if (!stationEntries) {
         stationEntries = []
       }
-      if (entry.crew) {
-        this.crews.set(entry.station.id, entry.crew)
-      }
+      runInAction(() => {
+        if (entry.crew) {
+          this.crews.set(entry.station.id, entry.crew)
+        }
+      })
       stationEntries.push(entry)
       entryMap.set(entry.station.id, stationEntries)
     })
