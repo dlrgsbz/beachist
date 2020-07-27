@@ -1,7 +1,16 @@
 import { action, observable, runInAction } from 'mobx'
 import moment, { Moment } from 'moment'
-import { Entry, EventEntry, Field, NetworkEntry, NetworkSpecialEvent, SpecialEvent, StationInfo } from 'dtos'
-import { Color } from 'interfaces'
+import {
+  Entry,
+  EventEntry,
+  Field,
+  NetworkEntry,
+  NetworkSpecialEvent,
+  SpecialEvent,
+  SpecialEventType,
+  StationInfo,
+} from 'dtos'
+import { AdminView, Color } from 'interfaces'
 import { fetchEntries, fetchEvents, fetchFields, fetchSpecialEvents, fetchStations } from 'modules/data'
 
 class AdminStore {
@@ -15,22 +24,21 @@ class AdminStore {
   @observable fields: Field[] = []
   @observable entries = new Map<string, Entry[]>()
   @observable crews = new Map<string, string>()
-  @observable specialEvents = new Map<string, SpecialEvent[]>()
+  @observable damages: SpecialEvent[] = []
+  @observable specialEvents: SpecialEvent[] = []
+
+  @observable view: AdminView = AdminView.damages // todo: reset
 
   async reloadData(): Promise<void> {
     this.setLoading(true)
     // @ts-ignore
-    const [
-      networkEntries,
-      events,
-      stations,
-      fields,
-      networkSpecialEvents,
-    ] = await Promise.all<NetworkEntry[],
+    const [networkEntries, events, stations, fields, networkSpecialEvents] = await Promise.all<
+      NetworkEntry[],
       EventEntry,
       StationInfo[],
       Field[],
-      NetworkSpecialEvent[]>([
+      NetworkSpecialEvent[]
+    >([
       fetchEntries(this.selectedDate),
       fetchEvents(this.selectedDate),
       fetchStations(),
@@ -54,7 +62,8 @@ class AdminStore {
       this.fields = fields
       this.entries = entries
       this.crews = crews
-      this.specialEvents = specialEvents
+      this.specialEvents = specialEvents.special
+      this.damages = specialEvents.damage
       this.setLoading(false)
     })
   }
@@ -84,6 +93,21 @@ class AdminStore {
 
   stationEntries(id: string): Entry[] {
     return this.entries.get(id) || []
+  }
+
+  @action.bound
+  showStationInfo() {
+    this.view = AdminView.stations
+  }
+
+  @action.bound
+  showDamages() {
+    this.view = AdminView.damages
+  }
+
+  @action.bound
+  showSpecialEvents() {
+    this.view = AdminView.specialEvents
   }
 }
 
@@ -124,8 +148,16 @@ function createEntryMap(
   }
 }
 
-function createSpecialEventMap(specialEvents: NetworkSpecialEvent[], stationMap: Map<string, StationInfo>): Map<string, SpecialEvent[]> {
-  const map = new Map<string, SpecialEvent[]>()
+interface SpecialEventMap {
+  special: SpecialEvent[]
+  damage: SpecialEvent[]
+}
+
+function createSpecialEventMap(
+  specialEvents: NetworkSpecialEvent[],
+  stationMap: Map<string, StationInfo>,
+): SpecialEventMap {
+  const map: SpecialEventMap = { special: [], damage: [] }
 
   specialEvents.forEach(event => {
     const stationId = event.station
@@ -134,13 +166,15 @@ function createSpecialEventMap(specialEvents: NetworkSpecialEvent[], stationMap:
       return
     }
 
-    let events = map.get(stationId)
-    if (!events) {
-      events = []
+    const specialEvent = { ...event, station }
+    switch (event.type) {
+      case SpecialEventType.damage:
+        map.damage.push(specialEvent)
+        break
+      case SpecialEventType.event:
+        map.special.push(specialEvent)
+        break
     }
-
-    events.push({ ...event, station })
-    map.set(stationId, events)
   })
 
   return map

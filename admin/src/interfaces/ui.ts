@@ -3,3 +3,9 @@ export enum Color {
   red,
   yellow,
 }
+
+export enum AdminView {
+  stations,
+  specialEvents,
+  damages,
+}
