@@ -27,7 +27,7 @@ class AdminStore {
   @observable damages: SpecialEvent[] = []
   @observable specialEvents: SpecialEvent[] = []
 
-  @observable view: AdminView = AdminView.damages // todo: reset
+  @observable view: AdminView = AdminView.stations
 
   async reloadData(): Promise<void> {
     this.setLoading(true)
@@ -64,6 +64,7 @@ class AdminStore {
       this.crews = crews
       this.specialEvents = specialEvents.special
       this.damages = specialEvents.damage
+      this.view = AdminView.stations
       this.setLoading(false)
     })
   }
