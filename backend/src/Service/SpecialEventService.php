@@ -6,6 +6,7 @@ namespace App\Service;
 
 
 use App\Entity\SpecialEvent;
+use App\Enum\SpecialEventType;
 use App\Interfaces\SpecialEventReader;
 use App\Interfaces\SpecialEventWriter;
 use App\Interfaces\StationNotFoundException;
@@ -26,13 +27,13 @@ class SpecialEventService {
     }
 
     /** @throws */
-    public function create(string $stationId, string $note, DateTime $date = null): UuidInterface {
+    public function create(string $stationId, string $title, string $note, string $notifier, SpecialEventType $type, DateTime $date = null): UuidInterface {
         $station = $this->stationReader->getStation($stationId);
         if (!$station) {
             throw new StationNotFoundException();
         }
 
-        $event = new SpecialEvent($station, $note, $date);
+        $event = new SpecialEvent($station, $title, $note, $notifier, $type, $date);
 
         return $this->specialEventWriter->create($event);
     }

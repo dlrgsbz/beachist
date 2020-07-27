@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Enum\SpecialEventType;
 use App\Interfaces\StationNotFoundException;
 use App\Service\SpecialEventService;
 use DateTime;
@@ -36,12 +37,15 @@ class StationSpecialEventController {
             return $validation;
         }
 
+        $title = $request->request->get('title');
         $note = $request->request->get('note');
+        $notifier = $request->request->get('notifier', 'i bims');
+        $type = SpecialEventType::make($request->request->get('type'));
         $date = $request->request->get('date');
         $date = $date ? DateTime::createFromFormat(DATE_FORMAT, $date) : null;
 
         try {
-            $id = $this->specialEventService->create($stationId, $note, $date);
+            $id = $this->specialEventService->create($stationId, $title, $note, $notifier, $type, $date);
         } catch (StationNotFoundException $e) {
             return new JsonResponse(['errors' => ['station not found']], 404);
         }
@@ -59,6 +63,9 @@ function validateCreateSpecialEventRequest(InputBag $request): ?Response {
     }
 
     $constraints['note'] = new Assert\NotBlank();
+    $constraints['title'] = new Assert\Length(['min' => 8]);
+    $constraints['type'] = new Assert\Regex(['pattern' => '/^(damage|event)$/']);
+    $constraints['notifier'] = new Assert\Length(['min' => 2]);
 
     $constraint = new Assert\Collection($constraints);
 
