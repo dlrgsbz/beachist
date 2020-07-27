@@ -22,4 +22,7 @@ interface WachmanagerService {
     fun getEvents(@Path("date") date: String, @Path("stationId") stationId: String): Call<EventStats>
     @POST("station/{stationId}/event")
     fun createEvent(@Path("stationId") stationId: String, @Body info: PostEvent): Call<IdResponse>
+
+    @POST("station/{stationId}/special")
+    fun createSpecialEvent(@Path("stationId") stationId: String, @Body event: PostSpecialEvent): Call<IdResponse>
 }

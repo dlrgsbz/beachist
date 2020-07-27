@@ -2,5 +2,6 @@
     <string name="app_name">Wachmanager</string>
     <string name="title_station_check">Stationsüberprüfung</string>
     <string name="title_events">Ereignisse</string>
+    <string name="title_special_events">Besondere Vorkommnisse</string>
     <string name="title_settings">Einstellungen</string>
 </resources>
