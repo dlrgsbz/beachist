@@ -4,7 +4,6 @@ import 'react-dates/lib/css/_datepicker.css'
 import { useObserver } from 'mobx-react-lite'
 import moment from 'moment'
 import { SingleDatePicker } from 'react-dates'
-import { useTranslation } from 'react-i18next'
 import classNames from 'classnames'
 import { useAdminStore } from 'store'
 import Loading from 'components/Loading'
@@ -18,8 +17,6 @@ const Wachfuehrer: React.FC = () => {
   const onFocusChange = ({ focused }: { focused: boolean | null }) => setFocused(!!focused)
 
   const adminStore = useAdminStore()
-
-  const { t } = useTranslation()
 
   useEffect(() => {
     adminStore.reloadData()

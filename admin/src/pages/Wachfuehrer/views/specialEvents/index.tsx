@@ -1,5 +1,4 @@
 import React from 'react'
-import { useTranslation } from 'react-i18next'
 import { useObserver } from 'mobx-react-lite'
 import { SpecialEventType } from 'dtos'
 import { useAdminStore } from 'store'
@@ -26,15 +25,9 @@ const SpecialEvents: React.FC<SpecialEventViewProps> = ({ type }) => {
           </div>
           <div className="card-footer text-muted">
             <div className="row">
-              <div className="col">
-                {event.notifier}
-              </div>
-              <div className="col text-center">
-                {event.station.name}
-              </div>
-              <div className="col text-right">
-                {event.date.format('LT')}
-              </div>
+              <div className="col">{event.notifier}</div>
+              <div className="col text-center">{event.station.name}</div>
+              <div className="col text-right">{event.date.format('LT')}</div>
             </div>
           </div>
         </div>
