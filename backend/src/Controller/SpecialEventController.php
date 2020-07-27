@@ -4,28 +4,24 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+
 use App\Controller\Support\DateControllerTrait;
 use App\Interfaces\StationNotFoundException;
-use App\Service\EventService;
+use App\Service\SpecialEventService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @Route("/api/event")
+ * @Route("/api/special")
  */
-class EventController {
+class SpecialEventController {
     use DateControllerTrait;
 
-    private EventService $eventService;
+    private SpecialEventService $specialEventService;
 
-    /**
-     * EventController constructor.
-     *
-     * @param EventService $eventService
-     */
-    public function __construct(EventService $eventService) {
-        $this->eventService = $eventService;
+    public function __construct(SpecialEventService $specialEventService) {
+        $this->specialEventService = $specialEventService;
     }
 
     /**
@@ -34,7 +30,7 @@ class EventController {
     public function get(string $date): Response {
         $date = $this->checkDate($date);
 
-        return new JsonResponse($this->eventService->get($date));
+        return new JsonResponse($this->specialEventService->get($date));
     }
 
     /**
@@ -44,9 +40,10 @@ class EventController {
         $date = $this->checkDate($date);
 
         try {
-            return new JsonResponse($this->eventService->getByStation($date, $stationId));
+            return new JsonResponse($this->specialEventService->getByStation($date, $stationId));
         } catch (StationNotFoundException $e) {
             return new JsonResponse(['errors' => ['station not found']], 404);
         }
     }
+
 }

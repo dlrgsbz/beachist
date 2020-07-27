@@ -5,10 +5,13 @@ import { useObserver } from 'mobx-react-lite'
 import moment from 'moment'
 import { SingleDatePicker } from 'react-dates'
 import { useTranslation } from 'react-i18next'
-import { WachfuehrerTurmDetail } from './WachfuehrerTurmDetail'
+import classNames from 'classnames'
 import { useAdminStore } from 'store'
 import Loading from 'components/Loading'
-import Legend from './Legend'
+import { AdminView } from 'interfaces'
+import StationInfo from './views/stationInfo'
+import SpecialEvents from './views/specialEvents'
+import { SpecialEventType } from '../../dtos'
 
 const Wachfuehrer: React.FC = () => {
   const [isFocused, setFocused] = useState(false)
@@ -28,7 +31,7 @@ const Wachfuehrer: React.FC = () => {
   return useObserver(() => (
     <div>
       <h1>Wachführer</h1>
-      {adminStore.loading && <Loading/>}
+      {adminStore.loading && <Loading />}
       <div>
         <SingleDatePicker
           id="15de9e5a"
@@ -41,28 +44,47 @@ const Wachfuehrer: React.FC = () => {
           isOutsideRange={date => date.isAfter(moment().endOf('day'))}
         />
 
-        <p>EH-Leistungen heute: {adminStore.firstAid}</p>
-        <p>Suchmeldungen heute: {adminStore.search}</p>
+        <div className="card mt-3">
+          <div className="card-header">
+            <ul className="nav nav-tabs card-header-tabs">
+              <li className="nav-item">
+                <button
+                  onClick={adminStore.showStationInfo}
+                  className={classNames({ 'nav-link': true, active: adminStore.view === AdminView.stations })}
+                >
+                  Stations-Info
+                </button>
+              </li>
+              <li className="nav-item">
+                <button
+                  onClick={adminStore.showDamages}
+                  className={classNames({ 'nav-link': true, active: adminStore.view === AdminView.damages })}
+                >
+                  Schadenmeldungen{' '}
+                  {adminStore.damages.length > 0 && (
+                    <span className="badge badge-danger">{adminStore.damages.length}</span>
+                  )}
+                </button>
+              </li>
+              <li className="nav-item">
+                <button
+                  onClick={adminStore.showSpecialEvents}
+                  className={classNames({ 'nav-link': true, active: adminStore.view === AdminView.specialEvents })}
+                >
+                  Besondere Vorkommnisse{' '}
+                  {adminStore.specialEvents.length > 0 && (
+                    <span className="badge badge-warning">{adminStore.specialEvents.length}</span>
+                  )}
+                </button>
+              </li>
+            </ul>
+          </div>
 
-        <Legend/>
-
-        <div className="accordion">
-          {adminStore.stations.map(station => (
-            <WachfuehrerTurmDetail title={station.name} color={adminStore.color(station.id)}
-                                   crew={adminStore.crews.get(station.id)}>
-              {adminStore
-                .stationEntries(station.id)
-                .filter(entry => !entry.state)
-                .map(entry => (
-                  <li>
-                    {entry.field.name}: {entry.stateKind && t('statekind_' + entry.stateKind.toString())} (
-                    {entry.stateKind === 'tooLittle' && (entry.amount ?? 0) + ' noch vorhanden'}
-                    {entry.stateKind === 'broken' && entry.note}
-                    {entry.stateKind === 'other' && entry.note})
-                  </li>
-                ))}
-            </WachfuehrerTurmDetail>
-          ))}
+          <div className="card-body">
+            {adminStore.view === AdminView.stations && <StationInfo />}
+            {adminStore.view === AdminView.damages && <SpecialEvents type={SpecialEventType.damage} />}
+            {adminStore.view === AdminView.specialEvents && <SpecialEvents type={SpecialEventType.event} />}
+          </div>
         </div>
       </div>
     </div>

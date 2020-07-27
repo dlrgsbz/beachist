@@ -1,8 +1,17 @@
 import { action, observable, runInAction } from 'mobx'
 import moment, { Moment } from 'moment'
-import { Entry, EventEntry, Field, NetworkEntry, StationInfo } from 'dtos'
-import { Color } from 'interfaces'
-import { fetchEntries, fetchEvents, fetchFields, fetchStations } from 'modules/data'
+import {
+  Entry,
+  EventEntry,
+  Field,
+  NetworkEntry,
+  NetworkSpecialEvent,
+  SpecialEvent,
+  SpecialEventType,
+  StationInfo,
+} from 'dtos'
+import { AdminView, Color } from 'interfaces'
+import { fetchEntries, fetchEvents, fetchFields, fetchSpecialEvents, fetchStations } from 'modules/data'
 
 class AdminStore {
   @observable selectedDate: Moment = moment()
@@ -15,15 +24,26 @@ class AdminStore {
   @observable fields: Field[] = []
   @observable entries = new Map<string, Entry[]>()
   @observable crews = new Map<string, string>()
+  @observable damages: SpecialEvent[] = []
+  @observable specialEvents: SpecialEvent[] = []
+
+  @observable view: AdminView = AdminView.damages // todo: reset
 
   async reloadData(): Promise<void> {
     this.setLoading(true)
     // @ts-ignore
-    const [entries, events, stations, fields] = await Promise.all<NetworkEntry[], EventEntry, StationInfo[], Field[]>([
+    const [networkEntries, events, stations, fields, networkSpecialEvents] = await Promise.all<
+      NetworkEntry[],
+      EventEntry,
+      StationInfo[],
+      Field[],
+      NetworkSpecialEvent[]
+    >([
       fetchEntries(this.selectedDate),
       fetchEvents(this.selectedDate),
       fetchStations(),
       fetchFields(),
+      fetchSpecialEvents(this.selectedDate),
     ])
 
     const stationMap = new Map<string, StationInfo>()
@@ -31,38 +51,19 @@ class AdminStore {
     const fieldMap = new Map<string, Field>()
     fields.forEach(field => fieldMap.set(field.id, field))
 
-    const theEntries: Entry[] = entries
-      .map(entry => {
-        const station = stationMap.get(entry.station)
-        const field = fieldMap.get(entry.field)
-        if (!station || !field) {
-          return undefined
-        }
-        return { ...entry, station, field }
-      })
-      .flat()
+    const { entries, crews } = createEntryMap(networkEntries, stationMap, fieldMap)
 
-    const entryMap = new Map<string, Entry[]>()
-    theEntries.forEach(entry => {
-      let stationEntries = entryMap.get(entry.station.id)
-      if (!stationEntries) {
-        stationEntries = []
-      }
-      runInAction(() => {
-        if (entry.crew) {
-          this.crews.set(entry.station.id, entry.crew)
-        }
-      })
-      stationEntries.push(entry)
-      entryMap.set(entry.station.id, stationEntries)
-    })
+    const specialEvents = createSpecialEventMap(networkSpecialEvents, stationMap)
 
     runInAction(() => {
       this.firstAid = events.firstAid
       this.search = events.search
       this.stations = stations
       this.fields = fields
-      this.entries = entryMap
+      this.entries = entries
+      this.crews = crews
+      this.specialEvents = specialEvents.special
+      this.damages = specialEvents.damage
       this.setLoading(false)
     })
   }
@@ -93,6 +94,90 @@ class AdminStore {
   stationEntries(id: string): Entry[] {
     return this.entries.get(id) || []
   }
+
+  @action.bound
+  showStationInfo() {
+    this.view = AdminView.stations
+  }
+
+  @action.bound
+  showDamages() {
+    this.view = AdminView.damages
+  }
+
+  @action.bound
+  showSpecialEvents() {
+    this.view = AdminView.specialEvents
+  }
+}
+
+function createEntryMap(
+  entries: NetworkEntry[],
+  stationMap: Map<string, StationInfo>,
+  fieldMap: Map<string, Field>,
+): { entries: Map<string, Entry[]>; crews: Map<string, string> } {
+  const crews = new Map<string, string>()
+
+  const theEntries: Entry[] = entries
+    .map(entry => {
+      const station = stationMap.get(entry.station)
+      const field = fieldMap.get(entry.field)
+      if (!station || !field) {
+        return undefined
+      }
+      return { ...entry, station, field }
+    })
+    .flat()
+
+  const entryMap = new Map<string, Entry[]>()
+  theEntries.forEach(entry => {
+    let stationEntries = entryMap.get(entry.station.id)
+    if (!stationEntries) {
+      stationEntries = []
+    }
+    if (entry.crew) {
+      crews.set(entry.station.id, entry.crew)
+    }
+    stationEntries.push(entry)
+    entryMap.set(entry.station.id, stationEntries)
+  })
+
+  return {
+    entries: entryMap,
+    crews,
+  }
+}
+
+interface SpecialEventMap {
+  special: SpecialEvent[]
+  damage: SpecialEvent[]
+}
+
+function createSpecialEventMap(
+  specialEvents: NetworkSpecialEvent[],
+  stationMap: Map<string, StationInfo>,
+): SpecialEventMap {
+  const map: SpecialEventMap = { special: [], damage: [] }
+
+  specialEvents.forEach(event => {
+    const stationId = event.station
+    const station = stationMap.get(stationId)
+    if (!station) {
+      return
+    }
+
+    const specialEvent = { ...event, station }
+    switch (event.type) {
+      case SpecialEventType.damage:
+        map.damage.push(specialEvent)
+        break
+      case SpecialEventType.event:
+        map.special.push(specialEvent)
+        break
+    }
+  })
+
+  return map
 }
 
 export default AdminStore

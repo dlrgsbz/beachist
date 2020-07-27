@@ -77,4 +77,18 @@ class HTTPRepo {
         val call = service.getStations()
         call.enqueue(callback)
     }
+
+    fun createSpecialEvent(
+        stationId: String,
+        title: String,
+        note: String,
+        notifier: String,
+        type: SpecialEventKind,
+        callback: RequestCallback<IdResponse>
+    ) {
+        val event = PostSpecialEvent(title, note, notifier, type)
+
+        val call = service.createSpecialEvent(stationId, event)
+        RetryingRequest(call, callback)
+    }
 }

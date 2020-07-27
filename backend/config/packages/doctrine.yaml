@@ -4,6 +4,7 @@ doctrine:
     types:
       statekind: 'App\Types\StateKind'
       eventType: 'App\Types\EventType'
+      specialEventType: 'App\Types\SpecialEventType'
     logging: true
     #      uuid: 'Ramsey\Uuid\Doctrine\UuidType'
 
