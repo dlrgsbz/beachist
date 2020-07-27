@@ -11,8 +11,6 @@ type SpecialEventViewProps = {
 const SpecialEvents: React.FC<SpecialEventViewProps> = ({ type }) => {
   const adminStore = useAdminStore()
 
-  const { t } = useTranslation()
-
   const accessor = type === SpecialEventType.event ? adminStore.specialEvents : adminStore.damages
 
   return useObserver(() => (
