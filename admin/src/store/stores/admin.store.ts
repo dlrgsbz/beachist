@@ -20,7 +20,7 @@ import {
   sendEventToWukos,
 } from 'modules/data'
 
-const AUTO_UPDATE_TIMEOUT = 10 * 1000
+const AUTO_UPDATE_TIMEOUT = 5 * 60 * 1000
 
 class AdminStore {
   @observable selectedDate: Moment = moment()
