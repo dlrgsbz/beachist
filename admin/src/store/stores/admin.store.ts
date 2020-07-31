@@ -11,7 +11,14 @@ import {
   StationInfo,
 } from 'dtos'
 import { AdminView, Color } from 'interfaces'
-import { fetchEntries, fetchEvents, fetchFields, fetchSpecialEvents, fetchStations } from 'modules/data'
+import {
+  fetchEntries,
+  fetchEvents,
+  fetchFields,
+  fetchSpecialEvents,
+  fetchStations,
+  sendEventToWukos,
+} from 'modules/data'
 
 class AdminStore {
   @observable selectedDate: Moment = moment()
@@ -112,36 +119,7 @@ class AdminStore {
   }
 
   sendEventToWukos(event: SpecialEvent): void {
-    const form = document.createElement('form')
-    form.name = 'damage-form'
-    form.method = 'POST'
-    form.action = 'https://wukos.de/sh/ostholstein/haffkrug-scharbeutz/index.php?p=m_problem'
-    form.target = '_blank'
-
-    const text = event.note
-    const title = `${event.title} (${event.station.name})`
-
-    const fields = new Map<string, string>([
-      ['quelle', ''],
-      ['show', ''],
-      ['mat_id', '0'],
-      ['klasse', '0'],
-      ['aktion', 'erstellen'],
-      ['titel', title],
-      ['text', text],
-    ])
-    fields.forEach((val, name) => {
-      const field = document.createElement('input')
-      field.type = 'text'
-      field.name = name
-      field.value = val
-      form.appendChild(field)
-    })
-
-    document.body.appendChild(form)
-    form.submit()
-
-    document.body.removeChild(form)
+    sendEventToWukos(event)
   }
 }
 
