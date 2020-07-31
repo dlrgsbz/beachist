@@ -1,13 +1,17 @@
 package de.tjarksaul.wachmanager.api
 
+import de.tjarksaul.wachmanager.BuildConfig
 import de.tjarksaul.wachmanager.config.backendUrl
 import de.tjarksaul.wachmanager.dtos.*
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import retrofit2.Callback
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 class HTTPRepo {
     private val service: WachmanagerService
@@ -17,12 +21,20 @@ class HTTPRepo {
     }
 
     init {
+        val defaultHttpClient = OkHttpClient.Builder()
+            .addInterceptor { chain ->
+                val request: Request = chain.request().newBuilder()
+                    .addHeader("X-Wachmanager-Version", BuildConfig.VERSION_NAME).build()
+                chain.proceed(request)
+            }.build()
+
         // 2
         val retrofit = Retrofit.Builder()
             // 1
             .baseUrl(BASE_URL)
             //3
             .addConverterFactory(GsonConverterFactory.create())
+            .client(defaultHttpClient)
             .build()
         //4
         service = retrofit.create(WachmanagerService::class.java)

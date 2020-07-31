@@ -3,8 +3,6 @@ package de.tjarksaul.wachmanager.dtos
 import android.text.format.DateUtils
 import kotlinx.serialization.Serializable
 import java.text.SimpleDateFormat
-import java.time.Instant
-import java.time.format.DateTimeFormatter
 import java.util.*
 
 @Serializable
@@ -19,8 +17,9 @@ data class SpecialEvent(
 ) {
     val actualDate: Date
         get() {
-            val dt = DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(date)
-            return Date.from(Instant.from(dt))
+            val simpleDateFormat =
+                SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.getDefault())
+            return simpleDateFormat.parse(date)!!
         }
 
     val printableDate: String

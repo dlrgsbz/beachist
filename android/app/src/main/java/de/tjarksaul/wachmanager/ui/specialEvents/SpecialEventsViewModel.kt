@@ -6,11 +6,10 @@ import androidx.lifecycle.ViewModel
 import de.tjarksaul.wachmanager.dtos.NetworkState
 import de.tjarksaul.wachmanager.dtos.SpecialEvent
 import de.tjarksaul.wachmanager.dtos.SpecialEventKind
-import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
+import java.text.SimpleDateFormat
 import java.util.*
 
-class SpecialEventsViewModel: ViewModel() {
+class SpecialEventsViewModel : ViewModel() {
     fun updateData(data: MutableList<SpecialEvent>) {
         _events.value = data
     }
@@ -19,7 +18,17 @@ class SpecialEventsViewModel: ViewModel() {
         val id = UUID.randomUUID().toString()
         val list = _events.value
         list?.let {
-            it.add(SpecialEvent(id, title, note, notifier, getDate(), kind, networkState = NetworkState.pending))
+            it.add(
+                SpecialEvent(
+                    id,
+                    title,
+                    note,
+                    notifier,
+                    getDate(),
+                    kind,
+                    networkState = NetworkState.pending
+                )
+            )
             _events.value = it
         }
         return id
@@ -38,7 +47,9 @@ class SpecialEventsViewModel: ViewModel() {
     }
 
     fun getDate(): String {
-        return DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(ZonedDateTime.now())
+        val simpleDateFormat =
+            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.getDefault())
+        return simpleDateFormat.format(Date())
     }
 
     private var iterator: Int = 1
