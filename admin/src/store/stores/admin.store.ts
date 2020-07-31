@@ -121,7 +121,15 @@ class AdminStore {
     const text = event.note
     const title = `${event.title} (${event.station.name})`
 
-    const fields = new Map<string, string>([['quelle', ''], ['show', ''], ['mat_id', '0'], ['klasse', '0'], ['aktion', 'erstellen'], ['titel', title], ['text', text]])
+    const fields = new Map<string, string>([
+      ['quelle', ''],
+      ['show', ''],
+      ['mat_id', '0'],
+      ['klasse', '0'],
+      ['aktion', 'erstellen'],
+      ['titel', title],
+      ['text', text],
+    ])
     fields.forEach((val, name) => {
       const field = document.createElement('input')
       field.type = 'text'
