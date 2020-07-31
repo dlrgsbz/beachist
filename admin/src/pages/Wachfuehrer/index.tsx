@@ -8,9 +8,12 @@ import classNames from 'classnames'
 import { useAdminStore } from 'store'
 import Loading from 'components/Loading'
 import { AdminView } from 'interfaces'
+import { SpecialEventType } from 'dtos'
 import StationInfo from './views/stationInfo'
 import SpecialEvents from './views/specialEvents'
-import { SpecialEventType } from '../../dtos'
+
+import { ReactComponent as CheckedBox } from './img/done.svg'
+import { ReactComponent as EmptyCheckbox } from './img/checkbox.svg'
 
 const Wachfuehrer: React.FC = () => {
   const [isFocused, setFocused] = useState(false)
@@ -27,7 +30,7 @@ const Wachfuehrer: React.FC = () => {
 
   return useObserver(() => (
     <div>
-      <h1>Wachführer</h1>
+      <h1>Wachführer-Dashboard</h1>
       {adminStore.loading && <Loading />}
       <div>
         <SingleDatePicker
@@ -40,6 +43,20 @@ const Wachfuehrer: React.FC = () => {
           showDefaultInputIcon={true}
           isOutsideRange={date => date.isAfter(moment().endOf('day'))}
         />
+        <div className="btn-group-toggle float-right" data-toggle="buttons">
+          {
+            <label className={classNames('btn btn-primary', { active: adminStore.autoUpdateEnabled })}>
+              <input
+                type="checkbox"
+                checked={adminStore.autoUpdateEnabled}
+                autoComplete="off"
+                onClick={adminStore.toggleAutoUpdate}
+              />
+              {adminStore.autoUpdateEnabled ? <CheckedBox /> : <EmptyCheckbox />}
+              &nbsp;Automatisch aktualisieren
+            </label>
+          }
+        </div>
 
         <div className="card mt-3">
           <div className="card-header">

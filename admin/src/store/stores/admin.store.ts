@@ -20,6 +20,8 @@ import {
   sendEventToWukos,
 } from 'modules/data'
 
+const AUTO_UPDATE_TIMEOUT = 10 * 1000
+
 class AdminStore {
   @observable selectedDate: Moment = moment()
   @observable feldListe = new Map<string, string>()
@@ -34,7 +36,10 @@ class AdminStore {
   @observable damages: SpecialEvent[] = []
   @observable specialEvents: SpecialEvent[] = []
 
+  @observable autoUpdateEnabled: boolean = true
   @observable view: AdminView = AdminView.stations
+
+  private timeout: number | undefined
 
   async reloadData(): Promise<void> {
     this.setLoading(true)
@@ -74,6 +79,10 @@ class AdminStore {
       this.view = AdminView.stations
       this.setLoading(false)
     })
+
+    if (this.autoUpdateEnabled) {
+      this.timeout = window.setTimeout(() => this.reloadData(), AUTO_UPDATE_TIMEOUT)
+    }
   }
 
   @action.bound
@@ -116,6 +125,18 @@ class AdminStore {
   @action.bound
   showSpecialEvents() {
     this.view = AdminView.specialEvents
+  }
+
+  @action.bound
+  toggleAutoUpdate(): void {
+    this.autoUpdateEnabled = !this.autoUpdateEnabled
+
+    if (this.autoUpdateEnabled) {
+      this.timeout = window.setTimeout(() => this.reloadData(), AUTO_UPDATE_TIMEOUT)
+    } else {
+      window.clearTimeout(this.timeout)
+      this.timeout = undefined
+    }
   }
 
   sendEventToWukos(event: SpecialEvent): void {
