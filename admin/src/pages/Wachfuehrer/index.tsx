@@ -43,7 +43,7 @@ const Wachfuehrer: React.FC = () => {
           showDefaultInputIcon={true}
           isOutsideRange={date => date.isAfter(moment().endOf('day'))}
         />
-        <div className="btn-group-toggle float-right" data-toggle="buttons">
+        <div className="btn-group-toggle float-sm-right" data-toggle="buttons">
           {
             <label className={classNames('btn btn-primary', { active: adminStore.autoUpdateEnabled })}>
               <input
