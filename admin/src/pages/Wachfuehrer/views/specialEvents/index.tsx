@@ -22,11 +22,6 @@ const SpecialEvents: React.FC<SpecialEventViewProps> = ({ type }) => {
           <div className="card-body">
             <h6 className="card-title">Beschreibung</h6>
             <div>{event.note}</div>
-            {type === SpecialEventType.damage && <div className="float-right">
-              <button className="btn btn-primary" type="button" onClick={() => adminStore.sendEventToWukos(event)}>
-                Schadenmeldung an Wukos senden
-              </button>
-            </div>}
           </div>
           <div className="card-footer text-muted">
             <div className="row">
