@@ -39,7 +39,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="rückgänig"
+        android:text="rückgängig"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="@id/firstAidButton"
         app:layout_constraintRight_toRightOf="@id/firstAidButton"
