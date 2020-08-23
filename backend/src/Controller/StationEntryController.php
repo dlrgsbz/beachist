@@ -8,6 +8,7 @@ use App\Entity\StateKind;
 use App\Interfaces\FieldNotFoundException;
 use App\Interfaces\StationNotFoundException;
 use App\Service\EntryService;
+use App\Service\StationService;
 use Symfony\Component\HttpFoundation\InputBag;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,9 +22,18 @@ use function App\Functions\validate;
  */
 class StationEntryController {
     private EntryService $entryService;
+    private StationService $stationService;
 
-    public function __construct(EntryService $entryService) {
+    public function __construct(EntryService $entryService, StationService $stationService) {
         $this->entryService = $entryService;
+        $this->stationService = $stationService;
+    }
+
+    private function updateAppVersion(string $stationId, Request $request): void {
+        $version = $request->headers->get('X-Wachmanager-Version');
+        if ($version) {
+            $this->stationService->setAppVersion($stationId, $version);
+        }
     }
 
     /**
@@ -43,6 +53,7 @@ class StationEntryController {
 
         try {
             $id = $this->entryService->create($stationId, $fieldId, $state, $stateKind, $amount, $note, $crew);
+            $this->updateAppVersion($stationId, $request);
         } catch (FieldNotFoundException $e) {
             return new JsonResponse(['errors' => ['field not found']], 404);
         } catch (StationNotFoundException $e) {
