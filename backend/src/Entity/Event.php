@@ -55,10 +55,3 @@ class Event {
         return $this->id;
     }
 }
-
-/**
- * @method static self firstAid()
- * @method static self search()
- */
-class EventType extends Enum {
-}

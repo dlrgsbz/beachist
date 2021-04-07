@@ -10,6 +10,7 @@ use App\Service\EventService;
 use App\Service\StationService;
 use Symfony\Component\HttpFoundation\InputBag;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -62,7 +63,7 @@ class StationEventController {
     }
 }
 
-function validateCreateEventRequest(InputBag $request): ?Response {
+function validateCreateEventRequest(ParameterBag $request): ?Response {
     $constraint = new Assert\Collection([
         'type' => new Assert\Regex(['pattern' => '/^(firstAid|search)$/']),
     ]);
