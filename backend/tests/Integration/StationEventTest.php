@@ -6,8 +6,8 @@ namespace App\Tests\Integration;
 
 
 use App\Entity\Station;
-use Ramsey\Uuid\Uuid;
 use Doctrine\Persistence\ObjectManager;
+use Ramsey\Uuid\Uuid;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -27,6 +27,14 @@ class StationEventTest extends WebTestCase {
         parent::setUp();
     }
 
+    private function request(string $method, string $uri, array $body = null) {
+        if ($body) {
+            $this->client->request($method, $uri, [], [], ['CONTENT_TYPE' => 'application/json'], json_encode($body));
+        } else {
+            $this->client->request($method, $uri);
+        }
+    }
+
     private function setupStation() {
         $station = new Station(Uuid::uuid4()->toString(), 'Test-Station');
         $this->entityManager->persist($station);
@@ -36,14 +44,54 @@ class StationEventTest extends WebTestCase {
     }
 
     public function testCreateEvent() {
-        $parameters = [
+        $data = [
             'type' => 'firstAid',
         ];
 
         $stationId = $this->stationId;
         $uri = "/api/station/${stationId}/event";
-        $this->client->request('POST', $uri, $parameters);
+        $this->request('POST', $uri, $data);
 
         $this->assertEquals(201, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testCreateEventWithDateAndId() {
+        $uuid = Uuid::uuid4()->toString();
+        $data = [
+            'type' => 'firstAid',
+            'id' => $uuid,
+            'date' => (new \DateTime())->format(\DateTime::ATOM),
+        ];
+
+        $stationId = $this->stationId;
+        $uri = "/api/station/${stationId}/event";
+        $this->request('POST', $uri, $data);
+
+        $this->assertEquals(201, $this->client->getResponse()->getStatusCode());
+
+        $response_data = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertEquals($response_data['id'], $uuid);
+    }
+
+    public function testCreateEventWithDateAndIdIdempotency() {
+        $uuid = Uuid::uuid4()->toString();
+        $data = [
+            'type' => 'firstAid',
+            'id' => $uuid,
+            'date' => (new \DateTime())->format(\DateTime::ATOM),
+        ];
+
+        $stationId = $this->stationId;
+        $uri = "/api/station/${stationId}/event";
+        $this->request('POST', $uri, $data);
+
+        $this->assertEquals(201, $this->client->getResponse()->getStatusCode());
+
+        $this->request('POST', $uri, $data);
+
+        $this->assertEquals(201, $this->client->getResponse()->getStatusCode());
+
+        $response_data = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertEquals($response_data['id'], $uuid);
     }
 }

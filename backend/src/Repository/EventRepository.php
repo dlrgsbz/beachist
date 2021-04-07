@@ -25,7 +25,7 @@ class EventRepository extends EntityRepository implements EventReader, EventWrit
     /**
      * @throws
      */
-    function create(Event $event): int {
+    function create(Event $event): string {
         $this->_em->persist($event);
         $this->_em->flush();
 
