@@ -10,6 +10,7 @@ use App\Service\EventService;
 use App\Service\StationService;
 use Symfony\Component\HttpFoundation\InputBag;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -44,14 +45,20 @@ class StationEventController {
      * @Route("", methods={"POST"})
      */
     function create(Request $request, string $stationId): Response {
-        if (null !== ($validation = validateCreateEventRequest($request->request))) {
+        $data = $request->request;
+        if (null !== ($validation = validateCreateEventRequest($data))) {
             return $validation;
         }
 
-        $type = EventType::make($request->request->get('type'));
+        $type = EventType::make($data->get('type'));
+        if ($data->get('date')) {
+            $date = \DateTime::createFromFormat(\DateTime::ATOM, $data->get('date'));
+        } else {
+            $date = null;
+        }
 
         try {
-            $id = $this->eventService->create($stationId, $type);
+            $id = $this->eventService->create($stationId, $type, $data->get('id'), $date);
             $this->updateAppVersion($stationId, $request);
         } catch (StationNotFoundException $e) {
             return new JsonResponse(['errors' => ['station not found']], 404);
@@ -62,10 +69,20 @@ class StationEventController {
     }
 }
 
-function validateCreateEventRequest(InputBag $request): ?Response {
-    $constraint = new Assert\Collection([
+function validateCreateEventRequest(ParameterBag $request): ?Response {
+    $constraints = [
         'type' => new Assert\Regex(['pattern' => '/^(firstAid|search)$/']),
-    ]);
+    ];
+
+    if ($request->get('id')) {
+        $constraints['id'] = new Assert\Uuid();
+    }
+
+    if ($request->get('date')) {
+        $constraints['date'] = new Assert\DateTime(['format' => \DateTimeInterface::ATOM]);
+    }
+
+    $constraint = new Assert\Collection($constraints);
 
     return validate($request, $constraint);
 }

@@ -2,33 +2,36 @@ package de.tjarksaul.wachmanager.ui.events
 
 import android.app.AlertDialog
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.TextView
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import de.tjarksaul.wachmanager.GlobalAction
 import de.tjarksaul.wachmanager.R
 import de.tjarksaul.wachmanager.api.HTTPRepo
 import de.tjarksaul.wachmanager.dtos.EventStats
-import de.tjarksaul.wachmanager.dtos.EventType
-import de.tjarksaul.wachmanager.dtos.IdResponse
 import de.tjarksaul.wachmanager.ui.base.BaseFragment
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.plusAssign
+import io.reactivex.subjects.PublishSubject
+import kotlinx.android.synthetic.main.fragment_events.*
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
+
 class EventsFragment : BaseFragment() {
     private val httpRepo = HTTPRepo()
+    private val disposable = CompositeDisposable()
 
-    private lateinit var eventViewModel: EventViewModel
-    private lateinit var undoButton: Button
-    private lateinit var firstAidButton: Button
+    private val viewModel: EventViewModel by viewModel()
 
-    private var canceled = false
+    private val actions: PublishSubject<EventListAction> = PublishSubject.create()
+    private val globalActions: PublishSubject<GlobalAction> = PublishSubject.create()
+    private val adapter: EventsListAdapter by lazy { EventsListAdapter(actions) }
 
     private val eventsCallback = object : Callback<EventStats> {
         override fun onFailure(call: Call<EventStats>?, t: Throwable?) {
@@ -39,32 +42,16 @@ class EventsFragment : BaseFragment() {
             response?.isSuccessful.let {
                 val data = response?.body()
                 if (data != null) {
-                    eventViewModel.updateData(data)
+                    viewModel.updateData(data)
                 }
             }
         }
     }
-
-    private val incrementCallback = object : Callback<IdResponse> {
-        override fun onFailure(call: Call<IdResponse>?, t: Throwable?) {
-            Log.e("MainActivity", "Problem calling Github API {${t?.message}}")
-        }
-
-        override fun onResponse(call: Call<IdResponse>?, response: Response<IdResponse>?) {
-            response?.isSuccessful.let {
-                val data = response?.body()
-                if (data != null) {
-                    httpRepo.getEvents(getStationId(), eventsCallback)
-                }
-            }
-        }
-    }
-
 
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         if (isNetworkConnected()) {
             httpRepo.getEvents(getStationId(), eventsCallback)
@@ -76,48 +63,53 @@ class EventsFragment : BaseFragment() {
         }
 
 
-        eventViewModel =
-                ViewModelProviders.of(this).get(EventViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_events, container, false)
-        val textView: TextView = root.findViewById(R.id.firstAidCount)
-        eventViewModel.firstAid.observe(viewLifecycleOwner, Observer {
-            textView.text = it.toString()
-        })
-
-        undoButton = root.findViewById(R.id.undoButton)
-        undoButton.visibility = View.INVISIBLE
-        undoButton.setOnClickListener {
-            canceled = true
-            firstAidButton.isEnabled = true
-            undoButton.visibility = View.INVISIBLE
-            eventViewModel.decrement()
-        }
-
-        firstAidButton = root.findViewById(R.id.firstAidButton)
-        firstAidButton.setOnClickListener {
-            firstAidButton.isEnabled = false
-            undoButton.visibility = View.VISIBLE
-            canceled = false
-            eventViewModel.increment()
-
-            Handler().postDelayed({
-                increment()
-            }, 10000)
-
-        }
-
-        return root
+        return inflater.inflate(R.layout.fragment_events, container, false)
     }
 
-    private fun increment() {
-        if (canceled) {
-            return
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        setupView()
+        setupBindings()
+
+        globalActions.onNext(GlobalAction.Refetch)
+    }
+
+    private fun setupView() {
+        val layoutManager = LinearLayoutManager(activity)
+        eventList.layoutManager = layoutManager
+        eventList.adapter = adapter
+
+        val dividerItemDecoration = DividerItemDecoration(
+            eventList.context,
+            layoutManager.orientation
+        )
+        eventList.addItemDecoration(dividerItemDecoration)
+    }
+
+    private fun setupBindings() {
+        viewModel.attach(actions)
+        viewModel.globalStore.attach(globalActions)
+
+        firstAidButton.setOnClickListener {
+            globalActions.onNext(GlobalAction.AddEventClicked)
         }
 
-        httpRepo.createEvent(getStationId(), EventType.firstAid, incrementCallback)
+        undoButton.setOnClickListener {
+            globalActions.onNext(GlobalAction.CancelClicked)
+        }
 
-        firstAidButton.isEnabled = true
-        undoButton.visibility = View.INVISIBLE
+        disposable += viewModel.globalStore.stateOf { canAdd }
+            .subscribe { canAdd ->
+                if (undoButton !== null) {
+                    undoButton.visibility = if (canAdd) View.INVISIBLE else View.VISIBLE
+                }
+                if (firstAidButton !== null) {
+                    firstAidButton.isEnabled = canAdd
+                }
+            }
 
+        disposable += viewModel.globalStore.stateOf { eventItems }
+            .subscribe { adapter.items = it }
     }
 }

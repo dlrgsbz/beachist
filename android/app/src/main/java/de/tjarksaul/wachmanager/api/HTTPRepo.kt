@@ -1,7 +1,6 @@
 package de.tjarksaul.wachmanager.api
 
 import de.tjarksaul.wachmanager.BuildConfig
-import de.tjarksaul.wachmanager.config.backendUrl
 import de.tjarksaul.wachmanager.dtos.*
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -17,7 +16,7 @@ class HTTPRepo {
     private val service: WachmanagerService
 
     companion object {
-        const val BASE_URL = backendUrl
+        const val BASE_URL = BuildConfig.BACKEND_URL
     }
 
     init {
@@ -78,12 +77,14 @@ class HTTPRepo {
         call.enqueue(callback)
     }
 
-    fun createEvent(stationId: String, type: EventType, callback: Callback<IdResponse>) {
-        val event = PostEvent(type)
-
-        val call = service.createEvent(stationId, event)
-        call.enqueue(callback)
-    }
+//    fun createEvent(stationId: String, eventId: String, date: Date, type: EventType, callback: Callback<IdResponse>) {
+//        val dateFormat: DateFormat = SimpleDateFormat("yyyy-MM-dd")
+//        val strDate: String = dateFormat.format(date)
+//        val event = PostEvent(type, eventId, strDate)
+//
+//        val call = service.createEvent(stationId, event)
+//        call.enqueue(callback)
+//    }
 
     fun getStations(callback: Callback<MutableList<Station>>) {
         val call = service.getStations()

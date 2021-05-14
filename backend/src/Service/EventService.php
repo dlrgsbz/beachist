@@ -12,6 +12,7 @@ use App\Interfaces\EventReader;
 use App\Interfaces\EventWriter;
 use App\Interfaces\StationNotFoundException;
 use App\Interfaces\StationReader;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 
 class EventService {
     private EventReader $eventReader;
@@ -27,15 +28,19 @@ class EventService {
     /**
      * @throws
      */
-    public function create(string $stationId, EventType $type): int {
+    public function create(string $stationId, EventType $type, string $id = null, \DateTimeInterface $date = null): string {
         $station = $this->stationReader->getStation($stationId);
         if (!$station) {
             throw new StationNotFoundException();
         }
 
-        $event = new Event($station, $type);
+        $event = new Event($station, $type, $date, $id);
 
-        return $this->eventWriter->create($event);
+        try {
+            return $this->eventWriter->create($event);
+        } catch (UniqueConstraintViolationException $e) {
+            return $event->getId();
+        }
     }
 
     public function get(\DateTimeInterface $date): DailyStats {

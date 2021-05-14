@@ -15,4 +15,5 @@
 .cxx
 app/src/main/java/de/tjarksaul/wachmanager/config/config.kt
 app/release
+project_resources/config.properties
 

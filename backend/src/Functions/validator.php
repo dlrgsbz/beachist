@@ -5,6 +5,7 @@ namespace App\Functions;
 
 use Symfony\Component\HttpFoundation\InputBag;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints\GroupSequence;
@@ -12,7 +13,7 @@ use Symfony\Component\Validator\Validation;
 
 if (!function_exists('App\Functions\validate')) {
 
-    function validate(InputBag $bag, Constraint $constraint, GroupSequence $groups = null): ?Response {
+    function validate(ParameterBag $bag, Constraint $constraint, GroupSequence $groups = null): ?Response {
         if (!$groups) {
             $groups = new GroupSequence(['Default']);
         }

@@ -7,7 +7,7 @@ namespace App\Entity;
 use DateTime;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
-use Spatie\Enum\Enum;
+use Ramsey\Uuid\Uuid;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\EventRepository")
@@ -17,8 +17,7 @@ class Event {
      * @var integer
      *
      * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue
+     * @ORM\Column(type="uuid", unique=true)
      */
     private $id;
 
@@ -38,27 +37,24 @@ class Event {
      */
     public DateTimeInterface $date;
 
-    public function __construct(Station $station, EventType $type, DateTimeInterface $date = null) {
+    public function __construct(Station $station, EventType $type, DateTimeInterface $date = null, string $id = null) {
         $this->station = $station;
         $this->type = $type;
         if ($date === null) {
             $date = new DateTime();
         }
         $this->date = $date;
+        if ($id === null) {
+            $id = Uuid::uuid1()->toString();
+        }
+        $this->id = $id;
     }
 
 
     /**
-     * @return int
+     * @return string
      */
-    public function getId(): int {
+    public function getId(): string {
         return $this->id;
     }
-}
-
-/**
- * @method static self firstAid()
- * @method static self search()
- */
-class EventType extends Enum {
 }

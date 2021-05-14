@@ -6,7 +6,9 @@ namespace App\Interfaces;
 
 
 use App\Entity\Event;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 
 interface EventWriter {
-    function create(Event $event): int;
+    /** @throws UniqueConstraintViolationException */
+    function create(Event $event): string ;
 }

@@ -10,7 +10,11 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import de.tjarksaul.wachmanager.api.apiKoinModule
+import de.tjarksaul.wachmanager.repositories.repositoryKoinModule
+import de.tjarksaul.wachmanager.ui.events.eventsKoinModule
 import de.tjarksaul.wachmanager.ui.splash.SplashFragment
+import org.koin.android.ext.android.startKoin
 
 class MainActivity : AppCompatActivity() {
 
@@ -24,6 +28,16 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        startKoin(
+            androidContext = this,
+            modules = listOf(
+                repositoryKoinModule,
+                apiKoinModule,
+                eventsKoinModule,
+                globalKoinModule
+            )
+        )
 
         if (stationHasBeenSelectedToday()) {
             showStationView()
