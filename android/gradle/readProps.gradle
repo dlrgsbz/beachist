@@ -1,0 +1,10 @@
+ext.readProps = {
+    ext.props = new Properties()
+    def configFile = file("../project_resources/config.properties")
+
+    def propsPreset = new Properties()
+    if (configFile.exists()) configFile.withInputStream { propsPreset.load(it) }
+    props.putAll(propsPreset)
+}
+
+readProps()
