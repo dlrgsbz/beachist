@@ -14,6 +14,10 @@ buildscript {
 
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
 
+        // Firebase
+        classpath 'com.google.gms:google-services:4.3.5'  // Google Services plugin
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.6.1'
+
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }

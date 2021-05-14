@@ -24,7 +24,6 @@ import retrofit2.Response
 
 
 class EventsFragment : BaseFragment() {
-    private val httpRepo = HTTPRepo()
     private val disposable = CompositeDisposable()
 
     private val viewModel: EventViewModel by viewModel()
@@ -33,29 +32,12 @@ class EventsFragment : BaseFragment() {
     private val globalActions: PublishSubject<GlobalAction> = PublishSubject.create()
     private val adapter: EventsListAdapter by lazy { EventsListAdapter(actions) }
 
-    private val eventsCallback = object : Callback<EventStats> {
-        override fun onFailure(call: Call<EventStats>?, t: Throwable?) {
-            Log.e("MainActivity", "Problem calling Github API {${t?.message}}")
-        }
-
-        override fun onResponse(call: Call<EventStats>?, response: Response<EventStats>?) {
-            response?.isSuccessful.let {
-                val data = response?.body()
-                if (data != null) {
-                    viewModel.updateData(data)
-                }
-            }
-        }
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        if (isNetworkConnected()) {
-            httpRepo.getEvents(getStationId(), eventsCallback)
-        } else {
+        if (!isNetworkConnected()) {
             AlertDialog.Builder(context).setTitle("Keine Internetverbindung")
                 .setMessage("Please check your internet connection and try again")
                 .setPositiveButton(android.R.string.ok) { _, _ -> }

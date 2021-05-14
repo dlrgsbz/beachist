@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "872369417762",
+    "project_id": "wachmanager",
+    "storage_bucket": "wachmanager.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:872369417762:android:a9de81fbaac8f66f78a47b",
+        "android_client_info": {
+          "package_name": "de.tjarksaul.wachmanager"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "872369417762-bd8bnqs52banbpb0f2js42tuv7adu51o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZnQU_gS29RbJOYkgSwHz-xSlK5Av0crQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "872369417762-bd8bnqs52banbpb0f2js42tuv7adu51o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
