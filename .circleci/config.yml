@@ -16,6 +16,11 @@ jobs:
       - checkout:
           path: ~/project
 
+      - run:
+          name: Setup build config
+          command: |
+            echo "backendUrl=$backendUrl\ndatabaseName=$databaseName" > ./project_resources/config.properties
+
       - android/run-tests:
           test-command: ./gradlew lint testDebug --continue
 
