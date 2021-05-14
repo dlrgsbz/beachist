@@ -1,0 +1,39 @@
+# Use the latest 2.1 version of CircleCI pipeline process engine. 
+# See: https://circleci.com/docs/2.0/configuration-reference
+version: 2.1
+
+# Orbs are reusable packages of CircleCI configuration that you may share across projects, enabling you to create encapsulated, parameterized commands, jobs, and executors that can be used across multiple projects.
+orbs:
+  android: circleci/android@1.0.3
+
+jobs:
+  build-and-test:  
+    working_directory: ~/project/android
+    executor:
+      name: android/android-machine
+
+    steps:
+      - checkout:
+          path: ~/project
+
+      - run:
+          name: Setup build config
+          command: |
+            mkdir -p ./project_resources && echo -e "backendUrl=\"$backendUrl\"\ndatabaseName=\"$databaseName\"" > ./project_resources/config.properties
+
+      - android/run-tests:
+          test-command: ./gradlew lint testDebug --continue --stacktrace
+
+      - android/start-emulator-and-run-tests:
+          test-command: ./gradlew connectedDebugAndroidTest --stacktrace
+          system-image: system-images;android-25;google_apis;x86
+
+      - run:
+          name: Assemble release build
+          command: |
+            ./gradlew assembleRelease
+
+workflows:
+  sample: 
+    jobs:
+      - build-and-test
