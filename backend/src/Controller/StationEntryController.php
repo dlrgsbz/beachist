@@ -9,8 +9,8 @@ use App\Interfaces\FieldNotFoundException;
 use App\Interfaces\StationNotFoundException;
 use App\Service\EntryService;
 use App\Service\StationService;
-use Symfony\Component\HttpFoundation\InputBag;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -64,7 +64,7 @@ class StationEntryController {
     }
 }
 
-function validateCreateEntryRequest(InputBag $request): ?Response {
+function validateCreateEntryRequest(ParameterBag $request): ?Response {
     $constraints = [
         'state' => new Assert\AtLeastOneOf([
             new Assert\IsTrue(),
