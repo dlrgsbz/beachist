@@ -19,7 +19,7 @@ jobs:
       - run:
           name: Setup build config
           command: |
-            mkdir -p ./project_resources && echo "backendUrl=\"$backendUrl\"\ndatabaseName=\"$databaseName\"" > ./project_resources/config.properties
+            mkdir -p ./project_resources && echo "backendUrl=\"$backendUrl\"\ndatabaseName=\"$databaseName\"" > ./project_resources/config.properties && echo "backendUrl=\"$backendUrl\"\ndatabaseName=\"$databaseName\""
 
       - android/run-tests:
           test-command: ./gradlew lint testDebug --continue --stacktrace
