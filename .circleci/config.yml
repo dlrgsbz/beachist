@@ -22,10 +22,10 @@ jobs:
             mkdir -p ./project_resources && echo "backendUrl=\"$backendUrl\"\ndatabaseName=\"$databaseName\"" > ./project_resources/config.properties
 
       - android/run-tests:
-          test-command: ./gradlew lint testDebug --continue
+          test-command: ./gradlew lint testDebug --continue --stacktrace
 
       - android/start-emulator-and-run-tests:
-          test-command: ./gradlew connectedDebugAndroidTest
+          test-command: ./gradlew connectedDebugAndroidTest --stacktrace
           system-image: system-images;android-25;google_apis;x86
 
       - run:
