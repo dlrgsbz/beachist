@@ -2,12 +2,11 @@
 # See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
 
-# Orbs are reusable packages of CircleCI configuration that you may share across projects, enabling you to create encapsulated, parameterized commands, jobs, and executors that can be used across multiple projects.
 orbs:
   android: circleci/android@1.0.3
 
 jobs:
-  build-and-test:  
+  build-and-sign:  
     working_directory: ~/project/android
     executor:
       name: android/android-machine
@@ -31,7 +30,7 @@ jobs:
 
       - run:
           name: Fetch keystore
-          command: bash .circleci/setup_keystore.sh
+          command: bash ../.circleci/setup_keystore.sh
 
       - run:
           name: Assemble release build
@@ -39,6 +38,6 @@ jobs:
             ./gradlew assembleRelease
 
 workflows:
-  sample: 
+  build_and_sign: 
     jobs:
-      - build-and-test
+      - build-and-sign
