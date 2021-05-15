@@ -17,9 +17,11 @@ jobs:
           path: ~/project
 
       - run:
-          name: Setup build config
+          name: Setup configs
           command: |
-            mkdir -p ./project_resources && echo -e "backendUrl=\"$backendUrl\"\ndatabaseName=\"$databaseName\"" > ./project_resources/config.properties
+            mkdir -p ./project_resources \
+              && echo -e "backendUrl=\"$backendUrl\"\ndatabaseName=\"$databaseName\"" > ./project_resources/config.properties \
+              && echo $CLIENT_KEYSTORE_BASE_64 | base64 -d > .signing/release.jks
 
       - android/run-tests:
           test-command: ./gradlew lint testDebug --continue --stacktrace
@@ -27,6 +29,10 @@ jobs:
       - android/start-emulator-and-run-tests:
           test-command: ./gradlew connectedDebugAndroidTest --stacktrace
           system-image: system-images;android-25;google_apis;x86
+
+      - run:
+          name: Fetch keystore
+          command: bash .circleci/setup_keystore.sh
 
       - run:
           name: Assemble release build
