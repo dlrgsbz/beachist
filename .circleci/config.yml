@@ -19,8 +19,7 @@ jobs:
       - run:
           name: Setup configs
           command: |
-            mkdir -p ./project_resources \
-              && echo -e "backendUrl=\"$backendUrl\"\ndatabaseName=\"$databaseName\"" > ./project_resources/config.properties \
+            echo -e "backendUrl=\"$backendUrl\"\ndatabaseName=\"$databaseName\"" > ./project_resources/config.properties \
               && echo $CLIENT_KEYSTORE_BASE_64 | base64 -d > .signing/release.jks
 
       - android/run-tests:
