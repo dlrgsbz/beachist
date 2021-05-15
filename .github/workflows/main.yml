@@ -31,13 +31,12 @@ jobs:
       run: npm run build
       working-directory: admin
     
-    - name: install composer
-      uses: docker://composer:1.9.1
-
     - name: composer install
-      run: |
-        composer install
-      working-directory: backend
+      uses: docker://composer:1.9.1
+      with:
+        run: |
+          composer install
+        working-directory: backend
 
     - name: use alpine
       uses: docker://alpine:latest
