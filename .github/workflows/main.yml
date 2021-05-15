@@ -36,7 +36,7 @@ jobs:
       with:
         php_version: 7.4
         version: 1
-        working-directory: backend
+        working_dir: backend
 
     - name: use alpine
       uses: docker://alpine:latest
