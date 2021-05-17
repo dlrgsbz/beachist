@@ -11,6 +11,9 @@ interface WachmanagerService {
     @GET("station")
     fun getStations(): Call<MutableList<Station>>
 
+    @GET("station")
+    fun getStationsRx(): Observable<List<Station>>
+
     @GET("station/{stationId}/field")
     fun getFields(@Path("stationId") stationId: String): Call<MutableList<Field>>
 

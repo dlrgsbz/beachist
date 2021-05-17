@@ -6,9 +6,10 @@ import de.tjarksaul.wachmanager.modules.base.BaseViewModel
 import de.tjarksaul.wachmanager.modules.base.ViewModelAction
 import de.tjarksaul.wachmanager.modules.base.ViewModelEffect
 import de.tjarksaul.wachmanager.modules.base.ViewModelState
+import de.tjarksaul.wachmanager.repositories.StationRepository
 
 internal class MainViewModel(
-    val sharedPreferences: SharedPreferences
+    val stationRepository: StationRepository
 ) : BaseViewModel<MainViewAction, MainViewState, MainViewEffect>(
     emptyState
 ) {
@@ -16,13 +17,9 @@ internal class MainViewModel(
     }
 
     fun shouldShowStationSelection(): Boolean {
-        val date = sharedPreferences.getLong("lastStationSelectedDate", 0)
+        val date = stationRepository.getLastUpdateDate()
 
-        return !DateUtils.isToday(date) || getCrew().trim() == ""
-    }
-
-    private fun getCrew(): String {
-        return sharedPreferences.getString("crewNames", "") ?: ""
+        return !DateUtils.isToday(date) || stationRepository.getCrew().trim() == ""
     }
 
     companion object {

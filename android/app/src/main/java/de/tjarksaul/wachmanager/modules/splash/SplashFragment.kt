@@ -1,66 +1,35 @@
 package de.tjarksaul.wachmanager.modules.splash
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.os.Bundle
-import android.util.Log
+import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
-import de.tjarksaul.wachmanager.modules.main.MainActivity
+import android.view.inputmethod.InputMethodManager
+import android.widget.AdapterView
+import android.widget.AdapterView.OnItemSelectedListener
+import android.widget.ArrayAdapter
 import de.tjarksaul.wachmanager.R
-import de.tjarksaul.wachmanager.api.HTTPRepo
 import de.tjarksaul.wachmanager.dtos.Station
 import de.tjarksaul.wachmanager.modules.base.BaseFragment
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import java.text.SimpleDateFormat
-import java.util.*
+import de.tjarksaul.wachmanager.modules.main.MainActivity
+import de.tjarksaul.wachmanager.util.TextChangeListener
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.plusAssign
+import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_splash.*
-import timber.log.Timber
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.util.*
+
 
 class SplashFragment : BaseFragment() {
-    private val httpRepo = HTTPRepo()
+    private val disposable = CompositeDisposable()
 
-    private lateinit var listView: ListView
+    private val actions: PublishSubject<SplashViewAction> = PublishSubject.create()
 
-    private val callback = object : Callback<MutableList<Station>> {
-        override fun onFailure(call: Call<MutableList<Station>>?, t: Throwable?) {
-            Timber.e("Problem calling Wachmanager API {${t?.message}}")
-            showInternetConnectionError()
-        }
-
-        override fun onResponse(
-            call: Call<MutableList<Station>>?,
-            response: Response<MutableList<Station>>?
-        ) {
-            response?.isSuccessful.let {
-                val data = response?.body() ?: emptyList<Station>().toMutableList()
-
-                if (data.count() > 0) {
-                    cacheStations(data)
-                }
-
-                updateModel(data)
-            }
-        }
-    }
-
-    private fun updateModel(data: List<Station>) {
-        splashViewModel.updateData(data.toMutableList())
-
-        if (getStoredStationId() != null) {
-            val index =
-                splashViewModel.stations.value?.indexOfFirst { it.id == getStoredStationId() }
-
-            index?.let { stationName.setSelection(index) }
-        }
-    }
-
-    private val splashViewModel: SplashViewModel by viewModels()
+    private val splashViewModel: SplashViewModel by viewModel()
 
     @SuppressLint("SimpleDateFormat")
     override fun onCreateView(
@@ -68,47 +37,106 @@ class SplashFragment : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        return inflater.inflate(R.layout.fragment_splash, container, false)
+    }
 
-        val cachedStations = cachedStations()
-        if (cachedStations != null) {
-            updateModel(cachedStations)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        setupView()
+
+        setupBindings()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        actions.onNext(SplashViewAction.Refetch)
+    }
+
+    private fun setupView() {
+        editCrewName.requestFocus()
+    }
+
+    private fun hideKeyboard() {
+        val imm =
+            requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        //Find the currently focused view, so we can grab the correct window token from it.
+        var view = requireActivity().currentFocus
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = View(activity)
+        }
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+
+    private fun setupBindings() {
+        splashViewModel.attach(actions)
+
+        disposable += splashViewModel.stateOf { stations }
+            .subscribe {
+                ArrayAdapter(
+                    requireContext(),
+                    android.R.layout.simple_spinner_item,
+                    it
+                ).also { adapter ->
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    spinnerStationName.adapter = adapter
+                }
+            }
+
+        disposable += splashViewModel.stateOf { selectedStation }
+            .subscribe { index ->
+                spinnerStationName?.setSelection(index)
+            }
+
+        disposable += splashViewModel.stateOf { currentDate }
+            .subscribe {
+                dateTextView.text = it
+            }
+
+        spinnerStationName.onItemSelectedListener = object : OnItemSelectedListener {
+            override fun onItemSelected(
+                parentView: AdapterView<*>?,
+                selectedItemView: View,
+                position: Int,
+                id: Long
+            ) {
+                actions.onNext(SplashViewAction.SelectStation(position))
+            }
+
+            override fun onNothingSelected(parentView: AdapterView<*>?) {
+                actions.onNext(SplashViewAction.SelectStation(0))
+            }
         }
 
-        if (isNetworkConnected()) {
-            httpRepo.getStations(callback)
-        } else {
-            showInternetConnectionError()
-        }
-
-
-        val format = SimpleDateFormat("dd.MM.yyyy")
-        dateTextView.text = format.format(Date())
-
-        splashViewModel.stations.observe(viewLifecycleOwner, Observer {
-            ArrayAdapter(
-                requireContext(),
-                android.R.layout.simple_spinner_item,
-                it
-            ).also { adapter ->
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                stationName.adapter = adapter
+        editCrewName.addTextChangedListener(object : TextChangeListener() {
+            override fun onTextChanged(s: Editable?) {
+                s?.toString()?.let {
+                    actions.onNext(SplashViewAction.UpdateCrewName(it))
+                }
             }
         })
 
         startButton.setOnClickListener {
-            setStationAndCrewNames()
-
-            val activity: MainActivity = activity as MainActivity
-
-            activity.goToStationView()
+            actions.onNext(SplashViewAction.Submit)
         }
 
-        return inflater.inflate(R.layout.fragment_splash, container, false)
+        disposable += splashViewModel.effect<SplashViewEffect.Dismiss>()
+            .subscribe { dismiss() }
+    }
+
+    private fun dismiss() {
+        hideKeyboard()
+
+        val activity: MainActivity = activity as MainActivity
+
+        activity.goToStationView()
     }
 
     private fun setStationAndCrewNames() {
         val crewNames = editCrewName.text.toString()
-        val station = stationName.selectedItem as Station
+        val station = spinnerStationName.selectedItem as Station
         val stationName = station.name
         val stationId = station.id
 
