@@ -50,7 +50,7 @@ class StationEventController {
             return $validation;
         }
 
-        $type = EventType::make($data->get('type'));
+        $type = EventType::firstAid();
         if ($data->get('date')) {
             $date = \DateTime::createFromFormat(\DateTime::ATOM, $data->get('date'));
         } else {

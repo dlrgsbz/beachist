@@ -10,6 +10,7 @@ use App\Service\SpecialEventService;
 use DateTime;
 use Symfony\Component\HttpFoundation\InputBag;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -55,7 +56,7 @@ class StationSpecialEventController {
 
 }
 
-function validateCreateSpecialEventRequest(InputBag $request): ?Response {
+function validateCreateSpecialEventRequest(ParameterBag $request): ?Response {
     $constraints = [];
 
     if ($request->get('date') !== null) {
