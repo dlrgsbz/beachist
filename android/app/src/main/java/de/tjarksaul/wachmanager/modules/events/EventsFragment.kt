@@ -1,8 +1,7 @@
-package de.tjarksaul.wachmanager.ui.events
+package de.tjarksaul.wachmanager.modules.events
 
 import android.app.AlertDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,17 +9,12 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import de.tjarksaul.wachmanager.GlobalAction
 import de.tjarksaul.wachmanager.R
-import de.tjarksaul.wachmanager.api.HTTPRepo
-import de.tjarksaul.wachmanager.dtos.EventStats
-import de.tjarksaul.wachmanager.ui.base.BaseFragment
+import de.tjarksaul.wachmanager.modules.base.BaseFragment
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_events.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 
 class EventsFragment : BaseFragment() {

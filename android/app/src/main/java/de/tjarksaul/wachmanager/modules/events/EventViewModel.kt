@@ -1,21 +1,12 @@
-package de.tjarksaul.wachmanager.ui.events
+package de.tjarksaul.wachmanager.modules.events
 
 import androidx.lifecycle.MutableLiveData
 import de.tjarksaul.wachmanager.GlobalStore
-import de.tjarksaul.wachmanager.api.Async
 import de.tjarksaul.wachmanager.dtos.EventStats
-import de.tjarksaul.wachmanager.dtos.EventType
-import de.tjarksaul.wachmanager.dtos.NetworkState
-import de.tjarksaul.wachmanager.repositories.StationRepository
-import de.tjarksaul.wachmanager.ui.base.BaseViewModel
-import de.tjarksaul.wachmanager.ui.base.ViewModelAction
-import de.tjarksaul.wachmanager.ui.base.ViewModelEffect
-import de.tjarksaul.wachmanager.ui.base.ViewModelState
-import io.reactivex.Observable
-import io.reactivex.rxkotlin.ofType
-import io.reactivex.rxkotlin.plusAssign
-import java.util.*
-import java.util.concurrent.TimeUnit
+import de.tjarksaul.wachmanager.modules.base.BaseViewModel
+import de.tjarksaul.wachmanager.modules.base.ViewModelAction
+import de.tjarksaul.wachmanager.modules.base.ViewModelEffect
+import de.tjarksaul.wachmanager.modules.base.ViewModelState
 
 internal class EventViewModel(
     val globalStore: GlobalStore

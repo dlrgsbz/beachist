@@ -1,4 +1,4 @@
-package de.tjarksaul.wachmanager.ui.splash
+package de.tjarksaul.wachmanager.modules.splash
 
 import android.os.Bundle
 import android.util.Log
@@ -8,11 +8,11 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import de.tjarksaul.wachmanager.MainActivity
+import de.tjarksaul.wachmanager.modules.main.MainActivity
 import de.tjarksaul.wachmanager.R
 import de.tjarksaul.wachmanager.api.HTTPRepo
 import de.tjarksaul.wachmanager.dtos.Station
-import de.tjarksaul.wachmanager.ui.base.BaseFragment
+import de.tjarksaul.wachmanager.modules.base.BaseFragment
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

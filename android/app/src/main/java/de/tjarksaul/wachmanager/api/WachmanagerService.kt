@@ -2,7 +2,7 @@ package de.tjarksaul.wachmanager.api
 
 import de.tjarksaul.wachmanager.dtos.*
 import de.tjarksaul.wachmanager.dtos.Field
-import de.tjarksaul.wachmanager.ui.events.PostEvent
+import de.tjarksaul.wachmanager.modules.events.PostEvent
 import retrofit2.Call
 import retrofit2.http.*
 import io.reactivex.Observable

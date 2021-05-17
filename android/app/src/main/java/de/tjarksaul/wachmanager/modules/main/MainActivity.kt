@@ -1,4 +1,4 @@
-package de.tjarksaul.wachmanager
+package de.tjarksaul.wachmanager.modules.main
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -7,7 +7,8 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import de.tjarksaul.wachmanager.ui.splash.SplashFragment
+import de.tjarksaul.wachmanager.R
+import de.tjarksaul.wachmanager.modules.splash.SplashFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity() {

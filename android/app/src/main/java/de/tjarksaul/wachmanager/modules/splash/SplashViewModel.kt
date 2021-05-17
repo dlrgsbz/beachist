@@ -1,4 +1,4 @@
-package de.tjarksaul.wachmanager.ui.splash
+package de.tjarksaul.wachmanager.modules.splash
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

@@ -1,4 +1,4 @@
-package de.tjarksaul.wachmanager.ui.settings
+package de.tjarksaul.wachmanager.modules.settings
 
 import android.content.Context
 import android.os.Bundle
@@ -14,7 +14,7 @@ import androidx.lifecycle.Observer
 import de.tjarksaul.wachmanager.R
 import de.tjarksaul.wachmanager.api.HTTPRepo
 import de.tjarksaul.wachmanager.dtos.Station
-import de.tjarksaul.wachmanager.ui.base.BaseFragment
+import de.tjarksaul.wachmanager.modules.base.BaseFragment
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

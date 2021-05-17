@@ -1,4 +1,4 @@
-package de.tjarksaul.wachmanager.ui.home
+package de.tjarksaul.wachmanager.modules.stationCheck
 
 import android.os.Bundle
 import android.util.Log
@@ -14,7 +14,7 @@ import de.tjarksaul.wachmanager.dtos.Entry
 import de.tjarksaul.wachmanager.dtos.Field
 import de.tjarksaul.wachmanager.dtos.IdResponse
 import de.tjarksaul.wachmanager.dtos.StateKind
-import de.tjarksaul.wachmanager.ui.base.BaseFragment
+import de.tjarksaul.wachmanager.modules.base.BaseFragment
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

@@ -1,4 +1,4 @@
-package de.tjarksaul.wachmanager.ui.settings
+package de.tjarksaul.wachmanager.modules.settings
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

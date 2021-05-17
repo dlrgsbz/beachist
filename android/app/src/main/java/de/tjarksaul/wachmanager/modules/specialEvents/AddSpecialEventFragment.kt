@@ -1,4 +1,4 @@
-package de.tjarksaul.wachmanager.ui.specialEvents
+package de.tjarksaul.wachmanager.modules.specialEvents
 
 import android.app.Activity
 import android.os.Bundle
@@ -21,7 +21,7 @@ import de.tjarksaul.wachmanager.api.RequestCallback
 import de.tjarksaul.wachmanager.dtos.IdResponse
 import de.tjarksaul.wachmanager.dtos.NetworkState
 import de.tjarksaul.wachmanager.dtos.SpecialEventKind
-import de.tjarksaul.wachmanager.ui.base.BaseFragment
+import de.tjarksaul.wachmanager.modules.base.BaseFragment
 
 
 class AddSpecialEventFragment(val viewModel: SpecialEventsViewModel) : BaseFragment(),

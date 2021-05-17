@@ -1,4 +1,4 @@
-package de.tjarksaul.wachmanager.ui.home
+package de.tjarksaul.wachmanager.modules.stationCheck
 
 import android.app.Activity
 import android.app.AlertDialog

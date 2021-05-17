@@ -1,4 +1,4 @@
-package de.tjarksaul.wachmanager.ui.events
+package de.tjarksaul.wachmanager.modules.events
 
 
 import de.tjarksaul.wachmanager.dtos.EventType

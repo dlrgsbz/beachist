@@ -1,4 +1,4 @@
-package de.tjarksaul.wachmanager.ui.base
+package de.tjarksaul.wachmanager.modules.base
 
 import androidx.lifecycle.ViewModel
 import io.reactivex.Observable

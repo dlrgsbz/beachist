@@ -5,11 +5,11 @@ import de.tjarksaul.wachmanager.dtos.EventType
 import de.tjarksaul.wachmanager.dtos.NetworkState
 import de.tjarksaul.wachmanager.repositories.EventRepository
 import de.tjarksaul.wachmanager.repositories.StationRepository
-import de.tjarksaul.wachmanager.ui.base.RxViewState
-import de.tjarksaul.wachmanager.ui.base.mapNotNull
-import de.tjarksaul.wachmanager.ui.events.CreateEventUseCase
-import de.tjarksaul.wachmanager.ui.events.Event
-import de.tjarksaul.wachmanager.ui.events.PostEvent
+import de.tjarksaul.wachmanager.modules.base.RxViewState
+import de.tjarksaul.wachmanager.modules.base.mapNotNull
+import de.tjarksaul.wachmanager.modules.events.CreateEventUseCase
+import de.tjarksaul.wachmanager.modules.events.Event
+import de.tjarksaul.wachmanager.modules.events.PostEvent
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable

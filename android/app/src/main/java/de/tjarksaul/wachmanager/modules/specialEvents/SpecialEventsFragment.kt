@@ -1,4 +1,4 @@
-package de.tjarksaul.wachmanager.ui.specialEvents
+package de.tjarksaul.wachmanager.modules.specialEvents
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,7 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import de.tjarksaul.wachmanager.R
-import de.tjarksaul.wachmanager.ui.base.BaseFragment
+import de.tjarksaul.wachmanager.modules.base.BaseFragment
 
 
 class SpecialEventsFragment : BaseFragment() {

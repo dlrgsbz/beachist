@@ -1,4 +1,4 @@
-package de.tjarksaul.wachmanager.ui.home
+package de.tjarksaul.wachmanager.modules.stationCheck
 
 import android.text.format.DateUtils
 import androidx.lifecycle.*

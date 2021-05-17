@@ -1,6 +1,7 @@
-package de.tjarksaul.wachmanager
+package de.tjarksaul.wachmanager.modules.main
 
 import android.content.Context
+import de.tjarksaul.wachmanager.BuildConfig
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.ext.koin.viewModel
 import org.koin.dsl.module.module

@@ -1,4 +1,4 @@
-package de.tjarksaul.wachmanager.ui.events
+package de.tjarksaul.wachmanager.modules.events
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater

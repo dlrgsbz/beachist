@@ -1,4 +1,4 @@
-package de.tjarksaul.wachmanager.ui.specialEvents
+package de.tjarksaul.wachmanager.modules.specialEvents
 
 import android.app.Activity
 import android.content.Context

@@ -1,15 +1,17 @@
-package de.tjarksaul.wachmanager
+package de.tjarksaul.wachmanager.modules.main
 
 import android.content.SharedPreferences
 import android.text.format.DateUtils
-import de.tjarksaul.wachmanager.ui.base.BaseViewModel
-import de.tjarksaul.wachmanager.ui.base.ViewModelAction
-import de.tjarksaul.wachmanager.ui.base.ViewModelEffect
-import de.tjarksaul.wachmanager.ui.base.ViewModelState
+import de.tjarksaul.wachmanager.modules.base.BaseViewModel
+import de.tjarksaul.wachmanager.modules.base.ViewModelAction
+import de.tjarksaul.wachmanager.modules.base.ViewModelEffect
+import de.tjarksaul.wachmanager.modules.base.ViewModelState
 
 internal class MainViewModel(
     val sharedPreferences: SharedPreferences
-) : BaseViewModel<MainViewAction, MainViewState, MainViewEffect>(emptyState) {
+) : BaseViewModel<MainViewAction, MainViewState, MainViewEffect>(
+    emptyState
+) {
     override fun handleActions() {
     }
 
@@ -24,7 +26,8 @@ internal class MainViewModel(
     }
 
     companion object {
-        private val emptyState = MainViewState()
+        private val emptyState =
+            MainViewState()
     }
 }
 
