@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#FFFFFF"
     tools:context=".ui.splash.SplashFragment">
 
     <TextView
@@ -39,8 +40,8 @@
         android:layout_marginTop="44dp"
         android:layout_marginBottom="133dp"
         android:ems="10"
-        android:inputType="textPersonName"
         android:hint="Namen eingeben"
+        android:inputType="textPersonName"
         app:layout_constraintBottom_toTopOf="@+id/startButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -68,27 +69,27 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <!--    <Button-->
-<!--        android:id="@+id/firstAidButton"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginStart="437dp"-->
-<!--        android:layout_marginTop="16dp"-->
-<!--        android:layout_marginEnd="437dp"-->
-<!--        android:background="#FFFFFF"-->
-<!--        android:text="EH-Leistung eintragen"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintLeft_toLeftOf="@id/stationInfo"-->
-<!--        app:layout_constraintRight_toRightOf="@id/stationInfo"-->
-<!--        app:layout_constraintTop_toBottomOf="@id/stationInfo" />-->
+    <!--        android:id="@+id/firstAidButton"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_marginStart="437dp"-->
+    <!--        android:layout_marginTop="16dp"-->
+    <!--        android:layout_marginEnd="437dp"-->
+    <!--        android:background="#FFFFFF"-->
+    <!--        android:text="EH-Leistung eintragen"-->
+    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--        app:layout_constraintLeft_toLeftOf="@id/stationInfo"-->
+    <!--        app:layout_constraintRight_toRightOf="@id/stationInfo"-->
+    <!--        app:layout_constraintTop_toBottomOf="@id/stationInfo" />-->
 
-<!--    <Button-->
-<!--        android:id="@+id/undoButton"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginTop="16dp"-->
-<!--        android:text="rückgänig"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintLeft_toLeftOf="@id/firstAidButton"-->
-<!--        app:layout_constraintRight_toRightOf="@id/firstAidButton"-->
-<!--        app:layout_constraintTop_toBottomOf="@id/firstAidButton" />-->
+    <!--    <Button-->
+    <!--        android:id="@+id/undoButton"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_marginTop="16dp"-->
+    <!--        android:text="rückgänig"-->
+    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--        app:layout_constraintLeft_toLeftOf="@id/firstAidButton"-->
+    <!--        app:layout_constraintRight_toRightOf="@id/firstAidButton"-->
+    <!--        app:layout_constraintTop_toBottomOf="@id/firstAidButton" />-->
 </androidx.constraintlayout.widget.ConstraintLayout>

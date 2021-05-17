@@ -104,7 +104,7 @@ class SplashFragment : BaseFragment() {
 
             val activity: MainActivity = activity as MainActivity
 
-            activity.showStationView()
+            activity.goToStationView()
         }
 
         return root

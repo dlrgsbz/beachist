@@ -1,61 +1,38 @@
 package de.tjarksaul.wachmanager
 
-import android.content.Context
 import android.os.Bundle
-import android.text.format.DateUtils
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.FragmentManager
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import de.tjarksaul.wachmanager.api.apiKoinModule
-import de.tjarksaul.wachmanager.repositories.repositoryKoinModule
-import de.tjarksaul.wachmanager.ui.events.eventsKoinModule
 import de.tjarksaul.wachmanager.ui.splash.SplashFragment
-import org.koin.android.ext.android.startKoin
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity() {
 
-    private fun stationHasBeenSelectedToday(): Boolean {
-        val context = applicationContext
-        val date = context.getSharedPreferences("WachmanagerSettings", Context.MODE_PRIVATE)
-            ?.getLong("lastStationSelectedDate", 0) ?: 0
-
-        return DateUtils.isToday(date)
-    }
+    private val viewModel: MainViewModel by viewModel()
+    private var splashFragment: SplashFragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        startKoin(
-            androidContext = this,
-            modules = listOf(
-                repositoryKoinModule,
-                apiKoinModule,
-                eventsKoinModule,
-                globalKoinModule
-            )
-        )
-
-        if (stationHasBeenSelectedToday()) {
-            showStationView()
-        } else {
-            val fragmentManager: FragmentManager = supportFragmentManager
-            val transaction = fragmentManager.beginTransaction()
-            transaction.add(android.R.id.content, SplashFragment())
-            transaction.commit()
-        }
+        setupView()
     }
 
-    fun showStationView() {
+    override fun onResume() {
+        super.onResume()
+
+        setupSplashView()
+    }
+
+    private fun setupView() {
         setContentView(R.layout.activity_main)
         val navView: BottomNavigationView = findViewById(R.id.nav_view)
 
         val navController = findNavController(R.id.nav_host_fragment)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
+
         val appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.navigation_home,
@@ -68,11 +45,35 @@ class MainActivity : AppCompatActivity() {
         navView.setupWithNavController(navController)
     }
 
+    private fun setupSplashView() {
+        if (!viewModel.shouldShowStationSelection()) {
+            return
+        }
+
+        splashFragment = SplashFragment()
+
+        supportFragmentManager.beginTransaction()
+            .add(android.R.id.content, splashFragment!!)
+            .commit()
+    }
+
+    fun goToStationView() {
+        if (splashFragment == null) {
+            throw IllegalStateException("splashFragment is null")
+        }
+
+        supportFragmentManager.beginTransaction()
+            .remove(splashFragment!!)
+            .commit()
+
+        splashFragment = null
+    }
+
     override fun onBackPressed() {
         if (supportFragmentManager.backStackEntryCount > 0) {
             supportFragmentManager.popBackStackImmediate()
         } else {
-            finish();
+            finish()
         }
     }
 }

@@ -29,10 +29,12 @@ android {
             // todo: maybe default to ngrok here
             buildConfigField("String", "BACKEND_URL", props.getProperty("backendUrl"))
             buildConfigField("String", "DATABASE_NAME", props.getProperty("databaseName"))
+            buildConfigField("String", "SHARED_PREFS_NAME", '"WachmanagerSettings"')
         }
         debug {
             buildConfigField("String", "BACKEND_URL", props.getProperty("backendUrl"))
             buildConfigField("String", "DATABASE_NAME", props.getProperty("databaseName"))
+            buildConfigField("String", "SHARED_PREFS_NAME", '"WachmanagerSettings"')
         }
     }
     compileOptions {

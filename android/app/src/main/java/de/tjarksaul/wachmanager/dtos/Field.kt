@@ -1,8 +1,9 @@
 package de.tjarksaul.wachmanager.dtos
 
-import kotlinx.serialization.Serializable
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
 
-@Serializable
+@Parcelize
 data class Field(
     val id: String, // todo: id
     val name: String,
@@ -10,10 +11,4 @@ data class Field(
     val required: Int? = null,
     val note: String? = null,
     var entry: Entry? = null
-) {
-//    var id = Random.nextBytes(24).toString()
-
-//    constructor(name: String, parent: String?, required: Int?, note: String?, state: Boolean?, id: String): this(name, parent, required, note, state) {
-//        this.id = id
-//    }
-}
+) : Parcelable
