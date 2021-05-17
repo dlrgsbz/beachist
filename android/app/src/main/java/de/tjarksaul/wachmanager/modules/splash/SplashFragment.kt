@@ -1,5 +1,6 @@
 package de.tjarksaul.wachmanager.modules.splash
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -18,6 +19,8 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlinx.android.synthetic.main.fragment_splash.*
+import timber.log.Timber
 
 class SplashFragment : BaseFragment() {
     private val httpRepo = HTTPRepo()
@@ -26,7 +29,7 @@ class SplashFragment : BaseFragment() {
 
     private val callback = object : Callback<MutableList<Station>> {
         override fun onFailure(call: Call<MutableList<Station>>?, t: Throwable?) {
-            Log.e("MainActivity", "Problem calling Wachmanager API {${t?.message}}")
+            Timber.e("Problem calling Wachmanager API {${t?.message}}")
             showInternetConnectionError()
         }
 
@@ -53,23 +56,18 @@ class SplashFragment : BaseFragment() {
             val index =
                 splashViewModel.stations.value?.indexOfFirst { it.id == getStoredStationId() }
 
-            index?.let { stationNameView.setSelection(index) }
+            index?.let { stationName.setSelection(index) }
         }
     }
 
-    val splashViewModel: SplashViewModel by viewModels()
-    private lateinit var stationNameView: Spinner
-    private lateinit var crewNameField: EditText
+    private val splashViewModel: SplashViewModel by viewModels()
 
+    @SuppressLint("SimpleDateFormat")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val root = inflater.inflate(R.layout.fragment_splash, container, false)
-        stationNameView = root.findViewById(R.id.stationName)
-        val dateTextView: TextView = root.findViewById(R.id.dateTextView)
-        crewNameField = root.findViewById(R.id.editTextTextPersonName)
 
         val cachedStations = cachedStations()
         if (cachedStations != null) {
@@ -93,11 +91,9 @@ class SplashFragment : BaseFragment() {
                 it
             ).also { adapter ->
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                stationNameView.adapter = adapter
+                stationName.adapter = adapter
             }
         })
-
-        val startButton: Button = root.findViewById(R.id.startButton)
 
         startButton.setOnClickListener {
             setStationAndCrewNames()
@@ -107,12 +103,12 @@ class SplashFragment : BaseFragment() {
             activity.goToStationView()
         }
 
-        return root
+        return inflater.inflate(R.layout.fragment_splash, container, false)
     }
 
     private fun setStationAndCrewNames() {
-        val crewNames = crewNameField.text.toString()
-        val station = stationNameView.selectedItem as Station
+        val crewNames = editCrewName.text.toString()
+        val station = stationName.selectedItem as Station
         val stationName = station.name
         val stationId = station.id
 

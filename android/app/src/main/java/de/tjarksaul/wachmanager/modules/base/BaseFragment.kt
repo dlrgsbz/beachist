@@ -19,19 +19,22 @@ open class BaseFragment : Fragment() {
                 networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 
+    @Deprecated("Please use StationRepository", replaceWith = ReplaceWith(
+        expression = "StationRepository().getStoredStationId()",
+        imports = ["de.tjarksaul.wachmanager.repositories.StationRepository"])
+    )
     protected fun getStoredStationId(): String? {
         return requireContext().getSharedPreferences("WachmanagerSettings", Context.MODE_PRIVATE)
             .getString("stationId", null)
     }
 
+    @Deprecated("Please use StationRepository", replaceWith = ReplaceWith(
+        expression = "StationRepository().getStationId()",
+        imports = ["de.tjarksaul.wachmanager.repositories.StationRepository"])
+    )
     protected fun getStationId(): String {
         return getStoredStationId()
             ?: throw IllegalStateException("No stationId found.")
-    }
-
-    protected fun getStationName(): String? {
-        return requireContext().getSharedPreferences("WachmanagerSettings", Context.MODE_PRIVATE)
-            .getString("stationName", null) ?: throw IllegalStateException("No stationName found.")
     }
 
     protected fun getCrew(): String {
