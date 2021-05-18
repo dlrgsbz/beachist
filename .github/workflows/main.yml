@@ -55,9 +55,9 @@ jobs:
         sed -i 's/dirname(__DIR__)/__DIR__/' dist/index.php
 
     - name: deployment to server
-      uses: wlixcc/SFTP-Deploy-Action@v1.2.1
+      uses: tjarksaul/SFTP-Deploy-Action@v1.2.2
       with:
-        server: ${{ secrets.FTP_SERVER }}
+        server: '${{ secrets.FTP_SERVER }}'
         username: ${{ secrets.FTP_USERNAME }}
         ssh_private_key: ${{ secrets.SFTP_PRIVATE_KEY }}
         local_path: './dist/*'
