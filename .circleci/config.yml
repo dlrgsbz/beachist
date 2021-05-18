@@ -19,7 +19,7 @@ jobs:
           name: Setup configs
           command: |
             echo -e "backendUrl=\"$backendUrl\"\ndatabaseName=\"$databaseName\"" > ./project_resources/config.properties \
-              && echo $CLIENT_KEYSTORE_BASE_64 | base64 -d > .signing/release.jks
+              && echo $CLIENT_KEYSTORE_BASE_64 | base64 -d > project_resources/release.keystore
 
       - android/run-tests:
           test-command: ./gradlew lint testDebug --continue --stacktrace
@@ -36,6 +36,10 @@ jobs:
           name: Assemble release build
           command: |
             ./gradlew assembleRelease
+
+      - store_artifacts:
+          path: app/build/outputs/apk/release/app-release.apk
+          destination: apk/wachmanager.apk
 
 workflows:
   build_and_sign: 
