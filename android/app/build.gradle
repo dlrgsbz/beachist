@@ -6,6 +6,7 @@ apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
 
 apply from: "../gradle/readProps.gradle"
+apply from: "../gradle/buildVersion.gradle"
 
 android {
     compileSdkVersion 29
@@ -15,16 +16,21 @@ android {
         applicationId "de.tjarksaul.wachmanager"
         minSdkVersion 24 // 24, weil das Tablet nicht mehr kann. 🙄
         targetSdkVersion 29
-        versionCode 202105140
+        versionCode buildVersion
         versionName "1.4.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        release {}
     }
 
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
 
             // todo: maybe default to ngrok here
             buildConfigField("String", "BACKEND_URL", props.getProperty("backendUrl"))
@@ -43,6 +49,26 @@ android {
     }
     kotlinOptions {
         jvmTarget = '1.8'
+    }
+}
+
+allprojects {
+    afterEvaluate { project ->
+        def propsFile = rootProject.file('project_resources/keystore.properties')
+        def configName = 'release'
+
+        if (propsFile.exists() && android.signingConfigs.hasProperty(configName)) {
+            def props = new Properties()
+            props.load(new FileInputStream(propsFile))
+            android.signingConfigs[configName].storeFile = file(props['KEYSTORE_FILE'])
+            android.signingConfigs[configName].storePassword = props['KEYSTORE_PASSWORD']
+            android.signingConfigs[configName].keyAlias = props['KEY_ALIAS']
+            android.signingConfigs[configName].keyPassword = props['KEY_PASSWORD']
+            android.signingConfigs[configName].v1SigningEnabled = false
+            android.signingConfigs[configName].v2SigningEnabled = true
+
+            android.buildTypes[configName].signingConfig = android.signingConfigs[configName]
+        }
     }
 }
 
