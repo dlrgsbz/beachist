@@ -1,12 +1,15 @@
 package de.tjarksaul.wachmanager.modules.main
 
-import android.content.SharedPreferences
 import android.text.format.DateUtils
 import de.tjarksaul.wachmanager.modules.base.BaseViewModel
 import de.tjarksaul.wachmanager.modules.base.ViewModelAction
 import de.tjarksaul.wachmanager.modules.base.ViewModelEffect
 import de.tjarksaul.wachmanager.modules.base.ViewModelState
 import de.tjarksaul.wachmanager.repositories.StationRepository
+import io.reactivex.Observable
+import io.reactivex.rxkotlin.ofType
+import io.reactivex.rxkotlin.plusAssign
+import java.util.concurrent.TimeUnit
 
 internal class MainViewModel(
     val stationRepository: StationRepository
@@ -14,12 +17,19 @@ internal class MainViewModel(
     emptyState
 ) {
     override fun handleActions() {
+        disposables += Observable.interval(1000L, TimeUnit.MILLISECONDS).timeInterval()
+            .subscribe { actions.onNext(MainViewAction.CheckStationSelection) }
+
+        disposables += actions.ofType<MainViewAction.CheckStationSelection>()
+            .subscribe { onCheckStationSelection() }
     }
 
-    fun shouldShowStationSelection(): Boolean {
+    private fun onCheckStationSelection() {
         val date = stationRepository.getLastUpdateDate()
 
-        return !DateUtils.isToday(date) || stationRepository.getCrew().trim() == ""
+        val shouldShowStationSelection = !DateUtils.isToday(date) || stationRepository.getCrew().trim() == ""
+
+        state.set { copy(shouldShowStationSelection = shouldShowStationSelection) }
     }
 
     companion object {
@@ -28,8 +38,12 @@ internal class MainViewModel(
     }
 }
 
-internal sealed class MainViewAction : ViewModelAction
+internal sealed class MainViewAction : ViewModelAction {
+    object CheckStationSelection : MainViewAction()
+}
 
 internal sealed class MainViewEffect : ViewModelEffect
 
-internal class MainViewState : ViewModelState
+internal data class MainViewState(
+    val shouldShowStationSelection: Boolean = false
+) : ViewModelState

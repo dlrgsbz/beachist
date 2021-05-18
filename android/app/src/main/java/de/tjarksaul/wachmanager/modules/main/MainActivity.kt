@@ -9,12 +9,17 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import de.tjarksaul.wachmanager.R
 import de.tjarksaul.wachmanager.modules.splash.SplashFragment
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.plusAssign
+import io.reactivex.subjects.PublishSubject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity() {
 
     private val viewModel: MainViewModel by viewModel()
     private var splashFragment: SplashFragment? = null
+    private val disposable = CompositeDisposable()
+    private val actions: PublishSubject<MainViewAction> = PublishSubject.create()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,7 +30,7 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
-        setupSplashView()
+        setupBindings()
     }
 
     private fun setupView() {
@@ -46,8 +51,15 @@ class MainActivity : AppCompatActivity() {
         navView.setupWithNavController(navController)
     }
 
-    private fun setupSplashView() {
-        if (!viewModel.shouldShowStationSelection()) {
+    private fun setupBindings() {
+        viewModel.attach(actions)
+
+        disposable += viewModel.stateOf { shouldShowStationSelection }
+            .subscribe { setupSplashView(it) }
+    }
+
+    private fun setupSplashView(shouldShow: Boolean) {
+        if (!shouldShow) {
             return
         }
 
