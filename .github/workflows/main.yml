@@ -55,12 +55,10 @@ jobs:
         sed -i 's/dirname(__DIR__)/__DIR__/' dist/index.php
 
     - name: deployment to server
-      uses: kevinpainchaud/simple-ftp-deploy-action@v1.2.1
+      uses: tjarksaul/SFTP-Deploy-Action@v1.2.2
       with:
-        ftp_host: '${{ secrets.FTP_SERVER }}'
-        ftp_username: ${{ secrets.FTP_USERNAME }}
-        ftp_password: ${{ secrets.FTP_PASSWORD }}
-        local_source_dir: './dist'
-        dist_target_dir: '/public_html/test'
-        only_newer: "true"
-        ignore_time: "true"
+        server: '${{ secrets.FTP_SERVER }}'
+        username: ${{ secrets.FTP_USERNAME }}
+        ssh_private_key: ${{ secrets.SFTP_PRIVATE_KEY }}
+        local_path: './dist/*'
+        remote_path: '/public_html/test'
