@@ -63,7 +63,7 @@ jobs:
           ./gradlew assembleRelease
 
       - name: deployment to server
-        uses: tjarksaul/SFTP-Deploy-Action@d1c7a725df9093b6c6700d2505b0b2df21c6f666
+        uses: tjarksaul/SFTP-Deploy-Action@1f9d3f7e125f06dc57760d081a04bca1d49a6dc1
         with:
           server: '${{ secrets.FTP_SERVER }}'
           username: ${{ secrets.FTP_USERNAME }}
