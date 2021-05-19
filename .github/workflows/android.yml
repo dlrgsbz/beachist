@@ -24,6 +24,9 @@ jobs:
         working-directory: android
         run: ./gradlew lint testDebug --continue --stacktrace
 
+      - name: print ref
+        run: echo ${{ github.ref }}
+
       - name: run tests on emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -34,7 +37,7 @@ jobs:
   build_and_sign:
     needs: 
       - test
-    if: ${{ github.ref == 'refs/heads/github-android' }}
+    if: github.ref == 'refs/heads/github-android'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
