@@ -27,6 +27,10 @@ jobs:
       name: android/android-machine
 
     steps:
+      - run:
+          name: Debugging
+          command: ls -la .
+
       - android/run-tests:
           test-command: ./gradlew lint testDebug --continue --stacktrace
 
