@@ -32,7 +32,7 @@ jobs:
 
   test:
     needs: determine_changes
-    if: steps.check_android.outputs.exit_code == 0
+    if: job.determine_changes.outputs.exit_code == 0
     runs-on: macos-latest
     steps:
       - name: Checkout the code
