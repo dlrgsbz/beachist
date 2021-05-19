@@ -2,7 +2,7 @@ name: Deployment
 
 on:
   push:
-    branches: [ github-action-update ]
+    branches: [ main ]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -83,4 +83,4 @@ jobs:
         username: ${{ secrets.FTP_USERNAME }}
         ssh_private_key: ${{ secrets.SFTP_PRIVATE_KEY }}
         local_path: './dist/'
-        remote_path: '/public_html/test'
+        remote_path: '/public_html'
