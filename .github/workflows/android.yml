@@ -1,8 +1,5 @@
 name: android
 
-env:
-  runNumber: ${{ GITHUB_RUN_NUMBER }}
-
 on:
   pull_request:
   push:
@@ -52,6 +49,7 @@ jobs:
           CLIENT_KEYSTORE_PASSWORD: ${{ secrets.CLIENT_KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
         run: |
           echo -e "backendUrl=\"$backendUrl\"\ndatabaseName=\"$databaseName\"" > ./project_resources/config.properties \
             && echo $CLIENT_KEYSTORE_BASE_64 | base64 -d > project_resources/release.keystore \
@@ -69,4 +67,4 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           ssh_private_key: ${{ secrets.SFTP_PRIVATE_KEY }}
           local_path: './android/app/build/outputs/apk/release/app-release.apk'
-          remote_path: '/public_html/app/wachmanager-${{ env.runNumber }}.apk'
+          remote_path: '/public_html/app/wachmanager-${{ github.run_number }}.apk'
