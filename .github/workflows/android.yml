@@ -1,7 +1,7 @@
 name: android
 
 env:
-  runNumber: ${GITHUB_RUN_NUMBER}
+  runNumber: ${{ GITHUB_RUN_NUMBER }}
 
 on:
   pull_request:
