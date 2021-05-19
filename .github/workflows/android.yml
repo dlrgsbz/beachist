@@ -48,6 +48,7 @@ jobs:
         run: |
           echo -e "backendUrl=\"$backendUrl\"\ndatabaseName=\"$databaseName\"" > ./project_resources/config.properties \
             && echo $CLIENT_KEYSTORE_BASE_64 | base64 -d > project_resources/release.keystore
+            && bash ./setup_keystore.sh
 
       - name: Assemble release build
         working-directory: android
