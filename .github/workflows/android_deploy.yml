@@ -2,7 +2,7 @@ name: android_deploy
 
 on:
   push:
-    branches: [ main ]
+    branches: [ github-android ]
 
 jobs:
   determine_changes:
