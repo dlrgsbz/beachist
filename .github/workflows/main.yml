@@ -1,4 +1,4 @@
-name: Deployment
+name: web
 
 on:
   push:

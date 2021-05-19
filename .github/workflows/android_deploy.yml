@@ -2,7 +2,7 @@ name: android_deploy
 
 on:
   push:
-    branches: [ github-android ]
+    branches: [ main ]
 
 jobs:
   determine_changes:
@@ -35,6 +35,7 @@ jobs:
 
   build_and_sign:
     needs: determine_changes
+    if: needs.determine_changes.outputs.exit_code == 0
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
@@ -79,6 +80,6 @@ jobs:
         with:
           github-token: ${{ github.token }} # this will use the runner's token.
           ms-teams-webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
-          notification-summary: Ein neuer Build ist verfügbar unter ${{ secrets.BUILD_URL }}-${{ github.run_number }}.apk
+          notification-summary: Ein neuer Build ist verfügbar unter ${{ secrets.BUILD_URL }}${{ github.run_number }}.apk
           notification-color: 28a745
           timezone: Europe/Berlin

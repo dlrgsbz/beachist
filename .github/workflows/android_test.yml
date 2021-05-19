@@ -1,4 +1,4 @@
-name: android
+name: android_test
 
 on:
   pull_request:
@@ -34,6 +34,7 @@ jobs:
 
   test:
     needs: determine_changes
+    if: needs.determine_changes.outputs.exit_code == 0
     runs-on: macos-latest
     steps:
       - name: Checkout the code
@@ -47,6 +48,19 @@ jobs:
       - name: run tests
         working-directory: android
         run: ./gradlew lint testDebug --continue --stacktrace
+
+  emulator_test:
+    needs: determine_changes
+    if: needs.determine_changes.outputs.exit_code == 0
+    runs-on: macos-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+
+      - name: Setup configs
+        working-directory: android
+        run: |
+          echo -e "backendUrl=\"https://example.com\"\ndatabaseName=\"wachmanager-test\"" > ./project_resources/config.properties
 
       - name: run tests on emulator
         uses: reactivecircus/android-emulator-runner@v2
