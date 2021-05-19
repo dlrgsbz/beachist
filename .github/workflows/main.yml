@@ -60,5 +60,5 @@ jobs:
         server: '${{ secrets.FTP_SERVER }}'
         username: ${{ secrets.FTP_USERNAME }}
         ssh_private_key: ${{ secrets.SFTP_PRIVATE_KEY }}
-        local_path: './dist/*'
+        local_path: './dist/'
         remote_path: '/public_html/test'
