@@ -12,7 +12,7 @@ aliases:
 
     - &attach_workspace
       attach_workspace:
-              at: ~/project
+              at: ~/
 
     - &dependencies
       - checkout:
@@ -23,10 +23,11 @@ aliases:
             echo -e "backendUrl=\"$backendUrl\"\ndatabaseName=\"$databaseName\"" > ./project_resources/config.properties \
               && echo $CLIENT_KEYSTORE_BASE_64 | base64 -d > project_resources/release.keystore
       - persist_to_workspace:
-          root: ~/project
+          root: ~/
           paths: 
-            - android
-            - .circleci
+            - project/android
+            - project/.circleci
+            - .gradle
 
     - &deps
       - setup_dependencies
@@ -43,10 +44,6 @@ jobs:
     <<: *environment
     steps:
       - *attach_workspace
-      - run:
-          name: Debugging
-          command: ls -la . && pwd
-
       - android/run-tests:
           test-command: ./gradlew lint testDebug --continue --stacktrace
 
@@ -87,4 +84,4 @@ workflows:
           filters:
             branches:
               only:
-                - circleci-update
+                - main
