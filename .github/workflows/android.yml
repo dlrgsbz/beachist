@@ -42,6 +42,9 @@ jobs:
 
       - name: Setup configs
         working-directory: android
+        env:
+          backendUrl: ${{ secrets.APP_BACKEND_URL }}
+          databaseName: ${{ secrets.APP_DATABASE_NAME }}
         run: |
           echo -e "backendUrl=\"$backendUrl\"\ndatabaseName=\"$databaseName\"" > ./project_resources/config.properties \
             && echo $CLIENT_KEYSTORE_BASE_64 | base64 -d > project_resources/release.keystore
