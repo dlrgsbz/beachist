@@ -15,6 +15,11 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@v2
 
+      - name: Setup configs
+        working-directory: android
+        run: |
+          echo -e "backendUrl=\"https://example.com\"\ndatabaseName=\"wachmanager-test\"" > ./project_resources/config.properties
+
       - name: run tests
         working-directory: android
         run: ./gradlew lint testDebug --continue --stacktrace
