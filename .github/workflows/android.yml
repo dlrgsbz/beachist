@@ -16,6 +16,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: run tests
+        working-directory: android
         run: ./gradlew lint testDebug --continue --stacktrace
 
       - name: run tests on emulator
@@ -23,6 +24,7 @@ jobs:
         with:
           api-level: 24
           script: ./gradlew connectedDebugAndroidTest --stacktrace
+          working-directory: android
 
   build_and_sign:
     needs: 
