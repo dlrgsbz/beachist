@@ -1,6 +1,6 @@
 static def getBuildVersion() {
     def version = 202105140
-    def buildNumber = System.getenv("CIRCLE_BUILD_NUM")
+    def buildNumber = System.getenv("GITHUB_RUN_NUMBER")
     if (buildNumber != null) {
         buildNumber = buildNumber as int
         version += buildNumber

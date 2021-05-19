@@ -1,0 +1,51 @@
+name: android
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+
+      - name: run tests
+        run: ./gradlew lint testDebug --continue --stacktrace
+
+      - name: run tests on emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 24
+          script: ./gradlew connectedDebugAndroidTest --stacktrace
+
+  build_and_sign:
+    needs: 
+      - test
+    if: github.ref == 'refs/heads/github-android'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+
+      - name: Setup configs
+        working-directory: android
+        run: |
+          echo -e "backendUrl=\"$backendUrl\"\ndatabaseName=\"$databaseName\"" > ./project_resources/config.properties \
+            && echo $CLIENT_KEYSTORE_BASE_64 | base64 -d > project_resources/release.keystore
+
+      - name: Assemble release build
+        working-directory: android
+        run: |
+          ./gradlew assembleRelease
+
+      - name: deployment to server
+        uses: tjarksaul/SFTP-Deploy-Action@d1c7a725df9093b6c6700d2505b0b2df21c6f666
+        with:
+          server: '${{ secrets.FTP_SERVER }}'
+          username: ${{ secrets.FTP_USERNAME }}
+          ssh_private_key: ${{ secrets.SFTP_PRIVATE_KEY }}
+          local_path: './android/app/build/outputs/apk/release/app-release.apk'
+          remote_path: '/public_html/app/wachmanager-${{ GITHUB_RUN_NUMBER }}.apk'
