@@ -6,5 +6,5 @@
     android:layout_height="match_parent"
     android:footerDividersEnabled="false"
     android:headerDividersEnabled="false"
-    tools:context=".ui.home.StationCheckFragment"
+    tools:context=".modules.stationCheck.StationCheckFragment"
     tools:listitem="@layout/item_station_check_item" />

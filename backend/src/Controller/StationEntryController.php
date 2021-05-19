@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Entity\StateKind;
 use App\Interfaces\FieldNotFoundException;
 use App\Interfaces\StationNotFoundException;
 use App\Service\EntryService;
@@ -45,7 +44,7 @@ class StationEntryController {
         }
 
         $state = $request->request->getBoolean('state', false);
-        $stateKind = !$state ? StateKind::make($request->request->get('stateKind')) : null;
+        $stateKind = !$state ? \App\Entity\StateKind::make($request->request->get('stateKind')) : null;
         $amount = $request->request->get('amount');
         $amount = $amount ? (int)$amount : null;
         $note = $request->request->get('note');
@@ -85,7 +84,10 @@ function validateCreateEntryRequest(ParameterBag $request): ?Response {
     }
 
     if ($request->get('crew') !== null) {
-        $constraints['crew'] = new Assert\NotBlank();
+        $constraints['crew'] = new Assert\AtLeastOneOf([
+            new Assert\NotBlank(),
+            new Assert\Blank(),
+        ]);
     }
 
     $constraint = new Assert\Collection($constraints);

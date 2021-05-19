@@ -17,7 +17,7 @@ android {
         minSdkVersion 24 // 24, weil das Tablet nicht mehr kann. 🙄
         targetSdkVersion 29
         versionCode buildVersion
-        versionName "1.4.0"
+        versionName "1.4.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -35,10 +35,12 @@ android {
             // todo: maybe default to ngrok here
             buildConfigField("String", "BACKEND_URL", props.getProperty("backendUrl"))
             buildConfigField("String", "DATABASE_NAME", props.getProperty("databaseName"))
+            buildConfigField("String", "SHARED_PREFS_NAME", '"WachmanagerSettings"')
         }
         debug {
             buildConfigField("String", "BACKEND_URL", props.getProperty("backendUrl"))
             buildConfigField("String", "DATABASE_NAME", props.getProperty("databaseName"))
+            buildConfigField("String", "SHARED_PREFS_NAME", '"WachmanagerSettings"')
         }
     }
     compileOptions {

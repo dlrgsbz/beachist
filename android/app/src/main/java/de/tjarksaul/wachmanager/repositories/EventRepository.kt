@@ -1,7 +1,7 @@
 package de.tjarksaul.wachmanager.repositories
 
 import de.tjarksaul.wachmanager.repositories.entities.EventEntity
-import de.tjarksaul.wachmanager.ui.events.Event
+import de.tjarksaul.wachmanager.modules.events.Event
 import io.reactivex.Observable
 import java.util.*
 

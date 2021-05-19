@@ -22,7 +22,7 @@ jobs:
         name: check last successful run
         with:
           branch: ${{ steps.extract_branch.outputs.branch }}
-          workflow_id: 'main.yml'
+          workflow_id: 'android_deploy.yml'
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: check if android test/build neeeds to run

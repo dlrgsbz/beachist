@@ -2,7 +2,7 @@ package de.tjarksaul.wachmanager.api
 
 import de.tjarksaul.wachmanager.dtos.*
 import de.tjarksaul.wachmanager.dtos.Field
-import de.tjarksaul.wachmanager.ui.events.PostEvent
+import de.tjarksaul.wachmanager.modules.events.PostEvent
 import retrofit2.Call
 import retrofit2.http.*
 import io.reactivex.Observable
@@ -10,6 +10,9 @@ import io.reactivex.Observable
 interface WachmanagerService {
     @GET("station")
     fun getStations(): Call<MutableList<Station>>
+
+    @GET("station")
+    fun getStationsRx(): Observable<List<Station>>
 
     @GET("station/{stationId}/field")
     fun getFields(@Path("stationId") stationId: String): Call<MutableList<Field>>

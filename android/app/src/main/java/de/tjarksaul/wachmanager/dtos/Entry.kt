@@ -1,8 +1,9 @@
 package de.tjarksaul.wachmanager.dtos
 
-import kotlinx.serialization.Serializable
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
 
-@Serializable
+@Parcelize
 data class Entry(
     val id: String?,
     val field: String,
@@ -12,5 +13,5 @@ data class Entry(
     val amount: Int?,
     val note: String?,
     val date: String // todo: date
-)
+) : Parcelable
 

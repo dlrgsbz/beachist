@@ -113,11 +113,3 @@ class Entry implements JsonSerializable {
         ];
     }
 }
-
-/**
- * @method static self broken()
- * @method static self tooLittle()
- * @method static self other()
- */
-final class StateKind extends Enum {
-}

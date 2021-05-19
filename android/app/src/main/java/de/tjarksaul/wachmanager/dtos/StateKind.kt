@@ -1,8 +1,9 @@
 package de.tjarksaul.wachmanager.dtos
 
-import kotlinx.serialization.Serializable
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
 
-@Serializable
-enum class StateKind {
+@Parcelize
+enum class StateKind : Parcelable {
     broken, tooLittle, other
 }
