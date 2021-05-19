@@ -47,6 +47,7 @@ jobs:
     - name: check if composer neeeds to run
       id: check_composer
       run: |
+        git fetch --all
         git diff-tree --no-commit-id --name-only -r ${{ steps.last_successful_commit.outputs.commit_hash }}..${{ github.sha }} | grep composer > /dev/null \
           && echo ::set-output name=exit_code::0 \
           || echo ::set-output name=exit_code::1
