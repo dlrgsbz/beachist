@@ -1,0 +1,70 @@
+name: android_test
+
+on:
+  pull_request:
+
+jobs:
+  determine_changes:
+    runs-on: ubuntu-latest
+    outputs:
+      exit_code: ${{ steps.check_android.outputs.exit_code }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+
+      - uses: nrwl/last-successful-commit-action@v1
+        id: last_successful_commit
+        name: check last successful run
+        with:
+          branch: ${{ steps.extract_branch.outputs.branch }}
+          workflow_id: 'main.yml'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: check if android test/build neeeds to run
+        id: check_android
+        run: |
+          git fetch --all
+          git diff-tree --no-commit-id --name-only -r ${{ steps.last_successful_commit.outputs.commit_hash }}..${{ github.sha }} | grep android > /dev/null \
+            && echo ::set-output name=exit_code::0 \
+            || echo ::set-output name=exit_code::1
+
+  test:
+    needs: determine_changes
+    if: needs.determine_changes.outputs.exit_code == 0
+    runs-on: macos-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+
+      - name: Setup configs
+        working-directory: android
+        run: |
+          echo -e "backendUrl=\"https://example.com\"\ndatabaseName=\"wachmanager-test\"" > ./project_resources/config.properties
+
+      - name: run tests
+        working-directory: android
+        run: ./gradlew lint testDebug --continue --stacktrace
+
+  emulator_test:
+    needs: determine_changes
+    if: needs.determine_changes.outputs.exit_code == 0
+    runs-on: macos-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+
+      - name: Setup configs
+        working-directory: android
+        run: |
+          echo -e "backendUrl=\"https://example.com\"\ndatabaseName=\"wachmanager-test\"" > ./project_resources/config.properties
+
+      - name: run tests on emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 24
+          script: ./gradlew connectedDebugAndroidTest --stacktrace
+          working-directory: android
