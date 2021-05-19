@@ -1,0 +1,84 @@
+name: android_deploy
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  determine_changes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+
+      - uses: nrwl/last-successful-commit-action@v1
+        id: last_successful_commit
+        name: check last successful run
+        with:
+          branch: ${{ steps.extract_branch.outputs.branch }}
+          workflow_id: 'main.yml'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: check if android test/build neeeds to run
+        id: check_android
+        run: |
+          git fetch --all
+          git diff-tree --no-commit-id --name-only -r ${{ steps.last_successful_commit.outputs.commit_hash }}..${{ github.sha }} | grep android > /dev/null \
+            && echo ::set-output name=exit_code::0 \
+            || echo ::set-output name=exit_code::1
+
+  build_and_sign:
+    needs: determine_changes
+    if: steps.check_android.outputs.exit_code == 0
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+
+      - name: Setup configs
+        working-directory: android
+        env:
+          backendUrl: ${{ secrets.APP_BACKEND_URL }}
+          databaseName: ${{ secrets.APP_DATABASE_NAME }}
+          CLIENT_KEYSTORE_BASE_64: ${{ secrets.CLIENT_KEYSTORE_BASE_64 }}
+          CLIENT_KEYSTORE_PASSWORD: ${{ secrets.CLIENT_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
+        run: |
+          echo -e "backendUrl=\"$backendUrl\"\ndatabaseName=\"$databaseName\"" > ./project_resources/config.properties \
+            && echo $CLIENT_KEYSTORE_BASE_64 | base64 -d > project_resources/release.keystore \
+            && bash ./setup_keystore.sh
+
+      - name: Assemble release build
+        working-directory: android
+        run: |
+          ./gradlew assembleRelease
+
+      - name: deployment to server
+        uses: tjarksaul/SFTP-Deploy-Action@1f9d3f7e125f06dc57760d081a04bca1d49a6dc1
+        with:
+          server: '${{ secrets.FTP_SERVER }}'
+          username: ${{ secrets.FTP_USERNAME }}
+          ssh_private_key: ${{ secrets.SFTP_PRIVATE_KEY }}
+          local_path: './android/app/build/outputs/apk/release/app-release.apk'
+          remote_path: '/public_html/app/wachmanager-${{ github.run_number }}.apk'
+
+  message_teams:
+    needs: 
+      - build_and_sign
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Teams Notification
+        uses: jdcargile/ms-teams-notification@v1.3
+        with:
+          github-token: ${{ github.token }} # this will use the runner's token.
+          ms-teams-webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
+          notification-summary: Ein neuer Build ist verfügbar unter ${{ secrets.BUILD_URL }}-${{ github.run_number }}.apk
+          notification-color: 28a745
+          timezone: Europe/Berlin
