@@ -4,28 +4,34 @@ version: 2.1
 orbs:
   android: circleci/android@1.0.3
 
-jobs:
-  setup_environment:
-    working_directory: ~/project/android
+aliases:
+    - &environment
+        working_directory: ~/project/android
+        executor:
+          name: android/android-machine
 
-    executor:
-      name: android/android-machine
-
-    steps:
+    - &dependencies
       - checkout:
           path: ~/project
-
       - run:
           name: Setup configs
           command: |
             echo -e "backendUrl=\"$backendUrl\"\ndatabaseName=\"$databaseName\"" > ./project_resources/config.properties \
               && echo $CLIENT_KEYSTORE_BASE_64 | base64 -d > project_resources/release.keystore
 
-  test:  
-    working_directory: ~/project/android
-    executor:
-      name: android/android-machine
+    - &deps
+      - setup_dependencies
 
+    - &deps_and_test
+      - setup_dependencies
+      - test
+
+jobs:
+  setup_dependencies:
+    <<: *environment
+    steps: *dependencies
+  test:
+    <<: *environment
     steps:
       - run:
           name: Debugging
@@ -61,14 +67,12 @@ workflows:
   version: 2
   main: 
     jobs:
-      - setup_environment
+      - setup_dependencies
       - test:
-          requires: 
-            - setup_environment
+          requires: *deps
       - build_and_sign:
           requires: 
-            - setup_environment
-            - test
+            *deps_and_test
           filters:
             branches:
               only:
