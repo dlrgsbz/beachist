@@ -35,7 +35,6 @@ jobs:
 
   build_and_sign:
     needs: determine_changes
-    if: needs.determine_changes.outputs.exit_code == 0
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code

@@ -34,7 +34,6 @@ jobs:
 
   test:
     needs: determine_changes
-    if: needs.determine_changes.outputs.exit_code == 0
     runs-on: macos-latest
     steps:
       - name: Checkout the code
