@@ -37,7 +37,7 @@ jobs:
   build_and_sign:
     needs: 
       - test
-    if: github.ref == 'refs/heads/github-android'
+    if: github.ref == 'refs/pull/10/merge'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
