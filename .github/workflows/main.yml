@@ -55,7 +55,7 @@ jobs:
         sed -i 's/dirname(__DIR__)/__DIR__/' dist/index.php
 
     - name: deployment to server
-      uses: tjarksaul/SFTP-Deploy-Action@v1.2.4
+      uses: tjarksaul/SFTP-Deploy-Action@e1c5b4f3efc9ef57f579f20dc53f59fa2320b293
       with:
         server: '${{ secrets.FTP_SERVER }}'
         username: ${{ secrets.FTP_USERNAME }}
