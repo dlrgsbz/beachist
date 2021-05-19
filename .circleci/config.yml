@@ -26,6 +26,7 @@ aliases:
           root: ~/project
           paths: 
             - android
+            - .circleci
 
     - &deps
       - setup_dependencies
