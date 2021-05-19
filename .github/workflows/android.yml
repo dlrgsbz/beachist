@@ -48,6 +48,10 @@ jobs:
         env:
           backendUrl: ${{ secrets.APP_BACKEND_URL }}
           databaseName: ${{ secrets.APP_DATABASE_NAME }}
+          CLIENT_KEYSTORE_BASE_64: ${{ secrets.CLIENT_KEYSTORE_BASE_64 }}
+          CLIENT_KEYSTORE_PASSWORD: ${{ secrets.CLIENT_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
           echo -e "backendUrl=\"$backendUrl\"\ndatabaseName=\"$databaseName\"" > ./project_resources/config.properties \
             && echo $CLIENT_KEYSTORE_BASE_64 | base64 -d > project_resources/release.keystore \
