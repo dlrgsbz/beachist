@@ -1,5 +1,8 @@
 name: android
 
+env:
+  runNumber: ${GITHUB_RUN_NUMBER}
+
 on:
   pull_request:
   push:
@@ -48,4 +51,4 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           ssh_private_key: ${{ secrets.SFTP_PRIVATE_KEY }}
           local_path: './android/app/build/outputs/apk/release/app-release.apk'
-          remote_path: '/public_html/app/wachmanager-${{ GITHUB_RUN_NUMBER }}.apk'
+          remote_path: '/public_html/app/wachmanager-${{ env.runNumber }}.apk'
