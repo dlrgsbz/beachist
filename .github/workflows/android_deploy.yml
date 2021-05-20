@@ -10,13 +10,15 @@ jobs:
     outputs:
       changes: ${{ steps.changes.outputs.android }}
     steps:
-    - uses: dorny/paths-filter@v2
-      id: changes
-      with:
-        base: 'main'
-        filters: |
-          android:
-            - 'android/**'
+      - name: Checkout the code
+        uses: actions/checkout@v2
+      - uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          base: 'main'
+          filters: |
+            android:
+              - 'android/**'
 
   build_and_sign:
     needs: determine_changes
