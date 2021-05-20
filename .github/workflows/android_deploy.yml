@@ -8,34 +8,19 @@ jobs:
   determine_changes:
     runs-on: ubuntu-latest
     outputs:
-      exit_code: ${{ steps.check_android.outputs.exit_code }}
+      changes: ${{ steps.changes.outputs.android }}
     steps:
-      - uses: actions/checkout@v2
-
-      - name: Extract branch name
-        shell: bash
-        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-        id: extract_branch
-
-      - uses: nrwl/last-successful-commit-action@v1
-        id: last_successful_commit
-        name: check last successful run
-        with:
-          branch: ${{ steps.extract_branch.outputs.branch }}
-          workflow_id: 'android_deploy.yml'
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: check if android test/build neeeds to run
-        id: check_android
-        run: |
-          git fetch --all
-          git diff-tree --no-commit-id --name-only -r ${{ steps.last_successful_commit.outputs.commit_hash }}..${{ github.sha }} | grep android > /dev/null \
-            && echo ::set-output name=exit_code::0 \
-            || echo ::set-output name=exit_code::1
+    - uses: dorny/paths-filter@v2
+      id: changes
+      with:
+        base: 'main'
+        filters: |
+          android:
+            - 'android/**'
 
   build_and_sign:
     needs: determine_changes
-    if: needs.determine_changes.outputs.exit_code == 0
+    if: needs.determine_changes.outputs.changes == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
