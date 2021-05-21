@@ -5,6 +5,7 @@ import { Footer } from 'components/Footer'
 import Wachfuehrer from 'pages/Wachfuehrer'
 import moment from 'moment'
 import 'moment/locale/de'
+import { Login } from 'pages/Login'
 
 moment.locale('de')
 
@@ -17,6 +18,8 @@ const RedirectComponent = () => (
 )
 
 function App() {
+  return <Login/>;
+
   return (
     <Router>
       <div className="container">
