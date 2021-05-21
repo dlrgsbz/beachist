@@ -2,6 +2,7 @@ import React, { ReactNode } from 'react'
 import RootStore from './stores/root.store'
 import AdminStore from 'store/stores/admin.store'
 import NavigationStore from 'store/stores/navigation.store'
+import { AuthStore } from './stores/auth.store'
 
 const StoreContext = React.createContext<RootStore | null>(null)
 
@@ -29,6 +30,10 @@ export function useAdminStore(): AdminStore {
 
 export function useNavigationStore(): NavigationStore {
   return useStore().navigationStore
+}
+
+export function useAuthStore(): AuthStore {
+  return useStore().authStore
 }
 
 export default StoreProvider

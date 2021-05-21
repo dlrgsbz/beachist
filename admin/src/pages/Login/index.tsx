@@ -1,7 +1,19 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import './index.scss'
+import { useAuthStore } from 'store'
+import Loading from 'components/Loading'
 
 export const Login = () => {
+  const { availableUsers, loadUsers } = useAuthStore()
+
+  useEffect(() => {
+    loadUsers()
+  }, [])
+
+  if (availableUsers.status !== 'success') {
+    return <Loading />
+  }
+
   return <div className="login--container">
     <div className="login--container-image">
     </div>

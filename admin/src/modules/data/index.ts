@@ -1,5 +1,5 @@
 import moment from 'moment'
-import { EventEntry, Field, NetworkEntry, NetworkSpecialEvent, SpecialEvent, StationInfo } from 'dtos'
+import { EventEntry, Field, NetworkEntry, NetworkSpecialEvent, SpecialEvent, StationInfo, UserInfo } from 'dtos'
 import { httpGet } from 'modules/network'
 
 export async function fetchStations(): Promise<StationInfo[]> {
@@ -28,6 +28,15 @@ export async function fetchSpecialEvents(date: moment.Moment): Promise<NetworkSp
   const dateString = date.format('Y-MM-DD')
   const data = await httpGet(`/api/special/${dateString}`)
   return data.data.map((dt: any) => ({ ...dt, date: moment(dt.date) }))
+}
+
+export async function fetchAvailableUsers(): Promise<UserInfo[]> {
+  return new Promise(resolve => {
+    setTimeout(() => resolve([{
+      username: 'wf',
+      description: 'Wachführer',
+    }]), 1350)
+  })
 }
 
 export function sendEventToWukos(event: SpecialEvent): void {
