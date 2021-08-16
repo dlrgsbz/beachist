@@ -17,7 +17,6 @@ export class AuthService {
     let token = ''
 
     try {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       token = this.getAndValidateToken()
     } catch (e) {
       if (e instanceof AccessTokenNotFound) {
