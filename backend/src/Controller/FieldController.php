@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Service\FieldService;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -11,6 +12,8 @@ use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * @Route("/api/field")
+ *
+ * @IsGranted("ROLE_USER")
  */
 class FieldController {
     private FieldService $fieldService;

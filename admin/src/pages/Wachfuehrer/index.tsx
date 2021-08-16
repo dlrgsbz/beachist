@@ -30,7 +30,7 @@ const Wachfuehrer: React.FC = () => {
 
   return useObserver(() => (
     <div>
-      <h1>Wachführer-Dashboard</h1>
+      <h1>Wachführer*innen-Dashboard</h1>
       {adminStore.loading && <Loading />}
       <div>
         <SingleDatePicker

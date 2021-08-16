@@ -2,6 +2,7 @@ import React, { FunctionComponent, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import 'moment/locale/de'
 import { useNavigationStore } from 'store'
+import { useAuth } from './context'
 
 type NavlinkProps = {
   target: string
@@ -19,6 +20,8 @@ const Navigation = () => {
   const [isExpanded, setExpanded] = useState(false)
   const [currentWachtag, setCurrentWachtag] = useState('')
   const navigationStore = useNavigationStore()
+
+  const { logout } = useAuth()
 
   useEffect(() => {
     setCurrentWachtag(navigationStore.currentWachtag.format('DD.MM.Y'))
@@ -51,11 +54,17 @@ const Navigation = () => {
       <div className={'collapse navbar-collapse ' + (isExpanded ? 'show' : '')} id="navbarNav">
         <ul className="navbar-nav mr-auto mt-2 mt-lg-0">
           <Navlink target="/">Start</Navlink>
-          <Navlink target="/wachfuehrer/">Wachführer-Dashboard</Navlink>
+          <Navlink target="/wachfuehrer/">Wachführer*innen-Dashboard</Navlink>
           {/*<Navlink target="/admin/">Admin</Navlink>*/}
         </ul>
         <ul className="nav navbar-nav flex-row justify-content-between ml-auto">
-          <li className="nav-item navbar-text">{currentWachtag}</li>
+          <li className="nav-item">
+            <button className="btn btn-outline-warning btn-sm nav-link d-inline m-0 p-2"
+                    onClick={logout} type="button" value="Abmelden"
+                    title="Benutzer abmelden">
+              Abmelden
+            </button>
+          </li>
         </ul>
       </div>
     </nav>

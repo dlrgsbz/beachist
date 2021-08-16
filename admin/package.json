@@ -5,21 +5,25 @@
   "proxy": "http://localhost:8000",
   "dependencies": {
     "axios": "^0.21.1",
+    "classnames": "^2.2.6",
     "i18next": "^19.5.1",
+    "jwt-decode": "^3.1.2",
     "mobx": "^5.15.4",
-    "mobx-react-lite": "latest",
+    "mobx-react-lite": "^2.2.2",
     "moment": "^2.24.0",
-    "node-sass": "^4.14.1",
+    "node-sass": "^6.0.0",
+    "notistack": "^1.0.10",
     "react": "^16.9.0",
     "react-dates": "^21.8.0",
     "react-dom": "^16.9.0",
+    "react-hook-form": "^7.12.2",
     "react-i18next": "^11.7.0",
     "react-redux": "^7.1.0",
     "react-router-dom": "^5.0.1",
-    "react-scripts": "^3.3.1",
+    "react-scripts": "^4.0.3",
+    "sass": "^1.37.0",
     "typescript": "^3.7",
-    "uuid": "^3.3.2",
-    "classnames": "^2.2.6"
+    "uuid": "^3.3.2"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -43,12 +47,12 @@
     ]
   },
   "devDependencies": {
-    "@types/react-redux": "^7.1.2",
+    "@types/classnames": "^2.2.10",
     "@types/react": "^16.9.2",
-    "@types/react-dom": "^16.8.5",
-    "@types/react-router-dom": "^4.3.4",
     "@types/react-dates": "^17.1.7",
-    "@types/uuid": "^3.4.5",
-    "@types/classnames": "^2.2.10"
+    "@types/react-dom": "^16.8.5",
+    "@types/react-redux": "^7.1.2",
+    "@types/react-router-dom": "^4.3.4",
+    "@types/uuid": "^3.4.5"
   }
 }

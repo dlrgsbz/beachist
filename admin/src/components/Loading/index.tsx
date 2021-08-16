@@ -1,7 +1,7 @@
 import React from 'react'
 import './loading.scss'
 
-const Loading: React.FC = () => {
+const Loading: React.VFC = () => {
   return (
     <div className="loading">
       <div className="loading__child loading__child--bounce1" />

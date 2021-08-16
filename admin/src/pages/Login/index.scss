@@ -1,4 +1,4 @@
-body {
+body.login {
   padding: 0;
 }
 
@@ -28,7 +28,7 @@ body {
 .login--container-image {
   @extend .login--container-item;
   background-size: cover;
-  background-image: url(/static/background.jpg);
+  background-image: url(./background.jpg);
 }
 
 .login--container--form--button-container {

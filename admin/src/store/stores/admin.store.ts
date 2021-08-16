@@ -12,11 +12,7 @@ import {
 } from 'dtos'
 import { AdminView, Color } from 'interfaces'
 import {
-  fetchEntries,
-  fetchEvents,
-  fetchFields,
-  fetchSpecialEvents,
-  fetchStations,
+  ApiClient,
   sendEventToWukos,
 } from 'modules/data'
 
@@ -41,6 +37,9 @@ class AdminStore {
 
   private timeout: number | undefined
 
+  constructor(private apiClient: ApiClient) {
+  }
+
   async reloadData(): Promise<void> {
     this.setLoading(true)
     // @ts-ignore
@@ -51,11 +50,11 @@ class AdminStore {
       Field[],
       NetworkSpecialEvent[]
     >([
-      fetchEntries(this.selectedDate),
-      fetchEvents(this.selectedDate),
-      fetchStations(),
-      fetchFields(),
-      fetchSpecialEvents(this.selectedDate),
+      this.apiClient.fetchEntries(this.selectedDate),
+      this.apiClient.fetchEvents(this.selectedDate),
+      this.apiClient.fetchStations(),
+      this.apiClient.fetchFields(),
+      this.apiClient.fetchSpecialEvents(this.selectedDate),
     ])
 
     const stationMap = new Map<string, StationInfo>()
@@ -152,15 +151,14 @@ function createEntryMap(
   const crews = new Map<string, string>()
 
   const theEntries: Entry[] = entries
-    .map(entry => {
+    .flatMap(entry => {
       const station = stationMap.get(entry.station)
       const field = fieldMap.get(entry.field)
       if (!station || !field) {
-        return undefined
+        return []
       }
-      return { ...entry, station, field }
+      return [{ ...entry, station, field }]
     })
-    .flat()
 
   const entryMap = new Map<string, Entry[]>()
   theEntries.forEach(entry => {

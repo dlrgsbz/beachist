@@ -2,7 +2,10 @@ export interface User {
   name: string
 }
 
-export interface UserInfo {
+export interface UserInfo extends User {
   description: string
-  username: string
+}
+
+export interface UserInfoWithToken extends UserInfo {
+  token: string
 }

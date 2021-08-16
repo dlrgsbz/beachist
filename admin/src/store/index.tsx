@@ -3,6 +3,8 @@ import RootStore from './stores/root.store'
 import AdminStore from 'store/stores/admin.store'
 import NavigationStore from 'store/stores/navigation.store'
 import { AuthStore } from './stores/auth.store'
+import { useAuthService } from '../context/AuthServiceContext'
+import { ApiClient } from '../modules/data'
 
 const StoreContext = React.createContext<RootStore | null>(null)
 
@@ -11,7 +13,9 @@ type StoreProviderProps = {
 }
 
 const StoreProvider = ({ children }: StoreProviderProps): JSX.Element => {
-  const rootStore = new RootStore()
+  const authService = useAuthService()
+  const apiClient = new ApiClient(authService)
+  const rootStore = new RootStore(apiClient)
 
   return <StoreContext.Provider value={rootStore}>{children}</StoreContext.Provider>
 }

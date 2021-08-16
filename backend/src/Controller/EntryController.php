@@ -7,12 +7,15 @@ namespace App\Controller;
 
 use App\Controller\Support\DateControllerTrait;
 use App\Service\EntryService;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * @Route("/api/entry")
+ *
+ * @IsGranted("ROLE_USER")
  */
 class EntryController {
     use DateControllerTrait;

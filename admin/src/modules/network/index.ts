@@ -33,21 +33,3 @@ export async function httpPost(url: string, data?: object, options?: HttpOptions
     throw error
   }
 }
-
-export async function httpPut(url: string, data?: object, options?: HttpOptions): Promise<HttpResponse> {
-  try {
-    const response = await axios.put(url, data, options)
-    return { data: response.data, status: response.status }
-  } catch (error) {
-    throw error
-  }
-}
-
-export async function httpDelete(url: string, options?: HttpOptions): Promise<HttpResponse> {
-  try {
-    const response = await axios.delete(url, options)
-    return { data: response.data, status: response.status }
-  } catch (error) {
-    throw error
-  }
-}
