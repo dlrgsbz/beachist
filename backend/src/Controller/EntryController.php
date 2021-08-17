@@ -14,8 +14,6 @@ use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * @Route("/api/entry")
- *
- * @IsGranted("ROLE_USER")
  */
 class EntryController {
     use DateControllerTrait;
@@ -29,6 +27,8 @@ class EntryController {
 
     /**
      * @Route("/{date}", methods={"GET"})
+     *
+     * @IsGranted("ROLE_USER")
      */
     public function get(string $date): Response {
         $date = $this->checkDate($date);
