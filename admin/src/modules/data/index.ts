@@ -1,34 +1,136 @@
 import moment from 'moment'
-import { EventEntry, Field, NetworkEntry, NetworkSpecialEvent, SpecialEvent, StationInfo } from 'dtos'
-import { httpGet } from 'modules/network'
+import {
+  EventEntry,
+  Field,
+  NetworkEntry,
+  NetworkSpecialEvent,
+  SpecialEvent,
+  StationInfo,
+  UserInfo,
+  UserInfoWithToken,
+} from 'dtos'
+import { AccessTokenNotFound, AuthService } from 'context/AuthServiceContext'
+import axios from 'axios'
+import { removeTokens } from 'lib/token'
 
-export async function fetchStations(): Promise<StationInfo[]> {
-  const data = await httpGet('/api/station')
-  return data.data
+export interface HttpHeaders {
+  [header: string]: string
 }
 
-export async function fetchFields(): Promise<Field[]> {
-  const data = await httpGet('/api/field')
-  return data.data
+export interface HttpOptions {
+  headers?: HttpHeaders
+  params?: object
+  body?: object
 }
 
-export async function fetchEntries(date: moment.Moment): Promise<NetworkEntry[]> {
-  const dateString = date.format('Y-MM-DD')
-  const data = await httpGet(`/api/entry/${dateString}`)
-  return data.data.map((dt: any) => ({ ...dt, date: moment(dt.date) }))
+export interface HttpResponse<T> {
+  data: T
+  status: number
 }
 
-export async function fetchEvents(date: moment.Moment): Promise<EventEntry> {
-  const dateString = date.format('Y-MM-DD')
-  const data = await httpGet(`/api/event/${dateString}`)
-  return { ...data.data, date: moment(data.data.date) }
+export class ApiClient {
+  constructor(private authService: AuthService) {
+  }
+
+  private async request<T>(url: string, method: 'POST' | 'GET', options?: HttpOptions): Promise<HttpResponse<T>> {
+    let token = ''
+    try {
+      token = this.authService.getAndValidateToken()
+    } catch (e) {
+      if (e instanceof AccessTokenNotFound) {
+        removeTokens()
+        window.location.replace('/')
+      }
+    }
+
+    const headers: Record<string, string> = {
+      ...options?.headers,
+      Authorization: `Bearer ${token}`,
+    }
+
+    const requestOptions = {
+      params: options?.params,
+      headers,
+      method,
+      url,
+    }
+
+    try {
+      const response = await axios.request(requestOptions)
+      return { data: response.data, status: response.status }
+    } catch (error) {
+      throw error
+    }
+  }
+
+  private async get<T>(url: string, options?: HttpOptions): Promise<HttpResponse<T>> {
+    return this.request(url, 'GET', options)
+  }
+
+  private async post<T>(url: string, data?: object, options?: HttpOptions): Promise<HttpResponse<T>> {
+    const requestOptions = {
+      ...options,
+      body: data,
+    }
+    return this.request(url, 'GET', requestOptions)
+  }
+
+  public async fetchStations(): Promise<StationInfo[]> {
+    const data = await this.get<StationInfo[]>('/api/station')
+    return data.data
+  }
+
+  public async fetchFields(): Promise<Field[]> {
+    const data = await this.get<Field[]>('/api/field')
+    return data.data
+  }
+
+  public async fetchEntries(date: moment.Moment): Promise<NetworkEntry[]> {
+    const dateString = date.format('Y-MM-DD')
+    const data = await this.get<NetworkEntry[]>(`/api/entry/${dateString}`)
+    return data.data.map((dt: any) => ({ ...dt, date: moment(dt.date) }))
+  }
+
+  public async fetchEvents(date: moment.Moment): Promise<EventEntry> {
+    const dateString = date.format('Y-MM-DD')
+    const data = await this.get<EventEntry>(`/api/event/${dateString}`)
+    return { ...data.data, date: moment(data.data.date) }
+  }
+
+  public async fetchSpecialEvents(date: moment.Moment): Promise<NetworkSpecialEvent[]> {
+    const dateString = date.format('Y-MM-DD')
+    const data = await this.get<NetworkSpecialEvent[]>(`/api/special/${dateString}`)
+    return data.data.map((dt: any) => ({ ...dt, date: moment(dt.date) }))
+  }
 }
 
-export async function fetchSpecialEvents(date: moment.Moment): Promise<NetworkSpecialEvent[]> {
-  const dateString = date.format('Y-MM-DD')
-  const data = await httpGet(`/api/special/${dateString}`)
-  return data.data.map((dt: any) => ({ ...dt, date: moment(dt.date) }))
+export async function getUserData(token: string): Promise<UserInfo> {
+  try {
+    const response = await axios.get('/me')
+    return response.data
+  } catch (error) {
+    throw error
+  }
 }
+
+export async function fetchAvailableUsers(): Promise<UserInfo[]> {
+  try {
+    const response = await axios.get('/auth/users')
+    return response.data
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function login(name: string, password: string): Promise<UserInfoWithToken> {
+  try {
+    const response = await axios.post('/auth/login', { username: name, password })
+    return response.data
+  } catch (error) {
+    throw error
+  }
+}
+
 
 export function sendEventToWukos(event: SpecialEvent): void {
   const form = document.createElement('form')

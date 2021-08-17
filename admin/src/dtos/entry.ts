@@ -1,5 +1,5 @@
 import moment from 'moment'
-import { Field, Station } from './station'
+import { Field, StationInfo } from './station'
 
 export interface BaseEntry {
   id: string
@@ -29,6 +29,6 @@ export interface EventEntry {
 }
 
 export interface Entry extends BaseEntry {
-  station: Station
+  station: StationInfo
   field: Field
 }

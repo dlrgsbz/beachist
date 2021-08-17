@@ -7,12 +7,15 @@ namespace App\Controller;
 use App\Controller\Support\DateControllerTrait;
 use App\Interfaces\StationNotFoundException;
 use App\Service\EventService;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * @Route("/api/event")
+ *
+ * @IsGranted("ROLE_USER")
  */
 class EventController {
     use DateControllerTrait;

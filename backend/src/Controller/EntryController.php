@@ -7,6 +7,7 @@ namespace App\Controller;
 
 use App\Controller\Support\DateControllerTrait;
 use App\Service\EntryService;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -26,6 +27,8 @@ class EntryController {
 
     /**
      * @Route("/{date}", methods={"GET"})
+     *
+     * @IsGranted("ROLE_USER")
      */
     public function get(string $date): Response {
         $date = $this->checkDate($date);
