@@ -6,6 +6,9 @@ body.login {
   display: flex;
   width: 100vw;
   height: 100vh;
+  @media screen and (max-device-width: 428px) {
+    flex-direction: column;
+  }
 }
 
 .login--container-item {
@@ -17,6 +20,10 @@ body.login {
   margin: 0;
   box-sizing: border-box;
   display: flex;
+
+  @media screen and (max-device-width: 428px) {
+    max-width: 100%;
+  }
 }
 
 .login--container-form-container {
