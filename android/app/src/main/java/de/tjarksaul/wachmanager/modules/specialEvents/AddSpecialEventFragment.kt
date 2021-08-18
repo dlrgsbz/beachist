@@ -116,8 +116,13 @@ class AddSpecialEventFragment(val viewModel: SpecialEventsViewModel) : BaseFragm
         val note = noteText.text.toString().trim()
         val id = viewModel.addEntry(title, note, notifier, kind)
 
+        val stationId = getStoredStationId()
+        if (stationId === null) {
+            return
+        }
+
         HTTPRepo().createSpecialEvent(
-            getStationId(),
+            stationId,
             title,
             note,
             notifier,

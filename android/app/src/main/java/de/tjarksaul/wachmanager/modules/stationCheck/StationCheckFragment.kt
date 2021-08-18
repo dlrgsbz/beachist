@@ -94,8 +94,9 @@ class StationCheckFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View? {
         if (stationCheckViewModel.needsRefresh()) {
-            if (isNetworkConnected()) {
-                httpRepo.getFields(getStationId(), fieldCallback)
+            val stationId = getStoredStationId()
+            if ((stationId != null) && isNetworkConnected()) {
+                httpRepo.getFields(stationId, fieldCallback)
             } else {
                 showInternetConnectionError()
             }
@@ -118,11 +119,12 @@ class StationCheckFragment : BaseFragment() {
                         val index = listView.firstVisiblePosition
                         val v = listView.getChildAt(0)
                         val top = v?.top ?: 0
+                        val stationId = getStoredStationId()
 
-                        if (state || stateKind !== null) {
+                        if (stationId !== null && (state || stateKind !== null)) {
                             httpRepo.updateEntry(
                                 id,
-                                getStationId(),
+                                stationId,
                                 state,
                                 stateKind,
                                 amount,

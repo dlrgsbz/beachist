@@ -15,9 +15,9 @@ android {
     defaultConfig {
         applicationId "de.tjarksaul.wachmanager"
         minSdkVersion 24 // 24, weil das Tablet nicht mehr kann. 🙄
-        targetSdkVersion 29
+        targetSdkVersion 30
         versionCode buildVersion
-        versionName "1.4.1"
+        versionName "1.4.4"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
