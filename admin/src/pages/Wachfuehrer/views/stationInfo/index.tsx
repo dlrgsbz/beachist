@@ -20,6 +20,7 @@ const StationInfo: React.FC = () => {
       <div className="accordion">
         {adminStore.stations.map(station => (
           <WachfuehrerTurmDetail
+            key={station.id}
             title={station.name}
             color={adminStore.color(station.id)}
             crew={adminStore.crews.get(station.id)}

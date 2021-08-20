@@ -42,6 +42,19 @@ class JwtService {
         return $token->toString();
     }
 
+    public function createTemporary(): string {
+        $now = new \DateTimeImmutable();
+        $token = $this->configuration->builder()
+            ->relatedTo('temporary')
+            ->issuedAt($now)
+            ->expiresAt($now->modify('+4 hours'))
+            ->canOnlyBeUsedAfter($now)
+            ->withClaim('prm', ['ROLE_USER'])
+            ->getToken($this->configuration->signer(), $this->configuration->signingKey());
+
+        return $token->toString();
+    }
+
     /**
      * @throws InvalidTokenException
      * @throws UserNotFoundException
@@ -61,6 +74,10 @@ class JwtService {
                 throw new UserNotFoundException();
             }
 
+            if ($uid === 'temporary') {
+                return $this->temporaryUser();
+            }
+
             $user = $this->userReader->getById((int)$uid);
 
             if (!$user) {
@@ -72,5 +89,14 @@ class JwtService {
             // list of constraints violation exceptions:
             throw new InvalidTokenException();
         }
+    }
+
+    private function temporaryUser(): User {
+        $user = new User();
+        $user->name = 'temporär';
+        $user->description = 'Rettungsschwimmer*in';
+        $user->id = -9;
+        $user->roles = ['ROLE_USER'];
+        return $user;
     }
 }

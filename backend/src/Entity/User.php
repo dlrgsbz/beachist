@@ -95,6 +95,7 @@ class User implements UserInterface
             'id' => $this->id,
             'name' => $this->name,
             'description' => $this->description,
+            'permissions' => $this->getRoles(),
         ];
     }
 }

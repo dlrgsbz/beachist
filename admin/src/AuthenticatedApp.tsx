@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Redirect, Route } from 'react-router-dom'
-import Navigation from './Navigation'
+import Navigation from './components/Navigation'
 import Wachfuehrer from './pages/Wachfuehrer'
 import { Footer } from './components/Footer'
 import React from 'react'

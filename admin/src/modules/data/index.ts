@@ -102,11 +102,20 @@ export class ApiClient {
     const data = await this.get<NetworkSpecialEvent[]>(`/api/special/${dateString}`)
     return data.data.map((dt: any) => ({ ...dt, date: moment(dt.date) }))
   }
+
+  public async fetchLoginToken() {
+    const data = await this.get<{ token: string }>('/auth/link')
+    return data.data.token
+  }
 }
 
 export async function getUserData(token: string): Promise<UserInfo> {
   try {
-    const response = await axios.get('/me')
+    const response = await axios.get('/api/me', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
     return response.data
   } catch (error) {
     throw error

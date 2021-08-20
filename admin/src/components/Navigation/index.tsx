@@ -1,8 +1,8 @@
 import React, { FunctionComponent, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import 'moment/locale/de'
 import { useNavigationStore } from 'store'
-import { useAuth } from './context'
+import { useAuth } from 'context'
+import { QrButton } from './QrButton'
 
 type NavlinkProps = {
   target: string
@@ -49,7 +49,7 @@ const Navigation = () => {
         aria-expanded={isExpanded}
         aria-label="Toggle navigation"
       >
-        <span className="navbar-toggler-icon" />
+        <span className="navbar-toggler-icon"/>
       </button>
       <div className={'collapse navbar-collapse ' + (isExpanded ? 'show' : '')} id="navbarNav">
         <ul className="navbar-nav mr-auto mt-2 mt-lg-0">
@@ -58,6 +58,7 @@ const Navigation = () => {
           {/*<Navlink target="/admin/">Admin</Navlink>*/}
         </ul>
         <ul className="nav navbar-nav flex-row justify-content-between ml-auto">
+          <QrButton/>
           <li className="nav-item">
             <button className="btn btn-outline-warning btn-sm nav-link d-inline m-0 p-2"
                     onClick={logout} type="button" value="Abmelden"

@@ -28,6 +28,8 @@ class Station implements JsonSerializable {
      */
     public ?int $sortId;
 
+    public bool $hasSearch = false;
+
     /**
      * Station constructor.
      *
@@ -53,6 +55,7 @@ class Station implements JsonSerializable {
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'hasSearch' => $this->hasSearch,
         ];
     }
 }

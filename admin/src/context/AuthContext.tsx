@@ -1,13 +1,15 @@
 import { UserInfo } from '../dtos'
 import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react'
 import Loading from '../components/Loading'
-import { useIsMounted } from '../lib'
+import { useIsMounted } from 'lib'
 import { AuthService, useAuthService } from './AuthServiceContext'
+import { getUserData } from 'modules/data'
 
 export interface AuthContextType {
   user: UserInfo | null
-  logout: () => Promise<void>;
-  login: (name: string, password: string) => Promise<void>;
+  logout: () => Promise<void>
+  login: (name: string, password: string) => Promise<void>
+  tokenLogin: (token: string) => Promise<void>
 }
 
 const asyncNoop: (...args: any[]) => any = async (..._args: any[]) => {
@@ -17,6 +19,7 @@ const AuthContext = React.createContext<AuthContextType>({
   user: null,
   login: asyncNoop,
   logout: asyncNoop,
+  tokenLogin: asyncNoop,
 })
 AuthContext.displayName = 'AuthContext'
 
@@ -25,7 +28,7 @@ const getLoginState = async (authService: AuthService): Promise<UserInfo | null>
   let userData = null
 
   if (loginState) {
-    userData = { name: 'wulu', description: 'Reuter' }
+    userData = getUserData(authService.getAndValidateToken())
   }
 
   return userData
@@ -71,6 +74,13 @@ export const AuthProvider: React.FC = props => {
     [authService],
   )
 
+  const tokenLogin = useCallback((token: string) =>
+      authService
+        .tokenLogin(token)
+        .then(userData => setUser(userData)),
+    [authService]
+  )
+
   const logout = useCallback(() => authService.logout().then(() => setUser(null)), [authService])
 
   const value = useMemo(
@@ -78,8 +88,9 @@ export const AuthProvider: React.FC = props => {
       user,
       login,
       logout,
+      tokenLogin,
     }),
-    [login, logout, user],
+    [tokenLogin, login, logout, user],
   )
 
   if (loading || idle) {

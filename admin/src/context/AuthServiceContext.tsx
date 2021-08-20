@@ -8,9 +8,19 @@ import { getToken, removeTokens, setToken } from '../lib/token'
 
 export class AuthService {
   public async login(username: string, password: string): Promise<UserInfo> {
-    const { name, description, token } = await login(username, password)
+    const { token, ...user } = await login(username, password)
     setToken(token)
-    return { name, description }
+    return user
+  }
+
+  public async tokenLogin(token: string): Promise<UserInfo> {
+    if (!isLoginTokenValid(token)) {
+      throw new AccessTokenNotFound('Invalid access token provided')
+    }
+
+    const userData = await getUserData(token)
+    setToken(token)
+    return userData
   }
 
   public async getLoggedInUser(): Promise<UserInfo> {
@@ -66,12 +76,15 @@ export const AuthServiceProvider: React.FC<any> = props => {
 export const useAuthService = () => React.useContext(AuthServiceContext)
 
 function isTokenExpired(token: string) {
-  const { exp } = jwtDecode<{ exp: number }>(token)
-  return exp * 1000 < Date.now()
+  try {
+    const { exp } = jwtDecode<{ exp: number }>(token)
+    return exp * 1000 < Date.now()
+  } catch (e) {
+    return true
+  }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function isLoginTokenValid(token: string | null): boolean {
+export function isLoginTokenValid(token: string | null): boolean {
   if (!token) {
     return false
   }

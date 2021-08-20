@@ -14,11 +14,13 @@
     "moment": "^2.24.0",
     "node-sass": "^6.0.0",
     "notistack": "^1.0.10",
+    "qrcode.react": "^1.0.1",
     "react": "^16.9.0",
     "react-dates": "^21.8.0",
     "react-dom": "^16.9.0",
     "react-hook-form": "^7.12.2",
     "react-i18next": "^11.7.0",
+    "react-portal": "^4.2.1",
     "react-redux": "^7.1.0",
     "react-router-dom": "^5.0.1",
     "react-scripts": "^4.0.3",
@@ -49,11 +51,12 @@
   },
   "devDependencies": {
     "@types/classnames": "^2.2.10",
+    "@types/qrcode.react": "^1.0.2",
     "@types/react": "^16.9.2",
     "@types/react-dates": "^17.1.7",
     "@types/react-dom": "^16.8.5",
     "@types/react-redux": "^7.1.2",
-    "@types/react-router-dom": "^4.3.4",
+    "@types/react-router-dom": "^5.1.0",
     "@types/uuid": "^3.4.5"
   }
 }

@@ -50,7 +50,7 @@ const Wachfuehrer: React.FC = () => {
                 type="checkbox"
                 checked={adminStore.autoUpdateEnabled}
                 autoComplete="off"
-                onClick={adminStore.toggleAutoUpdate}
+                onChange={adminStore.toggleAutoUpdate}
               />
               {adminStore.autoUpdateEnabled ? <CheckedBox /> : <EmptyCheckbox />}
               &nbsp;Automatisch aktualisieren

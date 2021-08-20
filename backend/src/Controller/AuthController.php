@@ -7,6 +7,7 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Service\AuthService;
 use App\Service\JwtService;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -40,7 +41,20 @@ class AuthController extends AbstractController {
         $user = $this->getUser();
 
         $token = $this->jwtService->create($user);
-        $response = ['token' => $token, 'name' => $user->name, 'description' => $user->description];
+        $response = ['token' => $token, 'name' => $user->name, 'description' => $user->description, 'permissions' => $user->getRoles()];
+
+        return new JsonResponse($response);
+    }
+
+    /**
+     * @Route("/link", name="link")
+     *
+     * @IsGranted("ROLE_QR")
+     */
+    public function loginLinkAction(): Response {
+        $token = $this->jwtService->createTemporary();
+
+        $response = ['token' => $token];
 
         return new JsonResponse($response);
     }
