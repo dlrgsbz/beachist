@@ -60,6 +60,7 @@ jobs:
         args: --optimize-autoloader
       env:
         APP_ENV: prod
+        SYMFONY_ENV: prod
 
     - name: use alpine
       uses: docker://alpine:latest
