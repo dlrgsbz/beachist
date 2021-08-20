@@ -44,21 +44,22 @@ jobs:
         workflow_id: 'main.yml'
         github_token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: check if composer neeeds to run
-      id: check_composer
-      run: |
-        git fetch --all
-        git diff-tree --no-commit-id --name-only -r ${{ steps.last_successful_commit.outputs.commit_hash }}..${{ github.sha }} | grep composer > /dev/null \
-          && echo ::set-output name=exit_code::0 \
-          || echo ::set-output name=exit_code::1
+    - name: Cache Composer dependencies
+      uses: actions/cache@v2
+      with:
+        path: /tmp/composer-cache
+        key: ${{ runner.os }}-${{ hashFiles('**/composer.lock') }}
     
     - name: composer install
-#       if: steps.check_composer.outputs.exit_code == 0
       uses: php-actions/composer@v5
       with:
         php_version: 7.4
         version: 1
         working_dir: backend
+        dev: no
+        args: --optimize-autoloader
+      env:
+        APP_ENV: prod
 
     - name: use alpine
       uses: docker://alpine:latest
@@ -71,10 +72,21 @@ jobs:
         cp -r backend/public/* dist
         cp -r backend/src dist
         mkdir dist/var
-        test -d backend/vendor && cp -r backend/vendor dist
         cp -r backend/composer.* dist
         cp -r backend/.env dist
         sed -i 's/dirname(__DIR__)/__DIR__/' dist/index.php
+
+    - name: check if composer neeeds to run
+      id: check_composer
+      run: |
+        git fetch --all
+        git diff-tree --no-commit-id --name-only -r ${{ steps.last_successful_commit.outputs.commit_hash }}..${{ github.sha }} | grep composer > /dev/null \
+          && echo ::set-output name=exit_code::0 \
+          || echo ::set-output name=exit_code::1
+
+    - name: move composer dependencies
+      if: steps.check_composer.outputs.exit_code == 0
+      run: cp -r backend/vendor dist
 
     - name: deployment to server
       uses: tjarksaul/SFTP-Deploy-Action@d1c7a725df9093b6c6700d2505b0b2df21c6f666
@@ -84,3 +96,5 @@ jobs:
         ssh_private_key: ${{ secrets.SFTP_PRIVATE_KEY }}
         local_path: './dist/'
         remote_path: '/public_html'
+
+# todo: run migrations
