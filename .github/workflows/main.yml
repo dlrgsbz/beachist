@@ -4,15 +4,11 @@ on:
   push:
     branches: [ main ]
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   deploy:
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
       with:
         fetch-depth: 2
@@ -22,7 +18,6 @@ jobs:
       with:
         node-version: '14.x'
 
-    # Runs a single command using the runners shell
     - name: npm ci
       run: npm ci
       working-directory: admin
@@ -51,7 +46,7 @@ jobs:
         key: ${{ runner.os }}-${{ hashFiles('**/composer.lock') }}
     
     - name: composer install
-      uses: php-actions/composer@v5
+      uses: php-actions/composer@v6
       with:
         php_version: 7.4
         version: 1
@@ -60,7 +55,6 @@ jobs:
         args: --optimize-autoloader
       env:
         APP_ENV: prod
-        SYMFONY_ENV: prod
 
     - name: use alpine
       uses: docker://alpine:latest
