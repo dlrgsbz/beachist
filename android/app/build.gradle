@@ -17,7 +17,7 @@ android {
         minSdkVersion 24 // 24, weil das Tablet nicht mehr kann. 🙄
         targetSdkVersion 30
         versionCode buildVersion
-        versionName "1.4.4"
+        versionName "1.4.5"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
