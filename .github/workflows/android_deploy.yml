@@ -23,6 +23,12 @@ jobs:
   build_and_sign:
     needs: determine_changes
     if: needs.determine_changes.outputs.changes == 'true'
+    strategy:
+      matrix:
+        env: ['STAGING', 'PROD']
+      fail-fast: true
+      max-parallel: 1
+    environment: ${{ matrix.env }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
@@ -46,7 +52,7 @@ jobs:
       - name: Assemble release build
         working-directory: android
         run: |
-          ./gradlew assembleRelease
+          ./gradlew app:bundleRelease
 
       - name: deployment to server
         uses: tjarksaul/SFTP-Deploy-Action@1f9d3f7e125f06dc57760d081a04bca1d49a6dc1
@@ -54,19 +60,25 @@ jobs:
           server: '${{ secrets.FTP_SERVER }}'
           username: ${{ secrets.FTP_USERNAME }}
           ssh_private_key: ${{ secrets.SFTP_PRIVATE_KEY }}
-          local_path: './android/app/build/outputs/apk/release/app-release.apk'
-          remote_path: '/public_html/app/wachmanager-${{ github.run_number }}.apk'
+          local_path: './android/app/build/outputs/bundle/release/app-release.aab'
+          remote_path: '/public_html/app/wachmanager-${{ matrix.env }}-${{ github.run_number }}.aab'
 
-  message_teams:
-    needs: 
-      - build_and_sign
-    runs-on: ubuntu-latest
-    steps:
       - name: Teams Notification
+        if: ${{ matrix.env }} == 'STAGING'
         uses: jdcargile/ms-teams-notification@v1.3
         with:
           github-token: ${{ github.token }} # this will use the runner's token.
           ms-teams-webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
-          notification-summary: Ein neuer Build ist verfügbar unter ${{ secrets.BUILD_URL }}${{ github.run_number }}.apk
+          notification-summary: Ein neuer Build ist verfügbar unter ${{ secrets.BUILD_URL }}-${{ matrix.env }}${{ github.run_number }}.aab
           notification-color: 28a745
           timezone: Europe/Berlin
+          
+      - name: Upload Android Release to Play Store
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: '${{ SECRETS.PLAY_STORE_SERVICE_ACCOUNT_JSON }}'
+          packageName: '${{ SECRETS.PLAY_STORE_PACKAGE_NAME }}'
+          releaseFiles: './android/app/build/outputs/bundle/release/app-release.aab'
+          track: '${{ SECRETS.PLAY_STORE_TRACK }}'
+          status: 'draft'
+          inAppUpdatePriority: 5
