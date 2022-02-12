@@ -69,7 +69,7 @@ jobs:
         with:
           github-token: ${{ github.token }} # this will use the runner's token.
           ms-teams-webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
-          notification-summary: Ein neuer Build ist verfügbar unter ${{ secrets.BUILD_URL }}-${{ matrix.env }}${{ github.run_number }}.aab
+          notification-summary: Ein neuer Build ist verfügbar unter ${{ secrets.BUILD_URL }}${{ matrix.env }}-${{ github.run_number }}.aab
           notification-color: 28a745
           timezone: Europe/Berlin
           
