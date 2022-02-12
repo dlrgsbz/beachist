@@ -7,6 +7,12 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        env: ['STAGING', 'PROD']
+      fail-fast: true
+      max-parallel: 1
+    environment: ${{ matrix.env }}
 
     steps:
     - uses: actions/checkout@v2
@@ -90,6 +96,6 @@ jobs:
         username: ${{ secrets.FTP_USERNAME }}
         ssh_private_key: ${{ secrets.SFTP_PRIVATE_KEY }}
         local_path: './dist/'
-        remote_path: '/public_html'
+        remote_path: '${{ secrets.FTP_PATH }}'
 
 # todo: run migrations
