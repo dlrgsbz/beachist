@@ -57,6 +57,7 @@ class TokenAuthenticator extends AbstractAuthenticator {
     }
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response {
-        return new Response(null, Response::HTTP_UNAUTHORIZED);
+        // Authentication failure is handled in controllers
+        return null;
     }
 }
