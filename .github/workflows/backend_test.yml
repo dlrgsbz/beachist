@@ -6,8 +6,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    container: ubuntu
-    
+
     services:
       mariadb:
         image: mariadb
@@ -18,6 +17,8 @@ jobs:
           # we don't care about the root password so we'll just use a random one
           MARIADB_RANDOM_ROOT_PASSWORD: 'yes'
         options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
+        ports:
+        - 3306:3306
 
     steps:
     - uses: actions/checkout@v2
@@ -37,4 +38,4 @@ jobs:
       run: ./bin/phpunit
       env:
         APP_ENV: test
-        DATABASE_URL: 'mysql://user:verysecret@mariadb:3306/beachist?serverVersion=5.7'
+        DATABASE_URL: 'mysql://user:verysecret@localhost:3306/beachist?serverVersion=5.7'
