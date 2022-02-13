@@ -38,11 +38,11 @@ jobs:
       working-directory: backend
       env:
         APP_ENV: test
-        DATABASE_URL: 'mysql://user:verysecret@localhost:3306/beachist?serverVersion=5.7'
+        DATABASE_URL: 'mysql://user:verysecret@127.0.0.1:3306/beachist?serverVersion=5.7'
 
     - name: Tests
       run: ./bin/phpunit
       working-directory: backend
       env:
         APP_ENV: test
-        DATABASE_URL: 'mysql://user:verysecret@localhost:3306/beachist?serverVersion=5.7'
+        DATABASE_URL: 'mysql://user:verysecret@127.0.0.1:3306/beachist?serverVersion=5.7'
