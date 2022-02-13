@@ -35,13 +35,14 @@ jobs:
         
     - name: Run migrations
       run: php bin/console doctrine:migrations:migrate -e test
+      working-directory: backend
       env:
         APP_ENV: test
         DATABASE_URL: 'mysql://user:verysecret@localhost:3306/beachist?serverVersion=5.7'
 
     - name: Tests
-      working-directory: backend
       run: ./bin/phpunit
+      working-directory: backend
       env:
         APP_ENV: test
         DATABASE_URL: 'mysql://user:verysecret@localhost:3306/beachist?serverVersion=5.7'
