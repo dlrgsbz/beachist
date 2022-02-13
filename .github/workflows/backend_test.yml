@@ -1,0 +1,38 @@
+name: backend_test
+
+on:
+  pull_request:
+
+jobs:
+  test:
+    needs: determine_changes
+    runs-on: ubuntu-latest
+    
+    services:
+      mariadb:
+        image: mariadb
+        env:
+          MYSQL_USER: user
+          MYSQL_PASSWORD: verysecret
+          MYSQL_DATABASE: beachist
+        options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
+
+    steps:
+      - uses: actions/checkout@v2
+      
+    - name: composer install
+      uses: php-actions/composer@v6
+      with:
+        php_version: 7.4
+        version: 1
+        working_dir: backend
+        dev: yes
+      env:
+        APP_ENV: test
+     
+    - name: Tests
+      working-directory: backend
+      run: ./bin/phpunit
+      env:
+        APP_ENV: test
+        DATABASE_URL: 'mysql://user:verysecret@mariadb:3306/beachist?serverVersion=5.7'
