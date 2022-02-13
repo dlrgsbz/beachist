@@ -6,15 +6,19 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    
+
     services:
       mariadb:
         image: mariadb
         env:
-          MYSQL_USER: user
-          MYSQL_PASSWORD: verysecret
-          MYSQL_DATABASE: beachist
+          MARIADB_USER: user
+          MARIADB_PASSWORD: verysecret
+          MARIADB_DATABASE: beachist
+          # we don't care about the root password so we'll just use a random one
+          MARIADB_RANDOM_ROOT_PASSWORD: 'yes'
         options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
+        ports:
+        - 3306:3306
 
     steps:
     - uses: actions/checkout@v2
@@ -28,10 +32,17 @@ jobs:
         dev: yes
       env:
         APP_ENV: test
-     
-    - name: Tests
+        
+    - name: Run migrations
+      run: php bin/console doctrine:migrations:migrate -e test -n
       working-directory: backend
-      run: ./bin/phpunit
       env:
         APP_ENV: test
-        DATABASE_URL: 'mysql://user:verysecret@mariadb:3306/beachist?serverVersion=5.7'
+        DATABASE_URL: 'mysql://user:verysecret@127.0.0.1:3306/beachist?serverVersion=5.7'
+
+    - name: Tests
+      run: ./bin/phpunit
+      working-directory: backend
+      env:
+        APP_ENV: test
+        DATABASE_URL: 'mysql://user:verysecret@127.0.0.1:3306/beachist?serverVersion=5.7'
