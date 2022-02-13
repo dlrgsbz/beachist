@@ -11,9 +11,11 @@ jobs:
       mariadb:
         image: mariadb
         env:
-          MYSQL_USER: user
-          MYSQL_PASSWORD: verysecret
-          MYSQL_DATABASE: beachist
+          MARIADB_USER: user
+          MARIADB_PASSWORD: verysecret
+          MARIADB_DATABASE: beachist
+          # we don't care about the root password so we'll just use a random one
+          MARIADB_RANDOM_ROOT_PASSWORD: 'yes'
         options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
 
     steps:
