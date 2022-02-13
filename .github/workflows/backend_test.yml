@@ -34,7 +34,7 @@ jobs:
         APP_ENV: test
         
     - name: Run migrations
-      run: php bin/console doctrine:migrations:migrate -e test
+      run: php bin/console doctrine:migrations:migrate -e test -n
       working-directory: backend
       env:
         APP_ENV: test
