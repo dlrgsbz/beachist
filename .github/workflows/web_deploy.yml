@@ -1,4 +1,7 @@
-name: web
+name: web_deploy
+
+concurrency: 
+  group: ${{ github.workflow }}
 
 on:
   push:
