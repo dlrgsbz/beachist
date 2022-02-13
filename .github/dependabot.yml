@@ -1,0 +1,20 @@
+updates:
+- directory: '/admin'
+  package-ecosystem: 'npm'
+  schedule:
+    interval: 'daily'
+
+- directory: '/backend'
+  package-ecosystem: 'composer'
+  schedule:
+    interval: 'daily'
+    
+- directory: '/android'
+  package-ecosystem: 'gradle'
+  schedule:
+    interval: 'daily'
+
+- directory: '/'
+  package-ecosystem: 'github-actions'
+  schedule:
+    interval: 'daily'
