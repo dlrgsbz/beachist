@@ -17,7 +17,9 @@ data class ShadowState(
 
 data class ShadowData(
     val connected: Boolean? = null,
-    val stationId: String? = null
+    val stationId: String? = null,
+    val appVersion: String? = null,
+    val appVersionCode: Long? = null
 )
 
 fun ShadowData.toJson(desired: JsonObject? = null, gson: Gson): String {
@@ -25,7 +27,9 @@ fun ShadowData.toJson(desired: JsonObject? = null, gson: Gson): String {
         state = ShadowState(
             reported = ShadowData(
                 connected = connected,
-                stationId = stationId
+                stationId = stationId,
+                appVersion = appVersion,
+                appVersionCode = appVersionCode
             )
         )
     )

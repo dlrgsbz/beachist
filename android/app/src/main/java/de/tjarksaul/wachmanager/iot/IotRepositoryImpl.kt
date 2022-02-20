@@ -4,13 +4,15 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import com.google.gson.Gson
 import de.tjarksaul.wachmanager.iotClient.*
+import de.tjarksaul.wachmanager.modules.shared.AppVersionRepository
 import kotlinx.coroutines.*
 import timber.log.Timber
 import kotlin.coroutines.CoroutineContext
 
 class IotRepositoryImpl(
     private val gson: Gson,
-    private val iotClient: IotClient
+    private val iotClient: IotClient,
+    private val versionRepo: AppVersionRepository
 ) : IotRepository,
     // todo: move this somewhere
     CoroutineScope {
@@ -42,7 +44,11 @@ class IotRepositoryImpl(
             Timber.tag("IotRepository").i("updating shadow")
             iotClient.publish(
                 "\$aws/things/${config.clientId}/shadow/update",
-                ShadowData(connected = true).toJson(gson = gson)
+                ShadowData(
+                    connected = true,
+                    appVersion = versionRepo.getAppVersionName(),
+                    appVersionCode = versionRepo.getAppVersionCode()
+                ).toJson(gson = gson)
             )
             iotClient.subscribe(
                 "stations/${config.clientId}/irgendwas",

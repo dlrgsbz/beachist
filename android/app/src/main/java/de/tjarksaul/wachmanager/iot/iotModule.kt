@@ -7,7 +7,8 @@ val iotModule = module {
     single {
         IotRepositoryImpl(
             gson = Gson(),
-            iotClient =  get()
+            iotClient =  get(),
+            versionRepo = get()
         )
     }  bind IotRepository::class
 }

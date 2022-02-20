@@ -25,6 +25,7 @@ val apiKoinModule = module {
             .connectTimeout(15, TimeUnit.SECONDS)
             .readTimeout(15, TimeUnit.SECONDS)
             .writeTimeout(15, TimeUnit.SECONDS)
+            // todo: remove this header interceptor to save on version stuff
             .addInterceptor { chain ->
                 val request: Request = chain.request().newBuilder()
                     .addHeader("X-Wachmanager-Version", BuildConfig.VERSION_NAME).build()
