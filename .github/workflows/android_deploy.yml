@@ -47,7 +47,10 @@ jobs:
         run: |
           echo -e "backendUrl=\"$backendUrl\"\ndatabaseName=\"$databaseName\"" > ./project_resources/config.properties \
             && echo $CLIENT_KEYSTORE_BASE_64 | base64 -d > project_resources/release.keystore \
-            && bash ./setup_keystore.sh
+            && bash ./setup_keystore.sh \
+            && cat <<< $(jq '.client[0].client_info.android_client_info.package_name="${{ secrets.APP_APPLICATION_ID }}"' app/google-services.json) > app/google-services.json \
+            && sed -i 's/applicationId.*/applicationId "${{ secrets.APP_APPLICATION_ID }}"/' app/build.gradle \
+            && sed -i 's:<string name="app_name">.*</string>:<string name="app_name">${{ secrets.APP_APP_NAME }}</string>:' app/src/main/res/values/strings.xml
 
       - name: Assemble release build
         working-directory: android
