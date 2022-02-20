@@ -1,11 +1,28 @@
 name: android_deploy
 
 on:
-  workflow_call:
-  workflow_dispatch:
+  push:
+    branches: [ main ]
 
 jobs:
+  determine_changes:
+    runs-on: ubuntu-latest
+    outputs:
+      changes: ${{ steps.changes.outputs.android }}
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+      - uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          base: 'main'
+          filters: |
+            android:
+              - 'android/**'
+
   build_and_sign:
+    needs: determine_changes
+    if: needs.determine_changes.outputs.changes == 'true'
     strategy:
       matrix:
         env: ['STAGING', 'PROD']
