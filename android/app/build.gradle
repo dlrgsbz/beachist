@@ -27,6 +27,8 @@ android {
     }
 
     buildTypes {
+        // todo: https://github.com/jlleitschuh/ktlint-gradle#how-to-use
+        // todo: https://github.com/detekt/detekt
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -41,6 +43,10 @@ android {
             buildConfigField("String", "BACKEND_URL", props.getProperty("backendUrl"))
             buildConfigField("String", "DATABASE_NAME", props.getProperty("databaseName"))
             buildConfigField("String", "SHARED_PREFS_NAME", '"WachmanagerSettings"')
+            buildConfigField("String", "AWS_ACCESS_KEY", props.getProperty("awsAccessKey"))
+            buildConfigField("String", "AWS_SECRET_KEY", props.getProperty("awsSecretKey"))
+            buildConfigField("String", "AWS_IOT_ENDPOINT", props.getProperty("awsIotEndpoint"))
+            buildConfigField("String", "AWS_IOT_CLIENT_ID", props.getProperty("awsIotClientId"))
         }
     }
     compileOptions {
@@ -90,6 +96,8 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.6.3'
     implementation 'com.squareup.retrofit2:converter-gson:2.6.3'
     implementation 'com.squareup.retrofit2:adapter-rxjava2:2.6.0'
+
+    implementation 'com.amazonaws:aws-android-sdk-iot:2.6.31'
 
     implementation "io.reactivex.rxjava2:rxjava:2.2.10"
     implementation "io.reactivex.rxjava2:rxkotlin:2.3.0"

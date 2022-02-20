@@ -3,6 +3,7 @@
     package="de.tjarksaul.wachmanager">
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <supports-screens
             android:largeScreens="true"
@@ -22,13 +23,23 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".modules.main.MainActivity"
-            android:label="@string/app_name">
+            android:label="@string/app_name"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service
+                android:name=".service.BeachistService"
+                android:enabled="true"
+                android:exported="false">
+<!--            <intent-filter>-->
+<!--                <action android:name="de.tjarksaul.wachmanager.START_SERVICE" />-->
+<!--            </intent-filter>-->
+        </service>
     </application>
 
 </manifest>

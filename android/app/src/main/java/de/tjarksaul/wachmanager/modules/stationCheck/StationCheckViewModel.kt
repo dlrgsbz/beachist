@@ -17,29 +17,16 @@ class StationCheckViewModel(private val state: SavedStateHandle) : ViewModel() {
     ) {
         _entries.value?.let {
             it[id]?.let { field ->
-                val newEntry = if (state) {
-                    Entry(
-                        field.entry?.id,
-                        field.id,
-                        "",
-                        state,
-                        null,
-                        null,
-                        null,
-                        field.entry?.date ?: ""
-                    )
-                } else {
-                    Entry(
-                        field.entry?.id,
-                        field.id,
-                        "",
-                        state,
-                        stateKind,
-                        amount,
-                        note,
-                        field.entry?.date ?: ""
-                    )
-                }
+                val newEntry = Entry(
+                    field.entry?.id,
+                    field.id,
+                    "",
+                    state,
+                    if (state) stateKind else null,
+                    if (state) amount else null,
+                    if (state) note else null,
+                    field.entry?.date ?: ""
+                )
                 it[id] = Field(
                     field.id,
                     field.name,

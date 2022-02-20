@@ -15,14 +15,18 @@ import de.tjarksaul.wachmanager.dtos.Field
 import de.tjarksaul.wachmanager.dtos.IdResponse
 import de.tjarksaul.wachmanager.dtos.StateKind
 import de.tjarksaul.wachmanager.modules.base.BaseFragment
+import org.koin.android.ext.android.inject
+import org.koin.standalone.KoinComponent
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 
-class StationCheckFragment : BaseFragment() {
+class StationCheckFragment : BaseFragment(), KoinComponent {
 
     private val httpRepo = HTTPRepo()
+
+    private val entryRepository: EntryRepository by inject()
 
     private val fieldCallback = object : Callback<MutableList<Field>> {
         override fun onFailure(call: Call<MutableList<Field>>?, t: Throwable?) {
@@ -122,15 +126,14 @@ class StationCheckFragment : BaseFragment() {
                         val stationId = getStoredStationId()
 
                         if (stationId !== null && (state || stateKind !== null)) {
-                            httpRepo.updateEntry(
+                            entryRepository.updateEntry(
                                 id,
                                 stationId,
                                 state,
                                 stateKind,
                                 amount,
                                 note,
-                                getCrew(),
-                                updateCallback
+                                getCrew()
                             )
                         }
 

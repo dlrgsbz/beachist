@@ -1,0 +1,35 @@
+{
+  "name": "beachist-lambdas",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "ncc build src/index.ts -o dist && zip dist/index.js.zip dist/*",
+    "deploy-dev": "npm install && npm run build && npx cdk deploy beachist-dev --require-approval never --exclusively -c stage=dev",
+    "deploy-dev-pipeline": "npm install && npm run build && npx cdk deploy beachist-dev-pipeline --require-approval never -c stage=dev",
+    "lint": "eslint --cache --ext '.js,.ts' ./src/ ./cdk/"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@aws-cdk/aws-codebuild": "^1.144.0",
+    "@aws-cdk/aws-iam": "^1.144.0",
+    "@aws-cdk/aws-iot": "~1.144.0",
+    "@aws-cdk/aws-iot-actions": "^1.144.0",
+    "@aws-cdk/aws-lambda": "~1.144.0",
+    "@aws-cdk/core": "~1.144.0",
+    "@types/node": "^17.0.16",
+    "@typescript-eslint/eslint-plugin": "^5.11.0",
+    "@typescript-eslint/parser": "^5.11.0",
+    "@vercel/ncc": "^0.33.1",
+    "aws-cdk": "~2.12.0",
+    "eslint": "^8.8.0",
+    "ts-node": "^10.5.0",
+    "typescript": "^4.5.5"
+  },
+  "dependencies": {
+    "axios": "^0.25.0",
+    "winston": "^3.6.0",
+    "zod": "^3.11.6"
+  }
+}
