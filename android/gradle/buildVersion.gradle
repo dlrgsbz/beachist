@@ -1,9 +1,9 @@
 static def getBuildVersion() {
-    def version = 1
+    def version = 300000001
     def buildNumber = System.getenv("GITHUB_RUN_NUMBER")
     if (buildNumber != null) {
         buildNumber = buildNumber as int
-        version = buildNumber
+        version = 300000000 + buildNumber
     }
     println("VersionCode: " + version)
     return version
