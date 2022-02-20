@@ -1,6 +1,7 @@
 name: android_deploy
 
 on:
+  workflow_dispatch:
   push:
     branches: [ main ]
 
@@ -21,8 +22,6 @@ jobs:
               - 'android/**'
 
   build_and_sign:
-    needs: determine_changes
-    if: needs.determine_changes.outputs.changes == 'true'
     strategy:
       matrix:
         env: ['STAGING', 'PROD']
