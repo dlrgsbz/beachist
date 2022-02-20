@@ -13,7 +13,7 @@ android {
     buildToolsVersion "29.0.3"
 
     defaultConfig {
-        applicationId "app.beachist.dev.icon3"
+        applicationId "app.beachist.dev.icon4"
         minSdkVersion 24 // 24, weil das Tablet nicht mehr kann. 🙄
         targetSdkVersion 29
         versionCode buildVersion
