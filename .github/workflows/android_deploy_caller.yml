@@ -1,0 +1,25 @@
+name: android deploy caller
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  determine_changes:
+    runs-on: ubuntu-latest
+    outputs:
+      changes: ${{ steps.changes.outputs.android }}
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+      - uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          base: 'main'
+          filters: |
+            android:
+              - 'android/**'
+  dispatch:
+    needs: determine_changes
+    if: needs.determine_changes.outputs.changes == 'true'
+    uses: dlrgsbz/beachist/.github/workflows/android_deploy.yml@main
