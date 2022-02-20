@@ -10,9 +10,9 @@ class AppVersionRepository(context: Context) {
     fun getAppVersionName(): String = packageInfo.versionName
 
     fun getAppVersionCode(): Long = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-        getNewAppVersionCode()
+        getNewAppVersionCode() - 300000000
     } else {
-        getLegacyAppVersionCode()
+        getLegacyAppVersionCode() - 300000000
     }
 
     @Suppress("DEPRECATION")
