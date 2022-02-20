@@ -13,7 +13,7 @@ android {
     buildToolsVersion "29.0.3"
 
     defaultConfig {
-        applicationId "de.tjarksaul.wachmanager"
+        applicationId "app.beachist.dev"
         minSdkVersion 24 // 24, weil das Tablet nicht mehr kann. 🙄
         targetSdkVersion 30
         versionCode buildVersion
