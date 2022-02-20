@@ -15,7 +15,7 @@ android {
     defaultConfig {
         applicationId "app.beachist.dev"
         minSdkVersion 24 // 24, weil das Tablet nicht mehr kann. 🙄
-        targetSdkVersion 30
+        targetSdkVersion 29
         versionCode buildVersion
         versionName "1.4.5"
 
