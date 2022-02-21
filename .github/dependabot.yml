@@ -1,3 +1,4 @@
+version: 2
 updates:
 - directory: '/admin'
   package-ecosystem: 'npm'
