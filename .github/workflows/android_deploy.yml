@@ -22,6 +22,9 @@ jobs:
               - 'android/**'
 
   build_and_sign:
+    needs: determine_changes
+    # run this step either on changes in the repo or if the workflow was manually triggered
+    if: ${{ (needs.determine_changes.outputs.changes == 'true') || (github.event_name == 'workflow_dispatch') }}
     strategy:
       matrix:
         env: ['STAGING', 'PROD']
