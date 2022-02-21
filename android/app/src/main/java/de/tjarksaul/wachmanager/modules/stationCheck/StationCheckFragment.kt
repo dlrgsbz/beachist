@@ -26,7 +26,7 @@ class StationCheckFragment : BaseFragment(), KoinComponent {
 
     private val httpRepo = HTTPRepo()
 
-    private val entryRepository: EntryRepository by inject()
+    private val entryService: EntryService by inject()
 
     private val fieldCallback = object : Callback<MutableList<Field>> {
         override fun onFailure(call: Call<MutableList<Field>>?, t: Throwable?) {
@@ -126,7 +126,7 @@ class StationCheckFragment : BaseFragment(), KoinComponent {
                         val stationId = getStoredStationId()
 
                         if (stationId !== null && (state || stateKind !== null)) {
-                            entryRepository.updateEntry(
+                            entryService.updateEntry(
                                 id,
                                 stationId,
                                 state,

@@ -6,7 +6,7 @@ import de.tjarksaul.wachmanager.dtos.StateKind
 import de.tjarksaul.wachmanager.iotClient.IotClient
 import de.tjarksaul.wachmanager.service.StationNameProvider
 
-class EntryRepository(
+class EntryService(
     private val iotClient: IotClient,
     private val stationNameProvider: StationNameProvider,
     private val gson: Gson
@@ -24,5 +24,4 @@ class EntryRepository(
         val stationName = stationNameProvider.currentStationName()
         iotClient.publish("${stationName}/field/${fieldId}/entry", gson.toJson(entry))
     }
-
 }
