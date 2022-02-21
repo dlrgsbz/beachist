@@ -8,6 +8,7 @@ on:
 jobs:
   determine_changes:
     runs-on: ubuntu-latest
+    if: ${{ (github.event_name == 'push') }}
     outputs:
       changes: ${{ steps.changes.outputs.android }}
     steps:
@@ -24,7 +25,7 @@ jobs:
   build_and_sign:
     needs: determine_changes
     # run this step either on changes in the repo or if the workflow was manually triggered
-    if: ${{ (needs.determine_changes.outputs.changes == 'true') || (github.event_name == 'workflow_dispatch') }}
+    if: ${{ (needs.determine_changes.result == 'skipped') || (needs.determine_changes.outputs.changes == 'true') }}
     strategy:
       matrix:
         env: ['STAGING', 'PROD']
