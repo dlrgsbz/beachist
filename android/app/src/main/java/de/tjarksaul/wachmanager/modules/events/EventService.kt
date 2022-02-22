@@ -1,30 +1,34 @@
-package de.tjarksaul.wachmanager.service
+package de.tjarksaul.wachmanager.modules.events
 
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.Observer
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.plusAssign
 import org.koin.android.ext.android.inject
 import org.koin.standalone.KoinComponent
 import timber.log.Timber
 
-class BeachistService: LifecycleService(), KoinComponent {
-    private val serviceViewModel: ServiceViewModel by inject()
+class EventService: LifecycleService(), KoinComponent {
+    protected val disposables = CompositeDisposable()
+
+    private val eventViewModel: EventViewModel by inject()
 
     private val binder = LocalBinder()
 
-    inner class LocalBinder : Binder() {
-        val service = this@BeachistService
+    inner class LocalBinder: Binder() {
+        val service = this@EventService
     }
 
     init {
-        Timber.tag("BeachistService").d("Init")
+        Timber.tag("EventService").d("Init")
     }
 
     override fun onBind(intent: Intent): IBinder? {
         super.onBind(intent)
-        Timber.tag("BeachistService").d("Bind")
+        Timber.tag("EventService").d("Bind")
         stopForeground(true)
         startService(intent)
 
@@ -44,9 +48,9 @@ class BeachistService: LifecycleService(), KoinComponent {
 
     override fun onCreate() {
         super.onCreate()
-        Timber.tag("BeachistService").d("Create")
+        Timber.tag("EventService").d("Create")
 
-        serviceViewModel.updates.observe(this, Observer {})
+        disposables += eventViewModel.states().subscribe {  }
     }
 
     override fun onUnbind(intent: Intent): Boolean {

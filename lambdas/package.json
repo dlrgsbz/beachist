@@ -28,6 +28,7 @@
     "typescript": "^4.5.5"
   },
   "dependencies": {
+    "@aws-sdk/client-iot-data-plane": "^3.52.0",
     "axios": "^0.25.0",
     "winston": "^3.6.0",
     "zod": "^3.11.6"

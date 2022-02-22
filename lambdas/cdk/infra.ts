@@ -10,6 +10,7 @@ import { IotRepublishMqttAction, LambdaFunctionAction, MqttQualityOfService } fr
 interface LambdaEnvs {
     STAGE: Stage
     BACKEND_URL: string
+    IOT_DATA_ENDPOINT: string
 }
 
 export class InfraStack extends Stack {
@@ -30,30 +31,15 @@ export class InfraStack extends Stack {
         this.lambdaEnvs = {
             STAGE: environmentProps.stage,
             BACKEND_URL: environmentProps.backendUrl,
+            IOT_DATA_ENDPOINT: environmentProps.awsConfig.iotDataEndpoint,
         }
 
         this.createCreateEntryHandler(handlerPrefix, props)
+        this.createCreateEventHandler(handlerPrefix, props)
         this.createLastWillTopic(props)
     }
 
     private createLastWillTopic(props: StackProps) {
-        /*
-{
-    "rule": {
-    "ruleDisabled": false,
-    "sql": "SELECT * FROM 'my/things/myLightBulb/update'",
-    "description": "Turn my/things/ into $aws/things/",
-    "actions": [
-        {
-        "republish": {
-            "topic": "$$aws/things/myLightBulb/shadow/update",
-            "roleArn": "arn:aws:iam:123456789012:role/aws_iot_republish"
-            }
-        }
-     ]
-   }
-}
-        */
         new TopicRule(this, 'update-shadow-last-will-rule', {
             topicRuleName: `beachist${props.stage}UpdateShadowLastWillRule`,
             sql: IotSql.fromStringAsVer20160323(
@@ -66,6 +52,28 @@ export class InfraStack extends Stack {
         })
     }
 
+    private createCreateEventHandler(handlerPrefix: string, props: StackProps) {
+      const createEventHandler = this.lambdaFunction(
+        `${props.prefix}-create-event`,
+        `${handlerPrefix}createEventHandler`,
+        this.lambdaEnvs,
+      )
+
+      addIotPublishToTopicRole(createEventHandler)
+
+      new TopicRule(this, 'create-event-rule', {
+        topicRuleName: `beachist${props.stage}CreateEventRule`,
+        sql: IotSql.fromStringAsVer20160323(
+          `SELECT 
+            id, type, date, 
+            topic(1) AS iotThingName, 
+            get_thing_shadow(topic(1), ${this.getThingShadowRoleArn}).state.desired.stationId AS stationId,
+          FROM '+/event'`,
+        ),
+        actions: [new LambdaFunctionAction(createEventHandler)],
+      })
+    }
+
     private createCreateEntryHandler(handlerPrefix: string, props: StackProps) {
         const createEntryHandler = this.lambdaFunction(
             `${props.prefix}-create-entry`,
@@ -73,7 +81,7 @@ export class InfraStack extends Stack {
             this.lambdaEnvs,
         );
 
-        addIotPublishToTopic(createEntryHandler);
+        addIotPublishToTopicRole(createEntryHandler)
 
         new TopicRule(this, 'create-entry-rule', {
             topicRuleName: `beachist${props.stage}CreateEntryRule`,
@@ -106,7 +114,7 @@ export class InfraStack extends Stack {
     }
 }
 
-function addIotShadowUpdatePermission(f: LambdaFunction) {
+const addIotShadowUpdateRole = (f: LambdaFunction) => {
     f.addToRolePolicy(
         new iam.PolicyStatement({
             actions: ['iot:UpdateThingShadow'],
@@ -116,7 +124,7 @@ function addIotShadowUpdatePermission(f: LambdaFunction) {
     );
 }
 
-function addIotPublishToTopic(f: LambdaFunction) {
+const addIotPublishToTopicRole = (f: LambdaFunction) => {
     f.addToRolePolicy(
         new iam.PolicyStatement({
             actions: ['iot:Publish', 'iot:Connect'],

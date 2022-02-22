@@ -11,6 +11,7 @@ export interface EnvironmentProps {
     backendUrl: string
     awsConfig: {
         region: string
+        iotDataEndpoint: string
     }
 }
 
@@ -26,6 +27,7 @@ const PROD: EnvironmentProps = {
     backendUrl: '***REMOVED***',
     awsConfig: {
         region: 'eu-central-1',
+        iotDataEndpoint: 'https://a3dok2ktu19gf9-ats.iot.eu-central-1.amazonaws.com',
     }
 }
 
@@ -35,6 +37,7 @@ const STAGING: EnvironmentProps = {
     backendUrl: '***REMOVED***',
     awsConfig: {
         region: 'eu-central-1',
+        iotDataEndpoint: 'https://a3dok2ktu19gf9-ats.iot.eu-central-1.amazonaws.com',
     }
 }
 
@@ -44,6 +47,7 @@ const DEV: EnvironmentProps = {
     backendUrl: '***REMOVED***',
     awsConfig: {
         region: 'eu-central-1',
+        iotDataEndpoint: 'https://a3dok2ktu19gf9-ats.iot.eu-central-1.amazonaws.com',
     }
 }
 

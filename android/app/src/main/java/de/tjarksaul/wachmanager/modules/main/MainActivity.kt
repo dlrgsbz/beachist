@@ -13,6 +13,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import de.tjarksaul.wachmanager.R
+import de.tjarksaul.wachmanager.modules.events.EventService
 import de.tjarksaul.wachmanager.modules.splash.SplashFragment
 import de.tjarksaul.wachmanager.service.BeachistService
 import io.reactivex.disposables.CompositeDisposable
@@ -30,8 +31,8 @@ class MainActivity: AppCompatActivity(), ServiceConnection {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val intent = Intent(this, BeachistService::class.java)
-        bindService(intent, this, Service.BIND_AUTO_CREATE)
+        bindService(Intent(this, BeachistService::class.java), this, Service.BIND_AUTO_CREATE)
+        bindService(Intent(this, EventService::class.java), this, Service.BIND_AUTO_CREATE)
 
         setupView()
     }

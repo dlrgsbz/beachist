@@ -40,6 +40,12 @@
 <!--                <action android:name="de.tjarksaul.wachmanager.START_SERVICE" />-->
 <!--            </intent-filter>-->
         </service>
+
+        <service
+                android:name=".modules.events.EventService"
+                android:enabled="true"
+                android:exported="false">
+        </service>
     </application>
 
 </manifest>

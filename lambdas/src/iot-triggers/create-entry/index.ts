@@ -13,7 +13,9 @@ enum StateKind {
 }
 
 // todo: should we do validation in the lambda or just don't care and 
-// todo: leave validation to the backend where it definitely happens
+//  leave validation to the backend where it definitely happens
+//  also: in the frontend we use yup, so maybe only use one library in 
+//  this project?
 const schema = z.object({
     iotThingName: z.string(),
     stationId: z.string().uuid(),
@@ -41,9 +43,8 @@ export const handler = async (event: Partial<CreateEntryInput>, iotClient: IotCl
 
         const result = await axios.post(`${config.BACKEND_URL}station/${stationId}/field/${fieldId}/entry`, rest)
 
-        // todo: publish success to mqtt
-
         const topic = `entry/${iotThingName}/success`
+        iotClient.publish(topic, result.data.id)
         console.log({ result: result.data, iotThingName, stationId, fieldId })
     } catch (err) {
         if (err instanceof Error) {

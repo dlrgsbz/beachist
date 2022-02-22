@@ -1,18 +1,17 @@
 package de.tjarksaul.wachmanager.modules.events
 
+import com.google.gson.Gson
 import org.koin.androidx.viewmodel.ext.koin.viewModel
 import org.koin.dsl.module.module
 
 val eventsKoinModule = module {
-    viewModel(override = true) {
+    viewModel {
         EventViewModel(
-            globalStore = get()
+            get(), get()
         )
     }
 
-    factory(override = true) {
-        CreateEventUsecaseImpl(
-            retrofit = get()
-        ) as CreateEventUseCase
+    factory {
+        EventBackendRepository(get(), get(), Gson())
     }
 }
