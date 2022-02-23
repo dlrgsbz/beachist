@@ -79,11 +79,12 @@ jobs:
           timezone: Europe/Berlin
           
       - name: Upload Android Release to Play Store
+        if: ${{ secrets.STORE_UPLOAD }} == 'true'
         uses: r0adkll/upload-google-play@v1
         with:
-          serviceAccountJsonPlainText: '${{ SECRETS.PLAY_STORE_SERVICE_ACCOUNT_JSON }}'
-          packageName: '${{ SECRETS.PLAY_STORE_PACKAGE_NAME }}'
+          serviceAccountJsonPlainText: '${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}'
+          packageName: '${{ secrets.PLAY_STORE_PACKAGE_NAME }}'
           releaseFiles: './android/app/build/outputs/bundle/release/app-release.aab'
-          track: '${{ SECRETS.PLAY_STORE_TRACK }}'
+          track: '${{ secrets.PLAY_STORE_TRACK }}'
           status: 'draft'
           inAppUpdatePriority: 5
