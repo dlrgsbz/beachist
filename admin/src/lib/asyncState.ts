@@ -59,9 +59,9 @@ export const runWithAsyncState = async <T, E = Error>(
     return success(result);
   } catch (e) {
     runInAction(() => {
-      asyncState.error = e;
+      asyncState.error = e as Error;
       asyncState.status = 'error';
     });
-    return error(e);
+    return error(e as E);
   }
 };
