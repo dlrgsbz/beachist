@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { SquareEmpty, SquareX, SquareCheck } from '../components'
 
 const Legend: React.FC = () => {
   const [isVisible, setVisible] = useState(true)
@@ -17,22 +18,13 @@ const Legend: React.FC = () => {
         <div className="card-body">
           <ul>
             <li>
-              <span role="img" aria-label="Not checked">
-                ⚠️
-              </span>{' '}
-              Diese Station wurde noch nicht überprüft
+              <SquareEmpty /> Diese Station wurde noch nicht überprüft
             </li>
             <li>
-              <span role="img" aria-label="Not okay">
-                🔴
-              </span>{' '}
-              Min. 1 Punkt der Überprüfung ist nicht in Ordnung
+              <SquareX /> Min. 1 Punkt der Überprüfung ist nicht in Ordnung
             </li>
             <li>
-              <span role="img" aria-label="Okay">
-                ✅
-              </span>{' '}
-              Diese Station wurde überprüft und alles ist in Ordnung
+              <SquareCheck /> Diese Station wurde überprüft und alles ist in Ordnung
             </li>
           </ul>
         </div>
