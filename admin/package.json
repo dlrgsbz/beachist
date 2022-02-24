@@ -12,7 +12,7 @@
     "@mui/material": "^5.4.3",
     "axios": "^0.21.4",
     "classnames": "^2.3.1",
-    "i18next": "^19.9.2",
+    "i18next": "^21.6.12",
     "jwt-decode": "^3.1.2",
     "mobx": "^5.15.7",
     "mobx-react-lite": "^2.2.2",
