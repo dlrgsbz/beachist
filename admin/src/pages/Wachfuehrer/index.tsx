@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from 'react'
-import 'react-dates/initialize'
-import 'react-dates/lib/css/_datepicker.css'
+import React, { useEffect } from 'react'
 import { useObserver } from 'mobx-react-lite'
 import moment from 'moment'
-import { SingleDatePicker } from 'react-dates'
+import DatePicker from '@mui/lab/DatePicker'
 import classNames from 'classnames'
 import { useAdminStore } from 'store'
 import Loading from 'components/Loading'
@@ -14,11 +12,9 @@ import SpecialEvents from './views/specialEvents'
 
 import { ReactComponent as CheckedBox } from './img/done.svg'
 import { ReactComponent as EmptyCheckbox } from './img/checkbox.svg'
+import { TextField } from '@mui/material'
 
 const Wachfuehrer: React.FC = () => {
-  const [isFocused, setFocused] = useState(false)
-  const onFocusChange = ({ focused }: { focused: boolean | null }) => setFocused(!!focused)
-
   const adminStore = useAdminStore()
 
   useEffect(() => {
@@ -33,15 +29,12 @@ const Wachfuehrer: React.FC = () => {
       <h1>Wachführer*innen-Dashboard</h1>
       {adminStore.loading && <Loading />}
       <div>
-        <SingleDatePicker
-          id="15de9e5a"
-          date={date}
-          focused={isFocused}
-          onDateChange={onDateChange}
-          onFocusChange={onFocusChange}
-          numberOfMonths={2}
-          showDefaultInputIcon={true}
-          isOutsideRange={date => date.isAfter(moment().endOf('day'))}
+        <DatePicker
+          label="Datum"
+          onChange={onDateChange}
+          maxDate={moment().endOf('day')}
+          value={date}
+          renderInput={(params) => <TextField {...params} />}
         />
         <div className="btn-group-toggle float-sm-right" data-toggle="buttons">
           {

@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 import { Color } from 'interfaces'
+import { SquareCheck, SquareEmpty, SquareX } from './components'
+import { useGeneratedId } from 'lib'
 
 interface WachfuehrerTurmDetailProps {
   title: string
@@ -26,30 +28,33 @@ const Title: React.FC<TitleProps> = ({ title, isVisible, setVisible, color }) =>
         aria-controls="station1"
         onClick={() => setVisible(!isVisible)}
       >
-          <span role="img" aria-label="Not okay">🔴</span> {title}
+          <SquareX /> {title}
       </button>
     )
   }
   if (color === Color.yellow) {
-      return <><span role="img" aria-label="Not checked">⚠️</span> {title}</>
+      return <><SquareEmpty /> {title}</>
   }
-    return <><span role="img" aria-label="Okay">✅</span> {title}</>
+    return <><SquareCheck /> {title}</>
 }
 
-export const WachfuehrerTurmDetail: React.FC<WachfuehrerTurmDetailProps> = ({ title, color, crew,children }) => {
+export const WachfuehrerTurmDetail: React.FC<WachfuehrerTurmDetailProps> = ({ title, color, crew, children }) => {
   const [isVisible, setVisible] = useState(false)
+
+  const id = useGeneratedId('card')
+  const bodyId = useGeneratedId('cardBody')
 
   return (
     <div className="card">
-      <div className="card-header" id="headerStation1" onClick={() => setVisible(!isVisible)}>
+      <div className="card-header" id={id} onClick={() => setVisible(!isVisible)}>
         <h5 className="mb-0">
           <Title title={title} color={color} isVisible={isVisible} setVisible={setVisible} />
         </h5>
       </div>
       <div
-        id="station1"
+        id={bodyId}
         className={'collapse ' + (isVisible ? 'show' : '')}
-        aria-labelledby="headerStation1"
+        aria-labelledby={id}
         data-parent="#accordion"
       >
           <div className="card-body">
@@ -62,3 +67,4 @@ export const WachfuehrerTurmDetail: React.FC<WachfuehrerTurmDetailProps> = ({ ti
     </div>
   )
 }
+

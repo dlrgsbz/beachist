@@ -1,5 +1,5 @@
 import React, { ReactElement, useEffect } from 'react'
-import { Portal } from '@material-ui/core'
+import { Portal } from '@mui/material'
 
 interface ModalProps {
   title: ReactElement
