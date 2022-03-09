@@ -22,7 +22,7 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Checkout the code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup configs
         working-directory: android
@@ -39,7 +39,7 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Checkout the code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup configs
         working-directory: android
