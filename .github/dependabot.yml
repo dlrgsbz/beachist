@@ -5,7 +5,7 @@ updates:
   schedule:
     interval: 'daily'
   # disable dependabot because we're doing the updates ourselves
-  open-pull-request-limit: 0
+  open-pull-requests-limit: 0
 
 - directory: '/backend'
   package-ecosystem: 'composer'
