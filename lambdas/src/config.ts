@@ -1,4 +1,4 @@
-import { requireEnv } from './utils'
+import { requireEnv } from './util'
 
 export interface Config {
     BACKEND_URL: string

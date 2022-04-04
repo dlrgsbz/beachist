@@ -12,16 +12,17 @@ import de.tjarksaul.wachmanager.modules.splash.splashKoinModule
 import de.tjarksaul.wachmanager.modules.station.stationKoinModule
 import de.tjarksaul.wachmanager.modules.stationCheck.stationCheckModule
 import de.tjarksaul.wachmanager.repositories.repositoryKoinModule
-import org.koin.android.ext.android.startKoin
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.startKoin
 import timber.log.Timber
 
 class WachmanagerApplication: Application() {
     override fun onCreate() {
         super.onCreate()
 
-        startKoin(
-            androidContext = this,
-            modules = listOf(
+        startKoin {
+            androidContext(this@WachmanagerApplication.applicationContext)
+            modules(
                 repositoryKoinModule,
                 apiKoinModule,
                 eventsKoinModule,
@@ -34,7 +35,7 @@ class WachmanagerApplication: Application() {
                 sharedModule,
                 appModule
             )
-        )
+        }
 
         Timber.plant(Timber.DebugTree())
     }

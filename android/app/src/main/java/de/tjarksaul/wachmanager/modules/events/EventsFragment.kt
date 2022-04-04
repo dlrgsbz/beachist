@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import de.tjarksaul.wachmanager.GlobalAction
 import de.tjarksaul.wachmanager.R
 import de.tjarksaul.wachmanager.modules.base.BaseFragment
 import io.reactivex.disposables.CompositeDisposable

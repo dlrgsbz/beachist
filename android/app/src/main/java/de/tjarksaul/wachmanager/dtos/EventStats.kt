@@ -1,6 +1,6 @@
 package de.tjarksaul.wachmanager.dtos
 
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 
 @Serializable
 data class EventStats(

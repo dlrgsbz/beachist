@@ -6,7 +6,7 @@ import android.os.IBinder
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.Observer
 import org.koin.android.ext.android.inject
-import org.koin.standalone.KoinComponent
+import org.koin.core.component.KoinComponent
 import timber.log.Timber
 
 class BeachistService: LifecycleService(), KoinComponent {

@@ -1,7 +1,7 @@
 package de.tjarksaul.wachmanager.iotClient
 
 import com.google.gson.Gson
-import org.koin.dsl.module.module
+import org.koin.dsl.module
 
 val iotClientModule = module {
     single {

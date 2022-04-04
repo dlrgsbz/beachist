@@ -1,8 +1,8 @@
 package de.tjarksaul.wachmanager.modules.events
 
 import com.google.gson.Gson
-import org.koin.androidx.viewmodel.ext.koin.viewModel
-import org.koin.dsl.module.module
+import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.dsl.module
 
 val eventsKoinModule = module {
     viewModel {

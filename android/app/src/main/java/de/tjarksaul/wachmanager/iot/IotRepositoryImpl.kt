@@ -40,7 +40,10 @@ class IotRepositoryImpl(
         iotClient.connect(config)
 
         launch(coroutineContext) {
-            delay(3 * 1_000)
+            while (iotClient.peekConnectionState() == null || iotClient.peekConnectionState() != IotConnectionState.Connected) {
+                Timber.tag("IotRepository").d("waiting for connection....")
+                delay(3 * 1_000)
+            }
             Timber.tag("IotRepository").i("updating shadow")
             iotClient.publish(
                 "\$aws/things/${config.clientId}/shadow/update",

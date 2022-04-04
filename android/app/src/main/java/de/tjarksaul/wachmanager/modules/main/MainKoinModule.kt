@@ -1,10 +1,10 @@
 package de.tjarksaul.wachmanager.modules.main
 
-import org.koin.androidx.viewmodel.ext.koin.viewModel
-import org.koin.dsl.module.module
+import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.dsl.module
 
 val mainKoinModule = module {
-    viewModel(override = true) {
+    viewModel {
         MainViewModel(
             stationRepository = get()
         )

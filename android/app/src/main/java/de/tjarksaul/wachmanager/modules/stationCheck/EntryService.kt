@@ -13,14 +13,12 @@ class EntryService(
 ) {
     fun updateEntry(
         fieldId: String,
-        stationId: String,
         state: Boolean,
         stateKind: StateKind?,
         amount: Int?,
-        note: String?,
-        crew: String
+        note: String?
     ) {
-        val entry = PostEntry(state, stateKind, amount, note, crew)
+        val entry = PostEntry(state, stateKind, amount, note)
         val stationName = stationNameProvider.currentStationName()
         iotClient.publish("${stationName}/field/${fieldId}/entry", gson.toJson(entry))
     }

@@ -24,7 +24,7 @@ const schema = z.object({
     stateKind: z.nativeEnum(StateKind).optional(),
     amount: z.number().int().min(0).optional(),
     note: z.string().optional(),
-    crew: z.string(),
+    crew: z.string().optional(),
 })
 
 type CreateEntryInput = z.infer<typeof schema>

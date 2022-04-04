@@ -34,6 +34,7 @@ export class InfraStack extends Stack {
             IOT_DATA_ENDPOINT: environmentProps.awsConfig.iotDataEndpoint,
         }
 
+        this.createGetFieldsHandler(handlerPrefix, props)
         this.createCreateEntryHandler(handlerPrefix, props)
         this.createCreateEventHandler(handlerPrefix, props)
         this.createLastWillTopic(props)
@@ -50,6 +51,27 @@ export class InfraStack extends Stack {
                 { qualityOfService: MqttQualityOfService.AT_LEAST_ONCE }
             )]
         })
+    }
+
+    private createGetFieldsHandler(handlerPrefix: string, props: StackProps) {
+      const getFieldsHandler = this.lambdaFunction(
+        `${props.prefix}-get-fields`,
+        `${handlerPrefix}getFieldsHandler`,
+        this.lambdaEnvs,
+      )
+
+      addIotPublishToTopicRole(getFieldsHandler)
+
+      new TopicRule(this, 'get-fields-rule', {
+        topicRuleName: `beachist${props.stage}GetFieldsRule`,
+        sql: IotSql.fromStringAsVer20160323(
+          `SELECT
+            topic(1) as iotThingName,
+            get_thing_shadow(topic(1), ${this.getThingShadowRoleArn}).state.desired.stationId AS stationId,
+          FROM '+/field/get'`,
+          ),
+          actions: [new LambdaFunctionAction(getFieldsHandler)],
+      })
     }
 
     private createCreateEventHandler(handlerPrefix: string, props: StackProps) {

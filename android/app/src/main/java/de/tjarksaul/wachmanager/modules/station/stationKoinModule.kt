@@ -1,9 +1,9 @@
 package de.tjarksaul.wachmanager.modules.station
 
-import org.koin.dsl.module.module
+import org.koin.dsl.module
 
 val stationKoinModule = module {
-    factory(override = true) {
+    factory {
         GetStationsUseCaseImpl(
             retrofit = get()
         ) as GetStationsUseCase
