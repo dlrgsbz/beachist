@@ -8,6 +8,7 @@ export enum Stage {
 
 export interface EnvironmentProps {
     stage: Stage
+    logLevel: 'debug' | 'info' | 'warn' | 'error'
     backendUrl: string
     awsConfig: {
         region: string
@@ -23,6 +24,7 @@ export const Timeouts = {
 
 const PROD: EnvironmentProps = {
     stage: Stage.PROD,
+    logLevel: 'info',
     // todo: move this to env
     backendUrl: '***REMOVED***',
     awsConfig: {
@@ -33,6 +35,7 @@ const PROD: EnvironmentProps = {
 
 const STAGING: EnvironmentProps = {
     stage: Stage.STAGING,
+    logLevel: 'info',
     // todo: move this to env
     backendUrl: '***REMOVED***',
     awsConfig: {
@@ -43,6 +46,7 @@ const STAGING: EnvironmentProps = {
 
 const DEV: EnvironmentProps = {
     stage: Stage.DEV,
+    logLevel: 'debug',
     // todo: move this to env
     backendUrl: '***REMOVED***',
     awsConfig: {

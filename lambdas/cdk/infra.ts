@@ -11,6 +11,7 @@ interface LambdaEnvs {
     STAGE: Stage
     BACKEND_URL: string
     IOT_DATA_ENDPOINT: string
+    LOG_LEVEL: 'debug' | 'info' | 'warn' | 'error'
 }
 
 export class InfraStack extends Stack {
@@ -32,6 +33,7 @@ export class InfraStack extends Stack {
             STAGE: environmentProps.stage,
             BACKEND_URL: environmentProps.backendUrl,
             IOT_DATA_ENDPOINT: environmentProps.awsConfig.iotDataEndpoint,
+            LOG_LEVEL: environmentProps.logLevel,
         }
 
         this.createGetFieldsHandler(handlerPrefix, props)
