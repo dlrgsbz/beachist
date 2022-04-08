@@ -1,10 +1,10 @@
 #!/usr/bin/env node
-import * as cdk from '@aws-cdk/core';
+import { App } from 'aws-cdk-lib';
 import { Stage } from './config';
 import { InfraStack } from './infra';
 import { CodebuildStack } from './pipeline';
 
-const app = new cdk.App();
+const app = new App();
 
 export interface StackProps {
     readonly serviceName: string

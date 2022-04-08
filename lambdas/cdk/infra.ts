@@ -1,11 +1,13 @@
 import * as path from 'path'
-import { Construct, Stack } from "@aws-cdk/core"
-import { IotSql, TopicRule } from '@aws-cdk/aws-iot'
-import { Code, Runtime, Function as LambdaFunction } from '@aws-cdk/aws-lambda'
 import { StackProps } from "./cdk"
-import * as iam from '@aws-cdk/aws-iam';
 import { environmentProps, Stage, Timeouts } from './config'
-import { IotRepublishMqttAction, LambdaFunctionAction, MqttQualityOfService } from '@aws-cdk/aws-iot-actions';
+import { Stack } from 'aws-cdk-lib'
+import { Construct } from 'constructs'
+import { Code, Runtime } from 'aws-cdk-lib/aws-lambda'
+import { IotSql, TopicRule } from '@aws-cdk/aws-iot-alpha'
+import { IotRepublishMqttAction, LambdaFunctionAction, MqttQualityOfService } from '@aws-cdk/aws-iot-actions-alpha'
+import { Function as LambdaFunction } from 'aws-cdk-lib/aws-lambda'
+import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam'
 
 interface LambdaEnvs {
     STAGE: Stage
@@ -140,20 +142,20 @@ export class InfraStack extends Stack {
 
 const addIotShadowUpdateRole = (f: LambdaFunction) => {
     f.addToRolePolicy(
-        new iam.PolicyStatement({
+        new PolicyStatement({
             actions: ['iot:UpdateThingShadow'],
             resources: ['*'],
-            effect: iam.Effect.ALLOW,
+            effect: Effect.ALLOW,
         }),
     );
 }
 
 const addIotPublishToTopicRole = (f: LambdaFunction) => {
     f.addToRolePolicy(
-        new iam.PolicyStatement({
+        new PolicyStatement({
             actions: ['iot:Publish', 'iot:Connect'],
             resources: ['*'],
-            effect: iam.Effect.ALLOW,
+            effect: Effect.ALLOW,
         }),
     );
 }
