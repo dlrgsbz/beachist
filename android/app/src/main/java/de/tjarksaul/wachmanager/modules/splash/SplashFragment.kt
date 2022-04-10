@@ -8,11 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.AdapterView
-import android.widget.AdapterView.OnItemSelectedListener
-import android.widget.ArrayAdapter
 import de.tjarksaul.wachmanager.R
-import de.tjarksaul.wachmanager.dtos.Station
 import de.tjarksaul.wachmanager.modules.base.BaseFragment
 import de.tjarksaul.wachmanager.modules.main.MainActivity
 import de.tjarksaul.wachmanager.util.TextChangeListener
@@ -21,7 +17,6 @@ import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_splash.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.util.*
 
 
 class SplashFragment : BaseFragment() {
@@ -73,42 +68,16 @@ class SplashFragment : BaseFragment() {
     private fun setupBindings() {
         splashViewModel.attach(actions)
 
-        disposable += splashViewModel.stateOf { stations }
+        disposable += splashViewModel.stateOf { stationId }
             .subscribe {
-                ArrayAdapter(
-                    requireContext(),
-                    android.R.layout.simple_spinner_item,
-                    it
-                ).also { adapter ->
-                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                    spinnerStationName.adapter = adapter
-                }
-            }
-
-        disposable += splashViewModel.stateOf { selectedStation }
-            .subscribe { index ->
-                spinnerStationName?.setSelection(index)
+                val stationString = resources.getString(R.string.station_name, it)
+                textStationName.text = stationString
             }
 
         disposable += splashViewModel.stateOf { currentDate }
             .subscribe {
                 dateTextView.text = it
             }
-
-        spinnerStationName.onItemSelectedListener = object : OnItemSelectedListener {
-            override fun onItemSelected(
-                parentView: AdapterView<*>?,
-                selectedItemView: View,
-                position: Int,
-                id: Long
-            ) {
-                actions.onNext(SplashViewAction.SelectStation(position))
-            }
-
-            override fun onNothingSelected(parentView: AdapterView<*>?) {
-                actions.onNext(SplashViewAction.SelectStation(0))
-            }
-        }
 
         editCrewName.addTextChangedListener(object : TextChangeListener() {
             override fun onTextChanged(s: Editable?) {
@@ -133,18 +102,4 @@ class SplashFragment : BaseFragment() {
 
         activity.goToStationView()
     }
-
-    private fun setStationAndCrewNames() {
-        val crewNames = editCrewName.text.toString()
-        val station = spinnerStationName.selectedItem as Station
-        val stationName = station.name
-        val stationId = station.id
-
-        saveVal("stationId", stationId)
-        saveVal("stationName", stationName)
-        saveVal("crewNames", crewNames)
-
-        saveIntVal("lastStationSelectedDate", Date().time)
-    }
-
 }

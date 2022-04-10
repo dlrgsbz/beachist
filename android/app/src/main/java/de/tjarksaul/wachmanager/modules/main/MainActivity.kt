@@ -14,6 +14,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import de.tjarksaul.wachmanager.R
 import de.tjarksaul.wachmanager.modules.events.EventService
+import de.tjarksaul.wachmanager.modules.provision.ui.login.ProvisionFragment
 import de.tjarksaul.wachmanager.modules.splash.SplashFragment
 import de.tjarksaul.wachmanager.service.BeachistService
 import io.reactivex.disposables.CompositeDisposable
@@ -25,6 +26,7 @@ class MainActivity: AppCompatActivity(), ServiceConnection {
 
     private val viewModel: MainViewModel by viewModel()
     private var splashFragment: SplashFragment? = null
+    private var provisionFragment: ProvisionFragment? = null
     private val disposable = CompositeDisposable()
     private val actions: PublishSubject<MainViewAction> = PublishSubject.create()
 
@@ -64,32 +66,51 @@ class MainActivity: AppCompatActivity(), ServiceConnection {
     private fun setupBindings() {
         viewModel.attach(actions)
 
-        disposable += viewModel.stateOf { shouldShowStationSelection }
-            .subscribe { setupSplashView(it) }
+        disposable += viewModel.stateOf { currentView }
+            .subscribe { onViewChange(it) }
     }
 
-    private fun setupSplashView(shouldShow: Boolean) {
-        if (!shouldShow) {
-            return
+    private fun onViewChange(view: MainViewCurrentView) {
+        when (view) {
+            MainViewCurrentView.CrewInput -> setupSplashView()
+            MainViewCurrentView.Provision -> setupProvisioningView()
+            MainViewCurrentView.TabbedView -> goToStationView()
         }
+    }
 
-        splashFragment = SplashFragment()
+    private fun setupSplashView() {
+        val fragment = SplashFragment()
 
         supportFragmentManager.beginTransaction()
-            .add(android.R.id.content, splashFragment!!)
+            .add(android.R.id.content, fragment)
             .commit()
+
+        splashFragment = fragment
+    }
+
+    private fun setupProvisioningView() {
+        val fragment = ProvisionFragment()
+
+        supportFragmentManager.beginTransaction()
+            .add(android.R.id.content, fragment)
+            .commit()
+
+        provisionFragment = fragment
     }
 
     fun goToStationView() {
-        if (splashFragment == null) {
-            throw IllegalStateException("splashFragment is null")
-        }
+        val fragment = when {
+            provisionFragment != null -> provisionFragment
+            splashFragment != null -> splashFragment
+            else -> null
+        } ?: return
 
         supportFragmentManager.beginTransaction()
-            .remove(splashFragment!!)
+            .remove(fragment)
             .commit()
 
         splashFragment = null
+        provisionFragment = null
     }
 
     override fun onBackPressed() {

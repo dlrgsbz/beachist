@@ -7,25 +7,34 @@ import androidx.lifecycle.Transformations
 import com.amazonaws.regions.Regions
 import de.tjarksaul.wachmanager.BuildConfig
 import de.tjarksaul.wachmanager.iotClient.IotConfig
+import de.tjarksaul.wachmanager.modules.auth.AuthRepository
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.plusAssign
 
 class ServiceViewModel(
-    private val iotRepository: IotRepository
+    private val iotRepository: IotRepository,
+    authRepository: AuthRepository,
     ) {
+    private val disposable = CompositeDisposable()
     private val generator = MutableLiveData<Unit>()
 
-    private fun something() {}
-
     init {
-        generator.value = something()
+        disposable += authRepository.getState()
+            .subscribe { state ->
+                val certificate = state.certificate ?: return@subscribe iotRepository.disconnect()
+
+                val config = IotConfig(
+                    iotEndpoint = certificate.dataEndpoint,
+                    clientId = certificate.thingName,
+                    certificateId = certificate.certificateId,
+                    region = Regions.EU_CENTRAL_1,
+                    certificatePem = certificate.certificatePem,
+                    privateKey = certificate.privateKey,
+                )
+
+                iotRepository.connect(config)
+            }
     }
 
-    val updates: LiveData<Unit> = Transformations.map(generator) {
-        val config = IotConfig(
-            iotEndpoint = BuildConfig.AWS_IOT_ENDPOINT,
-            clientId = BuildConfig.AWS_IOT_CLIENT_ID,
-            region = Regions.EU_CENTRAL_1
-        )
-
-        iotRepository.connect(config)
-    }
+    val updates: LiveData<Unit> = generator
 }

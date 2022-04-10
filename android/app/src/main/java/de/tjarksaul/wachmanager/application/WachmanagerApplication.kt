@@ -5,8 +5,10 @@ import de.tjarksaul.wachmanager.api.apiKoinModule
 import de.tjarksaul.wachmanager.appModule
 import de.tjarksaul.wachmanager.iot.iotModule
 import de.tjarksaul.wachmanager.iotClient.iotClientModule
+import de.tjarksaul.wachmanager.modules.auth.authModule
 import de.tjarksaul.wachmanager.modules.events.eventsKoinModule
 import de.tjarksaul.wachmanager.modules.main.mainKoinModule
+import de.tjarksaul.wachmanager.modules.provision.provisionModule
 import de.tjarksaul.wachmanager.modules.shared.sharedModule
 import de.tjarksaul.wachmanager.modules.splash.splashKoinModule
 import de.tjarksaul.wachmanager.modules.station.stationKoinModule
@@ -33,7 +35,9 @@ class WachmanagerApplication: Application() {
                 iotClientModule,
                 iotModule,
                 sharedModule,
-                appModule
+                provisionModule,
+                authModule,
+                appModule,
             )
         }
 

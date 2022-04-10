@@ -7,7 +7,7 @@ val splashKoinModule = module {
     viewModel {
         SplashViewModel(
             stationRepository = get(),
-            getStationsUseCase = get()
+            authRepository = get(),
         )
     }
 }

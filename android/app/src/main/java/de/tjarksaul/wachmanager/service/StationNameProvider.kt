@@ -1,9 +1,20 @@
 package de.tjarksaul.wachmanager.service
 
-import de.tjarksaul.wachmanager.BuildConfig
+import de.tjarksaul.wachmanager.modules.auth.AuthRepository
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.plusAssign
 
-class StationNameProvider {
-    fun currentStationName(): String? {
-        return BuildConfig.AWS_IOT_CLIENT_ID
+class StationNameProvider(
+    private val authRepository: AuthRepository
+) {
+    private val disposable = CompositeDisposable()
+
+    private var stationName: String? = null
+
+    init {
+        disposable += authRepository.getState()
+            .subscribe { stationName = it?.certificate?.thingName }
     }
+
+    fun currentStationName(): String? = stationName
 }

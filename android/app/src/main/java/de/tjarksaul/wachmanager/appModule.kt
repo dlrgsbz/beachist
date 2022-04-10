@@ -5,6 +5,6 @@ import de.tjarksaul.wachmanager.service.StationNameProvider
 import org.koin.dsl.module
 
 val appModule = module {
-    factory { ServiceViewModel(get()) }
-    factory { StationNameProvider() }
+    factory { ServiceViewModel(get(), get()) }
+    factory { StationNameProvider(get()) }
 }

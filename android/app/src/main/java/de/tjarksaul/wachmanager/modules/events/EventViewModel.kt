@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit
 
 internal class EventViewModel(
     private val eventRepository: EventRepository,
-    private val eventBackendRepository: EventBackendRepository
+    private val eventBackendRepository: EventBackendRepository,
 ) : BaseViewModel<EventListAction, EventListState, EventListEffect>(emptyState) {
     override fun handleActions() {
         disposables += actions.ofType<EventListAction.AddEventClicked>()
@@ -142,5 +142,5 @@ internal data class EventListState(
     val eventItems: List<Event> = listOf(),
     val currentEvent: Event? = null,
     val canAdd: Boolean = true,
-    val cancelled: Boolean = false
+    val cancelled: Boolean = false,
 ) : ViewModelState

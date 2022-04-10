@@ -3,36 +3,34 @@ package de.tjarksaul.wachmanager.iotClient
 import android.annotation.SuppressLint
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.amazonaws.auth.AWSCredentials
-import com.amazonaws.auth.AWSCredentialsProvider
 import com.amazonaws.mobileconnectors.iot.*
-import com.amazonaws.regions.Region
+import com.amazonaws.regions.Regions
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
-import timber.log.Timber
-import com.amazonaws.regions.Regions
-import de.tjarksaul.wachmanager.BuildConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-
-import java.util.*
-
+import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.nio.charset.Charset
+import java.util.*
 
 
 data class IotConfig(
     val iotEndpoint: String,
     val clientId: String,
-    val region: Regions
+    val certificateId: String,
+    val region: Regions,
+    val certificatePem: String,
+    val privateKey: String,
 )
 
 private const val MQTT_CONNECTION_KEEP_ALIVE_TIME_SECONDS = 30
 
-class IotClient(private val gson: Gson) : CoroutineScope {
+class IotClient(private val gson: Gson, private val tempDirectory: String) : CoroutineScope {
     private val LOG_TAG = "IotClient"
 
     private var connection: AWSIotMqttManager? = null
+    // todo: this should be a BehaviorSubject
     private val connectionState: MutableLiveData<IotConnectionState> =
         MutableLiveData(IotConnectionState.Initial)
     private var activeConfig: IotConfig? = null
@@ -67,26 +65,45 @@ class IotClient(private val gson: Gson) : CoroutineScope {
                 connection?.keepAlive = MQTT_CONNECTION_KEEP_ALIVE_TIME_SECONDS
                 connection?.mqttLastWillAndTestament = lastWill(config)
 
-                val credentialsProvider: AWSCredentialsProvider = object : AWSCredentialsProvider {
-                    override fun getCredentials(): AWSCredentials {
-                        return object : AWSCredentials {
-                            override fun getAWSAccessKeyId(): String {
-                                return BuildConfig.AWS_ACCESS_KEY
-                            }
-
-                            override fun getAWSSecretKey(): String {
-                                return BuildConfig.AWS_SECRET_KEY
-                            }
-                        }
-                    }
-
-                    override fun refresh() {
-                        // this does nothing #hardcodedcredentials
-                    }
+                val keystoreName = "keystore"
+                val keystorePassword = "verysecret"
+                if (!AWSIotKeystoreHelper.isKeystorePresent(tempDirectory, keystoreName)) {
+                    AWSIotKeystoreHelper.saveCertificateAndPrivateKey(
+                        config.certificateId,
+                        config.certificatePem,
+                        config.privateKey,
+                        tempDirectory,
+                        keystoreName,
+                        keystorePassword,
+                    )
                 }
 
+                if (!AWSIotKeystoreHelper.keystoreContainsAlias(
+                        config.certificateId,
+                        tempDirectory,
+                        keystoreName,
+                        keystorePassword,
+                    )
+                ) {
+                    AWSIotKeystoreHelper.saveCertificateAndPrivateKey(
+                        config.certificateId,
+                        config.certificatePem,
+                        config.privateKey,
+                        tempDirectory,
+                        keystoreName,
+                        keystorePassword,
+                    )
+                }
+
+                val keystore = AWSIotKeystoreHelper.getIotKeystore(
+                    config.certificateId,
+                    tempDirectory,
+                    keystoreName,
+                    keystorePassword
+                )
+
                 // todo: retry this?
-                connection?.connect(credentialsProvider, connectionCallback)
+                connection?.connect(keystore, connectionCallback)
             }
         }
     }
@@ -137,7 +154,7 @@ class IotClient(private val gson: Gson) : CoroutineScope {
     fun subscribe(
         topic: String,
         statusCallback: IotClientAction<MqttSubscriptionStatus>,
-        action: IotClientAction<String>
+        action: IotClientAction<String>,
     ) {
         launch {
             runCatching {
@@ -169,7 +186,7 @@ class IotClient(private val gson: Gson) : CoroutineScope {
     @Synchronized
     fun unsubscribe(
         topic: String,
-        statusCallback: IotClientAction<MqttSubscriptionStatus>
+        statusCallback: IotClientAction<MqttSubscriptionStatus>,
     ) {
         launch {
             runCatching {

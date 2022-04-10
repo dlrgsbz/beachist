@@ -6,7 +6,8 @@ import org.koin.dsl.module
 val mainKoinModule = module {
     viewModel {
         MainViewModel(
-            stationRepository = get()
+            stationRepository = get(),
+            authRepository = get(),
         )
     }
 }

@@ -42,7 +42,7 @@ class IotRepositoryImpl(
         launch(coroutineContext) {
             while (iotClient.peekConnectionState() == null || iotClient.peekConnectionState() != IotConnectionState.Connected) {
                 Timber.tag("IotRepository").d("waiting for connection....")
-                delay(3 * 1_000)
+                delay(3 * 1_000L)
             }
             Timber.tag("IotRepository").i("updating shadow")
             iotClient.publish(
@@ -50,13 +50,9 @@ class IotRepositoryImpl(
                 ShadowData(
                     connected = true,
                     appVersion = versionRepo.getAppVersionName(),
-                    appVersionCode = versionRepo.getAppVersionCode()
+                    appVersionCode = versionRepo.getAppVersionCode(),
                 ).toJson(gson = gson)
             )
-            iotClient.subscribe(
-                "stations/${config.clientId}/irgendwas",
-                { status -> Timber.tag("TestSubscription").d("Subscription: $status") },
-                { data -> Timber.tag("TestSubscription").d("got message: $data") })
         }
     }
 

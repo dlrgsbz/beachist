@@ -1,6 +1,8 @@
 package de.tjarksaul.wachmanager.modules.main
 
 import android.text.format.DateUtils
+import de.tjarksaul.wachmanager.modules.auth.AuthRepository
+import de.tjarksaul.wachmanager.modules.auth.State
 import de.tjarksaul.wachmanager.modules.base.BaseViewModel
 import de.tjarksaul.wachmanager.modules.base.ViewModelAction
 import de.tjarksaul.wachmanager.modules.base.ViewModelEffect
@@ -12,7 +14,8 @@ import io.reactivex.rxkotlin.plusAssign
 import java.util.concurrent.TimeUnit
 
 internal class MainViewModel(
-    val stationRepository: StationRepository
+    private val stationRepository: StationRepository,
+    private val authRepository: AuthRepository,
 ) : BaseViewModel<MainViewAction, MainViewState, MainViewEffect>(
     emptyState
 ) {
@@ -22,19 +25,47 @@ internal class MainViewModel(
 
         disposables += actions.ofType<MainViewAction.CheckStationSelection>()
             .subscribe { onCheckStationSelection() }
+
+        disposables += authRepository.getState()
+            .subscribe { onAuthRepositoryState(it) }
+    }
+
+    private fun onAuthRepositoryState(authState: State?) {
+        authState ?: return state.set {
+            copy(currentView = MainViewCurrentView.Provision,
+                shouldShowProvisioning = true)
+        }
+
+        authState.certificate ?: return state.set {
+            copy(currentView = MainViewCurrentView.Provision,
+                shouldShowProvisioning = true)
+        }
+
+        state.set { copy(shouldShowProvisioning = false) }
+
+        actions.onNext(MainViewAction.CheckStationSelection)
     }
 
     private fun onCheckStationSelection() {
         val date = stationRepository.getLastUpdateDate()
 
-        val shouldShowStationSelection = !DateUtils.isToday(date) || stationRepository.getCrew().trim() == ""
+        val shouldShowCrewInput = !DateUtils.isToday(date) || !stationRepository.hasCrew()
 
-        state.set { copy(shouldShowStationSelection = shouldShowStationSelection) }
+        state.get {
+            val shouldShowProvisioning = it.shouldShowProvisioning
+
+            val currentView = when {
+                shouldShowProvisioning -> MainViewCurrentView.Provision
+                shouldShowCrewInput -> MainViewCurrentView.CrewInput
+                else -> MainViewCurrentView.TabbedView
+            }
+
+            state.set { copy(currentView = currentView) }
+        }
     }
 
     companion object {
-        private val emptyState =
-            MainViewState()
+        private val emptyState = MainViewState()
     }
 }
 
@@ -45,5 +76,12 @@ internal sealed class MainViewAction : ViewModelAction {
 internal sealed class MainViewEffect : ViewModelEffect
 
 internal data class MainViewState(
-    val shouldShowStationSelection: Boolean = false
+    val currentView: MainViewCurrentView = MainViewCurrentView.TabbedView,
+    val shouldShowProvisioning: Boolean = true,
 ) : ViewModelState
+
+internal sealed class MainViewCurrentView {
+    object TabbedView : MainViewCurrentView()
+    object CrewInput : MainViewCurrentView()
+    object Provision : MainViewCurrentView()
+}

@@ -37,17 +37,15 @@ android {
 
             // todo: maybe default to ngrok here
             buildConfigField("String", "BACKEND_URL", props.getProperty("backendUrl"))
+            buildConfigField("String", "PROVISIONING_URL", props.getProperty("provisioningUrl"))
             buildConfigField("String", "DATABASE_NAME", props.getProperty("databaseName"))
             buildConfigField("String", "SHARED_PREFS_NAME", '"WachmanagerSettings"')
         }
         debug {
             buildConfigField("String", "BACKEND_URL", props.getProperty("backendUrl"))
+            buildConfigField("String", "PROVISIONING_URL", props.getProperty("provisioningUrl"))
             buildConfigField("String", "DATABASE_NAME", props.getProperty("databaseName"))
             buildConfigField("String", "SHARED_PREFS_NAME", '"WachmanagerSettings"')
-            buildConfigField("String", "AWS_ACCESS_KEY", props.getProperty("awsAccessKey"))
-            buildConfigField("String", "AWS_SECRET_KEY", props.getProperty("awsSecretKey"))
-            buildConfigField("String", "AWS_IOT_ENDPOINT", props.getProperty("awsIotEndpoint"))
-            buildConfigField("String", "AWS_IOT_CLIENT_ID", props.getProperty("awsIotClientId"))
         }
     }
     compileOptions {
@@ -56,6 +54,9 @@ android {
     }
     kotlinOptions {
         jvmTarget = '1.8'
+    }
+    buildFeatures {
+        viewBinding true
     }
 }
 
@@ -94,9 +95,10 @@ dependencies {
     implementation "androidx.fragment:fragment-ktx:1.2.5"
     implementation 'androidx.navigation:navigation-ui-ktx:2.3.0'
     implementation "org.jetbrains.anko:anko-common:0.10.8"
-    implementation 'com.squareup.retrofit2:retrofit:2.6.3'
-    implementation 'com.squareup.retrofit2:converter-gson:2.6.3'
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     implementation 'com.squareup.retrofit2:adapter-rxjava2:2.6.0'
+    implementation "com.squareup.okhttp3:logging-interceptor:4.8.1"
 
     implementation 'com.amazonaws:aws-android-sdk-core:2.43.0'
     implementation 'com.amazonaws:aws-android-sdk-iot:2.43.0'
@@ -110,12 +112,16 @@ dependencies {
 
     implementation "com.jakewharton.timber:timber:4.7.1"
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.annotation:annotation:1.3.0'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.4.1'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1'
 
     apply plugin: 'kotlin-kapt'
 
 //    kapt "android.arch.persistence.room:compiler:1.0.0"
 
     implementation "androidx.room:room-ktx:$room_version"
+    implementation "androidx.room:room-rxjava2:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
 
     implementation platform('com.google.firebase:firebase-bom:28.0.0')
