@@ -6,6 +6,13 @@ export enum Stage {
     PROD = 'prod',
 }
 
+const requireEnv = (name: string): string => {
+  const value = process.env[name]
+  if (value === undefined) {
+      throw new Error(`Missing env: ${name}`)
+  }
+  return value
+}
 export interface EnvironmentProps {
     stage: Stage
     logLevel: 'debug' | 'info' | 'warn' | 'error'
@@ -25,33 +32,30 @@ export const Timeouts = {
 const PROD: EnvironmentProps = {
     stage: Stage.PROD,
     logLevel: 'info',
-    // todo: move this to env
-    backendUrl: '***REMOVED***',
+    backendUrl: requireEnv('BACKEND_URL'),
     awsConfig: {
         region: 'eu-central-1',
-        iotDataEndpoint: 'https://a3dok2ktu19gf9-ats.iot.eu-central-1.amazonaws.com',
+        iotDataEndpoint: requireEnv('IOT_DATA_ENDPOINT'),
     }
 }
 
 const STAGING: EnvironmentProps = {
     stage: Stage.STAGING,
     logLevel: 'info',
-    // todo: move this to env
-    backendUrl: '***REMOVED***',
+    backendUrl: requireEnv('BACKEND_URL'),
     awsConfig: {
         region: 'eu-central-1',
-        iotDataEndpoint: 'https://a3dok2ktu19gf9-ats.iot.eu-central-1.amazonaws.com',
+        iotDataEndpoint: requireEnv('IOT_DATA_ENDPOINT'),
     }
 }
 
 const DEV: EnvironmentProps = {
     stage: Stage.DEV,
     logLevel: 'debug',
-    // todo: move this to env
-    backendUrl: '***REMOVED***',
+    backendUrl: requireEnv('BACKEND_URL'),
     awsConfig: {
         region: 'eu-central-1',
-        iotDataEndpoint: 'https://a3dok2ktu19gf9-ats.iot.eu-central-1.amazonaws.com',
+        iotDataEndpoint: requireEnv('IOT_DATA_ENDPOINT'),
     }
 }
 

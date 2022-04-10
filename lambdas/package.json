@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "ncc build src/index.ts -o dist && zip dist/index.js.zip dist/*",
-    "deploy-dev": "npm install && npm run build && npx cdk deploy beachist-dev --require-approval never --exclusively -c stage=dev",
-    "deploy-dev-pipeline": "npm install && npm run build && npx cdk deploy beachist-dev-pipeline --require-approval never -c stage=dev",
+    "deploy": "npm install && npm run build && npx cdk deploy beachist-$STAGE --require-approval never --exclusively -c stage=$STAGE",
+    "deploy-pipeline": "npm install && npm run build && npx cdk deploy beachist-$STAGE-pipeline --require-approval never -c stage=$STAGE",
     "lint": "eslint --cache --ext '.js,.ts' ./src/ ./cdk/"
   },
   "author": "",

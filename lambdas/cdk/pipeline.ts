@@ -22,7 +22,7 @@ export class CodebuildStack extends Stack {
           ManagedPolicy.fromAwsManagedPolicyName('AWSCloudFormationFullAccess'),
           ManagedPolicy.fromAwsManagedPolicyName('AWSIoTFullAccess'),
           new ManagedPolicy(this, 'PipelineManagedPolicy', {
-            managedPolicyName: 'pol-beachist-pipeline-managed-policy',
+            managedPolicyName: `pol-beachist-${props.stage}-pipeline-managed-policy`,
             statements: [
               new PolicyStatement({
                 actions: ['codepipeline:*'],
