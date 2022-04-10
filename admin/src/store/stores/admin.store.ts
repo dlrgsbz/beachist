@@ -2,7 +2,6 @@ import { action, observable, runInAction } from 'mobx'
 import moment, { Moment } from 'moment'
 import {
   Entry,
-  EventEntry,
   Field,
   NetworkEntry,
   NetworkSpecialEvent,
@@ -43,13 +42,7 @@ class AdminStore {
   async reloadData(): Promise<void> {
     this.setLoading(true)
     // @ts-ignore
-    const [networkEntries, events, stations, fields, networkSpecialEvents] = await Promise.all<
-      NetworkEntry[],
-      EventEntry,
-      StationInfo[],
-      Field[],
-      NetworkSpecialEvent[]
-    >([
+    const [networkEntries, events, stations, fields, networkSpecialEvents] = await Promise.all([
       this.apiClient.fetchEntries(this.selectedDate),
       this.apiClient.fetchEvents(this.selectedDate),
       this.apiClient.fetchStations(),

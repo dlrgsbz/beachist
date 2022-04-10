@@ -1,6 +1,7 @@
 name: android_deploy
 
 on:
+  workflow_dispatch:
   push:
     branches: [ main ]
 
@@ -11,7 +12,7 @@ jobs:
       changes: ${{ steps.changes.outputs.android }}
     steps:
       - name: Checkout the code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - uses: dorny/paths-filter@v2
         id: changes
         with:
@@ -22,7 +23,8 @@ jobs:
 
   build_and_sign:
     needs: determine_changes
-    if: needs.determine_changes.outputs.changes == 'true'
+    # run this step either on changes in the repo or if the workflow was manually triggered
+    if: ${{ (needs.determine_changes.outputs.changes == 'true') || (github.event_name == 'workflow_dispatch') }}
     strategy:
       matrix:
         env: ['STAGING', 'PROD']
@@ -32,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup configs
         working-directory: android
@@ -47,7 +49,10 @@ jobs:
         run: |
           echo -e "backendUrl=\"$backendUrl\"\ndatabaseName=\"$databaseName\"" > ./project_resources/config.properties \
             && echo $CLIENT_KEYSTORE_BASE_64 | base64 -d > project_resources/release.keystore \
-            && bash ./setup_keystore.sh
+            && bash ./setup_keystore.sh \
+            && cat <<< $(jq '.client[0].client_info.android_client_info.package_name="${{ secrets.APP_APPLICATION_ID }}"' app/google-services.json) > app/google-services.json \
+            && sed -i 's/applicationId.*/applicationId "${{ secrets.APP_APPLICATION_ID }}"/' app/build.gradle \
+            && sed -i 's:<string name="app_name">.*</string>:<string name="app_name">${{ secrets.APP_APP_NAME }}</string>:' app/src/main/res/values/strings.xml
 
       - name: Assemble release build
         working-directory: android
@@ -61,7 +66,7 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           ssh_private_key: ${{ secrets.SFTP_PRIVATE_KEY }}
           local_path: './android/app/build/outputs/bundle/release/app-release.aab'
-          remote_path: '/public_html/app/wachmanager-${{ matrix.env }}-${{ github.run_number }}.aab'
+          remote_path: '${{ secrets.FTP_PATH }}/beachist-${{ matrix.env }}-${{ github.run_number }}.aab'
 
       - name: Teams Notification
         if: ${{ matrix.env }} == 'STAGING'
@@ -74,11 +79,14 @@ jobs:
           timezone: Europe/Berlin
           
       - name: Upload Android Release to Play Store
+        env:
+          STORE_UPLOAD: ${{ secrets.STORE_UPLOAD }}
+        if: "${{ env.STORE_UPLOAD == 'true' }}"
         uses: r0adkll/upload-google-play@v1
         with:
-          serviceAccountJsonPlainText: '${{ SECRETS.PLAY_STORE_SERVICE_ACCOUNT_JSON }}'
-          packageName: '${{ SECRETS.PLAY_STORE_PACKAGE_NAME }}'
+          serviceAccountJsonPlainText: '${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}'
+          packageName: '${{ secrets.PLAY_STORE_PACKAGE_NAME }}'
           releaseFiles: './android/app/build/outputs/bundle/release/app-release.aab'
-          track: '${{ SECRETS.PLAY_STORE_TRACK }}'
+          track: '${{ secrets.PLAY_STORE_TRACK }}'
           status: 'draft'
           inAppUpdatePriority: 5
