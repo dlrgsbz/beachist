@@ -117,6 +117,7 @@ const handler = async (event: ProvisioningHandlerInput, iotClient: IotClient): P
       privateKey: certificate.keyPair.privateKey,
       publicKey: certificate.keyPair.publicKey,
       certificatePem: certificate.certificatePem,
+      certificateId: certificate.certificateId,
       thingName,
       ...endpoints,
     })

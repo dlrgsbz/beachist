@@ -148,6 +148,7 @@ export class InfraStack extends Stack {
       actions: [
         "iot:AttachPolicy",
         "iot:AttachThingPrincipal",
+        "iot:AttachPrincipalPolicy",
         "iot:AddThingToThingGroup",
         "iot:CreateKeysAndCertificate",
         "iot:CreatePolicy",
@@ -179,14 +180,33 @@ export class InfraStack extends Stack {
       policyName: `${props.prefix}-iot-policy`,
       policyDocument: new PolicyDocument({
         statements: [
+          // todo: this should not be here
           new PolicyStatement({
             effect: Effect.ALLOW,
-            actions: ['iot:UpdateThingShadow', 'iot:UpdateThingShadow'],
+            actions: ['iot:*'],
+            resources: ['*'],
+          }),
+          new PolicyStatement({
+            effect: Effect.ALLOW,
+            actions: ['iot:GetThingShadow'],
             resources: [`arn:aws:iot:${Stack.of(this).region}:${Stack.of(this).account}:thing/\${iot:ClientId}`]
           }),
           new PolicyStatement({
             effect: Effect.ALLOW,
-            actions: ['iot:Publish', 'iot:Receive', 'iot:Subscribe'],
+            actions: ['iot:UpdateThingShadow'],
+            resources: [`arn:aws:iot:${Stack.of(this).region}:${Stack.of(this).account}:thing/\${iot:ClientId}`]
+          }),
+          new PolicyStatement({
+            effect: Effect.ALLOW,
+            actions: ['iot:Publish', 'iot:Receive'],
+            resources: [
+              `arn:aws:iot:${Stack.of(this).region}:${Stack.of(this).account}:topicfilter/$aws/things/\${iot:ClientId}/*`,
+              `arn:aws:iot:${Stack.of(this).region}:${Stack.of(this).account}:topicfilter/\${iot:ClientId}/*`,
+            ],
+          }),
+          new PolicyStatement({
+            effect: Effect.ALLOW,
+            actions: ['iot:Subscribe'],
             resources: [
               `arn:aws:iot:${Stack.of(this).region}:${Stack.of(this).account}:topicfilter/$aws/things/\${iot:ClientId}/*`,
               `arn:aws:iot:${Stack.of(this).region}:${Stack.of(this).account}:topicfilter/\${iot:ClientId}/*`,
