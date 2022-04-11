@@ -1,4 +1,4 @@
-package de.tjarksaul.wachmanager.modules.provision.ui.login
+package de.tjarksaul.wachmanager.modules.provision.ui
 
 import android.os.Bundle
 import android.text.Editable

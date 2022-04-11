@@ -6,7 +6,7 @@ import de.tjarksaul.wachmanager.modules.provision.data.ProvisionApiFactory
 import de.tjarksaul.wachmanager.modules.provision.data.ProvisionRepository
 import de.tjarksaul.wachmanager.modules.provision.data.ProvisionUseCase
 import de.tjarksaul.wachmanager.modules.provision.data.ProvisionUseCaseImpl
-import de.tjarksaul.wachmanager.modules.provision.ui.login.ProvisionViewModel
+import de.tjarksaul.wachmanager.modules.provision.ui.ProvisionViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 

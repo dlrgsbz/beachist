@@ -1,4 +1,4 @@
-package de.tjarksaul.wachmanager.modules.provision.ui.login
+package de.tjarksaul.wachmanager.modules.provision.ui
 
 /**
  * Authentication result : success (user details) or error message.
