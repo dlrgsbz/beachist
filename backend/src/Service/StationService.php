@@ -120,7 +120,13 @@ class StationService {
     public function listProvisions(): array {
         $provisions = $this->provisioningRepository->getUnexpiredProvisions();
 
-        return $provisions;
+        $provisionMap = [];
+        /** @var StationProvisioningRequest $provision */
+        foreach ($provisions as $provision) {
+            $provisionMap[$provision->station->id] = $provision;
+        }
+
+        return $provisionMap;
     }
 }
 

@@ -6,13 +6,13 @@ import {
   NetworkSpecialEvent,
   SpecialEvent,
   StationInfo,
-  StationInfoMap,
   UserInfo,
   UserInfoWithToken,
 } from 'dtos'
 import { AccessTokenNotFound, AuthService } from 'context/AuthServiceContext'
 import axios from 'axios'
 import { removeTokens } from 'lib/token'
+import { ApiProvisioningRequest, ApiStationInfo } from './dtos'
 
 export interface HttpHeaders {
   [header: string]: string
@@ -73,7 +73,7 @@ export class ApiClient {
       ...options,
       body: data,
     }
-    return this.request(url, 'GET', requestOptions)
+    return this.request(url, 'POST', requestOptions)
   }
 
   public async fetchStations(): Promise<StationInfo[]> {
@@ -81,14 +81,20 @@ export class ApiClient {
     return data.data
   }
 
-  public async fetchStationInfo(): Promise<StationInfoMap> {
-    const data = await this.get<Record<string, { online: boolean, date: string} | null>>('/api/station/info')
-    return Object.entries(data.data).reduce((carry, [key, data]) => {
-      carry[key] = data ? { online: data.online, onlineStateSince: moment(data.date) } : null
-      return carry
-    }, {} as StationInfoMap)
+  public async fetchStationInfo(): Promise<Record<string, ApiStationInfo | null>> {
+    const data = await this.get<Record<string, ApiStationInfo | null>>('/api/station/info')
+    return data.data
   }
 
+  public async fetchProvisioningRequests(): Promise<Record<string, ApiProvisioningRequest>> {
+    const data = await this.get<Record<string, ApiProvisioningRequest>>('/api/provision')
+    return data.data
+  }
+
+  public async createProvisioningRequest(stationId: string): Promise<ApiProvisioningRequest> {
+    const data = await this.post<ApiProvisioningRequest>(`/api/provision/${stationId}`)
+    return data.data
+  }
 
   public async fetchFields(): Promise<Field[]> {
     const data = await this.get<Field[]>('/api/field')
@@ -123,8 +129,8 @@ export async function getUserData(token: string): Promise<UserInfo> {
   try {
     const response = await axios.get('/api/me', {
       headers: {
-        Authorization: `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     })
     return response.data
   } catch (error) {

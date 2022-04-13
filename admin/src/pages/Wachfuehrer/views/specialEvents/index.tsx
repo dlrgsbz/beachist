@@ -1,14 +1,14 @@
 import React from 'react'
 import { useObserver } from 'mobx-react-lite'
 import { SpecialEventType } from 'dtos'
-import { useAdminStore } from 'store'
+import { useDashboardStore } from 'store'
 
 type SpecialEventViewProps = {
   type: SpecialEventType
 }
 
 const SpecialEvents: React.FC<SpecialEventViewProps> = ({ type }) => {
-  const adminStore = useAdminStore()
+  const adminStore = useDashboardStore()
 
   const accessor = type === SpecialEventType.event ? adminStore.specialEvents : adminStore.damages
 

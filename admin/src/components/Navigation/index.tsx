@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom'
 import { useNavigationStore } from 'store'
 import { useAuth } from 'context'
 import { QrButton } from './QrButton'
+import { Restricted } from '../auth/Restricted'
+import { Permission } from 'dtos'
 
 type NavlinkProps = {
   target: string
@@ -53,9 +55,10 @@ const Navigation = () => {
       </button>
       <div className={'collapse navbar-collapse ' + (isExpanded ? 'show' : '')} id="navbarNav">
         <ul className="navbar-nav mr-auto mt-2 mt-lg-0">
-          <Navlink target="/">Start</Navlink>
-          <Navlink target="/wachfuehrer/">Wachführer*innen-Dashboard</Navlink>
-          {/*<Navlink target="/admin/">Admin</Navlink>*/}
+          <Navlink target="/wachfuehrer">Wachführer*innen-Dashboard</Navlink>
+          <Restricted permission={Permission.admin}>
+            <Navlink target="/admin/station">Stationsverwaltung</Navlink>
+          </Restricted>
         </ul>
         <ul className="nav navbar-nav flex-row justify-content-between ml-auto">
           <QrButton/>

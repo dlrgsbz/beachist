@@ -1,211 +1,37 @@
-import { action, observable, runInAction } from 'mobx'
-import moment, { Moment } from 'moment'
-import {
-  Entry,
-  Field,
-  NetworkEntry,
-  NetworkSpecialEvent,
-  SpecialEvent,
-  SpecialEventType,
-  StationInfo,
-} from 'dtos'
-import { AdminView, StationState } from 'interfaces'
-import {
-  ApiClient,
-  sendEventToWukos,
-} from 'modules/data'
-
-// noinspection PointlessArithmeticExpressionJS
-const AUTO_UPDATE_TIMEOUT = 1 * 60 * 1000
+import { action, observable } from 'mobx'
+import { ProvisioningRequest, ProvisioningRequestMap, StationInfo } from 'dtos'
+import { AsyncState, createAsyncState, Result, runWithAsyncState } from 'lib'
+import { AdminService } from 'services'
 
 class AdminStore {
-  @observable selectedDate: Moment = moment()
-  @observable feldListe = new Map<string, string>()
-  @observable felder = new Map<string, Field>()
-  @observable firstAid = 0
-  @observable search = 0
-  @observable loading = false
-  @observable stations: StationInfo[] = []
-  @observable fields: Field[] = []
-  @observable entries = new Map<string, Entry[]>()
-  @observable crews = new Map<string, string>()
-  @observable damages: SpecialEvent[] = []
-  @observable specialEvents: SpecialEvent[] = []
+  @observable stationsState: AsyncState<StationInfo[]> = createAsyncState([])
+  @observable provisionMapState: AsyncState<ProvisioningRequestMap> = createAsyncState({})
+  @observable creatProvisioningState: AsyncState<ProvisioningRequest | undefined> = createAsyncState(undefined)
 
-  @observable autoUpdateEnabled: boolean = true
-  @observable view: AdminView = AdminView.stations
+  constructor(private adminService: AdminService) {}
 
-  private timeout: number | undefined
-
-  constructor(private apiClient: ApiClient) {
-  }
-
-  async reloadData(): Promise<void> {
-    this.setLoading(true)
-    let [networkEntries, events, stations, fields, networkSpecialEvents, stationInfo] = await Promise.all([
-      this.apiClient.fetchEntries(this.selectedDate),
-      this.apiClient.fetchEvents(this.selectedDate),
-      this.apiClient.fetchStations(),
-      this.apiClient.fetchFields(),
-      this.apiClient.fetchSpecialEvents(this.selectedDate),
-      this.apiClient.fetchStationInfo(),
+  @action.bound
+  async fetchData(): Promise<void> {
+    await Promise.all([
+      this.fetchStations(),
+      this.fetchProvisioningRequests(),
     ])
-
-    const stationMap = new Map<string, StationInfo>()
-    stations = stations.map(station => {
-      stationMap.set(station.id, station)
-      return { ...station, ...stationInfo[station.id] }
-    })
-    const fieldMap = new Map<string, Field>()
-    fields.forEach(field => fieldMap.set(field.id, field))
-
-    const { entries, crews } = createEntryMap(networkEntries, stationMap, fieldMap)
-
-    const specialEvents = createSpecialEventMap(networkSpecialEvents, stationMap)
-
-    runInAction(() => {
-      this.firstAid = events.firstAid
-      this.search = events.search
-      this.stations = stations
-      this.fields = fields
-      this.entries = entries
-      this.crews = crews
-      this.specialEvents = specialEvents.special
-      this.damages = specialEvents.damage
-      this.view = AdminView.stations
-      this.setLoading(false)
-    })
-
-    if (this.autoUpdateEnabled) {
-      this.timeout = window.setTimeout(() => this.reloadData(), AUTO_UPDATE_TIMEOUT)
-    }
   }
 
   @action.bound
-  changeSelectedDate(date: Moment | null): void {
-    if (date) {
-      this.selectedDate = date
-      this.reloadData()
-    }
-  }
-
-  @action
-  setLoading(loading: boolean): void {
-    this.loading = loading
-  }
-
-  stationState(id: string): StationState {
-    const entries = this.entries.get(id)
-
-    if (!entries || entries.length === 0) {
-      return StationState.missing
-    }
-
-    return entries.filter(e => !e.state).length === 0 ? StationState.okay : StationState.notOkay
-  }
-
-  stationEntries(id: string): Entry[] {
-    return this.entries.get(id) || []
+  async fetchStations(): Promise<Result<Error, StationInfo[]>> {
+    return runWithAsyncState(this.stationsState, () => this.adminService.getStationsWithInfo())
   }
 
   @action.bound
-  showStationInfo() {
-    this.view = AdminView.stations
+  async fetchProvisioningRequests(): Promise<Result<Error, ProvisioningRequestMap>> {
+    return runWithAsyncState(this.provisionMapState, () => this.adminService.getProvisioningRequests())
   }
 
   @action.bound
-  showDamages() {
-    this.view = AdminView.damages
+  async createProvisioningRequest(stationId: string): Promise<Result<Error, ProvisioningRequest | undefined>> {
+    return runWithAsyncState(this.creatProvisioningState, () => this.adminService.createProvisioningRequest(stationId))
   }
-
-  @action.bound
-  showSpecialEvents() {
-    this.view = AdminView.specialEvents
-  }
-
-  @action.bound
-  toggleAutoUpdate(): void {
-    this.autoUpdateEnabled = !this.autoUpdateEnabled
-
-    if (this.autoUpdateEnabled) {
-      this.timeout = window.setTimeout(() => this.reloadData(), AUTO_UPDATE_TIMEOUT)
-    } else {
-      window.clearTimeout(this.timeout)
-      this.timeout = undefined
-    }
-  }
-
-  sendEventToWukos(event: SpecialEvent): void {
-    sendEventToWukos(event)
-  }
-}
-
-function createEntryMap(
-  entries: NetworkEntry[],
-  stationMap: Map<string, StationInfo>,
-  fieldMap: Map<string, Field>,
-): { entries: Map<string, Entry[]>; crews: Map<string, string> } {
-  const crews = new Map<string, string>()
-
-  const theEntries: Entry[] = entries
-    .flatMap(entry => {
-      const station = stationMap.get(entry.station)
-      const field = fieldMap.get(entry.field)
-      if (!station || !field) {
-        return []
-      }
-      return [{ ...entry, station, field }]
-    })
-
-  const entryMap = new Map<string, Entry[]>()
-  theEntries.forEach(entry => {
-    let stationEntries = entryMap.get(entry.station.id)
-    if (!stationEntries) {
-      stationEntries = []
-    }
-    if (entry.crew) {
-      crews.set(entry.station.id, entry.crew)
-    }
-    stationEntries.push(entry)
-    entryMap.set(entry.station.id, stationEntries)
-  })
-
-  return {
-    entries: entryMap,
-    crews,
-  }
-}
-
-interface SpecialEventMap {
-  special: SpecialEvent[]
-  damage: SpecialEvent[]
-}
-
-function createSpecialEventMap(
-  specialEvents: NetworkSpecialEvent[],
-  stationMap: Map<string, StationInfo>,
-): SpecialEventMap {
-  const map: SpecialEventMap = { special: [], damage: [] }
-
-  specialEvents.forEach(event => {
-    const stationId = event.station
-    const station = stationMap.get(stationId)
-    if (!station) {
-      return
-    }
-
-    const specialEvent = { ...event, station }
-    switch (event.type) {
-      case SpecialEventType.damage:
-        map.damage.push(specialEvent)
-        break
-      case SpecialEventType.event:
-        map.special.push(specialEvent)
-        break
-    }
-  })
-
-  return map
 }
 
 export default AdminStore

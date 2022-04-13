@@ -1,12 +1,12 @@
 import React from 'react'
 import { useObserver } from 'mobx-react-lite'
 import { useTranslation } from 'react-i18next'
-import { useAdminStore } from 'store'
+import { useDashboardStore } from 'store'
 import Legend from '../../Legend'
 import { WachfuehrerTurmDetail } from '../../WachfuehrerTurmDetail'
 
 const StationInfo: React.FC = () => {
-  const adminStore = useAdminStore()
+  const adminStore = useDashboardStore()
 
   const { t } = useTranslation()
 
