@@ -3,14 +3,15 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Entity\AppInfo;
 use App\Entity\Station;
 use App\Entity\StationField;
 use App\Entity\StationProvisioningRequest;
 use App\Interfaces\StationFieldReader;
 use App\Interfaces\StationReader;
 use App\Interfaces\StationWriter;
-use App\Interfaces\VersionReader;
-use App\Interfaces\VersionWriter;
+use App\Interfaces\AppInfoReader;
+use App\Interfaces\AppInfoWriter;
 use App\Interfaces\StationNotFoundException;
 use App\Repository\ProvisioningRepository;
 use DateTime;
@@ -19,23 +20,23 @@ class StationService {
     private StationReader $stationReader;
     private StationWriter $stationWriter;
     private StationFieldReader $stationFieldReader;
-    private VersionReader $versionReader;
-    private VersionWriter $versionWriter;
+    private AppInfoReader $appInfoReader;
+    private AppInfoWriter $appInfoWriter;
     private ProvisioningRepository $provisioningRepository;
 
     public function __construct(
-        StationReader $stationReader,
-        StationWriter $stationWriter,
-        StationFieldReader $stationFieldReader,
-        VersionReader $versionReader,
-        VersionWriter $versionWriter,
+        StationReader          $stationReader,
+        StationWriter          $stationWriter,
+        StationFieldReader     $stationFieldReader,
+        AppInfoReader          $versionReader,
+        AppInfoWriter          $versionWriter,
         ProvisioningRepository $provisioningRepository
     ) {
         $this->stationReader = $stationReader;
         $this->stationWriter = $stationWriter;
         $this->stationFieldReader = $stationFieldReader;
-        $this->versionReader = $versionReader;
-        $this->versionWriter = $versionWriter;
+        $this->appInfoReader = $versionReader;
+        $this->appInfoWriter = $versionWriter;
         $this->provisioningRepository = $provisioningRepository;
     }
 
@@ -61,17 +62,30 @@ class StationService {
         return $this->stationFieldReader->get($stationId, $fieldId);
     }
 
-    public function setAppVersion(string $stationId, string $appVersion): void {
+    /**
+     * @throws StationNotFoundException
+     */
+    public function updateAppInfo(string $stationId, string $appVersion, int $appVersionCode, bool $connected) {
         $station = $this->stationReader->getStation($stationId);
         if (!$station) {
-            return;
+            throw new StationNotFoundException();
         }
 
-        $storedVersion = $this->versionReader->getLatestAppVersion($stationId);
+        $this->appInfoWriter->setAppInfo($station, $appVersion, $appVersionCode, $connected);
+    }
 
-        if (!$storedVersion || !version_compare($appVersion, $storedVersion, 'eq')) {
-            $this->versionWriter->setAppVersion($station, $appVersion);
-        }
+    public function getAppInfo(string $stationId): AppInfo {
+        return $this->appInfoReader->getLatestAppInfo($stationId);
+    }
+
+    public function getLatestInfoMap(): array {
+        $stations = $this->getStations();
+        return array_reduce($stations, function (array $carry, Station $station) {
+            $info = $this->appInfoReader->getLatestAppInfo($station->id);
+
+            $carry[$station->id] = $info;
+            return $carry;
+        }, []);
     }
 
     public function createProvisioning(string $stationId): StationProvisioningRequest {

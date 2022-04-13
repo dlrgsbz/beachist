@@ -5,21 +5,21 @@ declare(strict_types=1);
 namespace App\Repository;
 
 
-use App\Entity\AppVersion;
+use App\Entity\AppInfo;
 use App\Entity\Station;
-use App\Interfaces\VersionReader;
-use App\Interfaces\VersionWriter;
+use App\Interfaces\AppInfoReader;
+use App\Interfaces\AppInfoWriter;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Exception;
 
-class VersionRepository extends EntityRepository implements VersionReader, VersionWriter {
+class AppInfoRepository extends EntityRepository implements AppInfoReader, AppInfoWriter {
     public function __construct(EntityManagerInterface $em) {
-        parent::__construct($em, new ClassMetadata(AppVersion::class));
+        parent::__construct($em, new ClassMetadata(AppInfo::class));
     }
 
-    function getLatestAppVersion(string $id): ?string {
+    function getLatestAppInfo(string $id): ?AppInfo {
         $result = $this->createQueryBuilder('v')
             ->orderBy('v.date', 'DESC')
             ->setMaxResults(1)
@@ -28,15 +28,15 @@ class VersionRepository extends EntityRepository implements VersionReader, Versi
             ->getQuery();
 
         try {
-            return $result->getSingleScalarResult();
+            return $result->getOneOrNullResult();
         } catch (Exception $_) {
             return null;
         }
     }
 
     /** @throws */
-    function setAppVersion(Station $station, string $version) {
-        $version = new AppVersion($station, $version);
+    function setAppInfo(Station $station, string $version, int $versionCode, bool $connected): void {
+        $version = new AppInfo($station, $version, $versionCode, $connected);
 
         $this->_em->persist($version);
         $this->_em->flush();

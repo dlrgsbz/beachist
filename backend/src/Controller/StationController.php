@@ -28,6 +28,13 @@ class StationController {
     }
 
     /**
+     * @Route("/info", methods={"GET"})
+     */
+    public function getVersions(): Response {
+        return new JsonResponse($this->stationService->getLatestInfoMap());
+    }
+
+    /**
      * @Route("/{id}", methods={"GET"})
      */
     public function getStation(string $id): Response {

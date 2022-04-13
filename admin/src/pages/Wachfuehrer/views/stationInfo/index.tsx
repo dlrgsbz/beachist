@@ -22,8 +22,10 @@ const StationInfo: React.FC = () => {
           <WachfuehrerTurmDetail
             key={station.id}
             title={station.name}
-            color={adminStore.color(station.id)}
+            stationState={adminStore.stationState(station.id)}
             crew={adminStore.crews.get(station.id)}
+            onlineStateSince={station.onlineStateSince}
+            isOnline={station.online}
           >
             {adminStore
               .stationEntries(station.id)

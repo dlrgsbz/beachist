@@ -9,13 +9,14 @@ import {
   SpecialEventType,
   StationInfo,
 } from 'dtos'
-import { AdminView, Color } from 'interfaces'
+import { AdminView, StationState } from 'interfaces'
 import {
   ApiClient,
   sendEventToWukos,
 } from 'modules/data'
 
-const AUTO_UPDATE_TIMEOUT = 5 * 60 * 1000
+// noinspection PointlessArithmeticExpressionJS
+const AUTO_UPDATE_TIMEOUT = 1 * 60 * 1000
 
 class AdminStore {
   @observable selectedDate: Moment = moment()
@@ -41,17 +42,20 @@ class AdminStore {
 
   async reloadData(): Promise<void> {
     this.setLoading(true)
-    // @ts-ignore
-    const [networkEntries, events, stations, fields, networkSpecialEvents] = await Promise.all([
+    let [networkEntries, events, stations, fields, networkSpecialEvents, stationInfo] = await Promise.all([
       this.apiClient.fetchEntries(this.selectedDate),
       this.apiClient.fetchEvents(this.selectedDate),
       this.apiClient.fetchStations(),
       this.apiClient.fetchFields(),
       this.apiClient.fetchSpecialEvents(this.selectedDate),
+      this.apiClient.fetchStationInfo(),
     ])
 
     const stationMap = new Map<string, StationInfo>()
-    stations.forEach(station => stationMap.set(station.id, station))
+    stations = stations.map(station => {
+      stationMap.set(station.id, station)
+      return { ...station, ...stationInfo[station.id] }
+    })
     const fieldMap = new Map<string, Field>()
     fields.forEach(field => fieldMap.set(field.id, field))
 
@@ -90,14 +94,14 @@ class AdminStore {
     this.loading = loading
   }
 
-  color(id: string): Color {
+  stationState(id: string): StationState {
     const entries = this.entries.get(id)
 
     if (!entries || entries.length === 0) {
-      return Color.yellow
+      return StationState.missing
     }
 
-    return entries.filter(e => !e.state).length === 0 ? Color.green : Color.red
+    return entries.filter(e => !e.state).length === 0 ? StationState.okay : StationState.notOkay
   }
 
   stationEntries(id: string): Entry[] {

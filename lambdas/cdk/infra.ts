@@ -49,6 +49,7 @@ export class InfraStack extends Stack {
     this.createCreateEntryHandler(handlerPrefix, props)
     this.createCreateEventHandler(handlerPrefix, props)
     this.createProvisioningHandler(handlerPrefix, props)
+    this.createInfoHandler(handlerPrefix, props)
     this.createLastWillTopic(props)
   }
 
@@ -132,6 +133,30 @@ export class InfraStack extends Stack {
                   FROM '+/field/+/entry'`,
       ),
       actions: [new LambdaFunctionAction(createEntryHandler)],
+    });
+  }
+
+  private createInfoHandler(handlerPrefix: string, props: StackProps) {
+    const appInfoUpdatedHandler = this.lambdaFunction(
+      `${props.prefix}-app-info-updated`,
+      `${handlerPrefix}appInfoUpdatedHandler`,
+      this.lambdaEnvs,
+    )
+
+    return new TopicRule(this, `${props.prefix}-app-info-rule`, {
+      topicRuleName: `vgb${props.stage}AppInfoTopicRule`,
+      sql: IotSql.fromStringAsVer20160323(
+        `SELECT current.state.reported.appVersionCode AS appVersionCode,
+                current.state.reported.appVersion     AS appVersion,
+                current.state.desired.stationId       AS stationId,
+                current.state.reported.connected      AS connected
+         FROM '$aws/things/+/shadow/update/documents'
+         WHERE (isUndefined(previous.state.reported.appVersionCode) AND NOT isUndefined(current.state.reported.appVersionCode)) 
+         OR previous.state.reported.appVersionCode <> current.state.reported.appVersionCode
+         OR (isUndefined(previous.state.reported.connected) AND NOT isUndefined(current.state.reported.connected))
+         OR previous.state.reported.connected <> current.state.reported.connected`,
+      ),
+      actions: [new LambdaFunctionAction(appInfoUpdatedHandler)],
     });
   }
 

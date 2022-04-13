@@ -7,8 +7,6 @@ namespace App\Controller;
 use App\Entity\EventType;
 use App\Interfaces\StationNotFoundException;
 use App\Service\EventService;
-use App\Service\StationService;
-use Symfony\Component\HttpFoundation\InputBag;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,23 +20,14 @@ use function App\Functions\validate;
  */
 class StationEventController {
     private EventService $eventService;
-    private StationService $stationService;
 
     /**
      * EventController constructor.
      *
      * @param EventService $eventService
      */
-    public function __construct(EventService $eventService, StationService $stationService) {
+    public function __construct(EventService $eventService) {
         $this->eventService = $eventService;
-        $this->stationService = $stationService;
-    }
-
-    private function updateAppVersion(string $stationId, Request $request): void {
-        $version = $request->headers->get('X-Wachmanager-Version');
-        if ($version) {
-            $this->stationService->setAppVersion($stationId, $version);
-        }
     }
 
     /**
@@ -59,7 +48,6 @@ class StationEventController {
 
         try {
             $id = $this->eventService->create($stationId, $type, $data->get('id'), $date);
-            $this->updateAppVersion($stationId, $request);
         } catch (StationNotFoundException $e) {
             return new JsonResponse(['errors' => ['station not found']], 404);
         }

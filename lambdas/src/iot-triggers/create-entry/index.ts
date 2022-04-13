@@ -39,13 +39,10 @@ export const handler = async (event: Partial<CreateEntryInput>, iotClient: IotCl
 
         const { iotThingName, fieldId, stationId, ...rest } = validatedEvent
 
-        console.log(event)
-
         const result = await axios.post(`${config.BACKEND_URL}station/${stationId}/field/${fieldId}/entry`, rest)
 
         const topic = `entry/${iotThingName}/success`
-        iotClient.publish(topic, result.data.id)
-        console.log({ result: result.data, iotThingName, stationId, fieldId })
+        await iotClient.publish(topic, result.data.id)
     } catch (err) {
         if (err instanceof Error) {
             logger.error(err.message)

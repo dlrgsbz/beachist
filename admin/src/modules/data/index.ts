@@ -6,6 +6,7 @@ import {
   NetworkSpecialEvent,
   SpecialEvent,
   StationInfo,
+  StationInfoMap,
   UserInfo,
   UserInfoWithToken,
 } from 'dtos'
@@ -79,6 +80,15 @@ export class ApiClient {
     const data = await this.get<StationInfo[]>('/api/station')
     return data.data
   }
+
+  public async fetchStationInfo(): Promise<StationInfoMap> {
+    const data = await this.get<Record<string, { online: boolean, date: string} | null>>('/api/station/info')
+    return Object.entries(data.data).reduce((carry, [key, data]) => {
+      carry[key] = data ? { online: data.online, onlineStateSince: moment(data.date) } : null
+      return carry
+    }, {} as StationInfoMap)
+  }
+
 
   public async fetchFields(): Promise<Field[]> {
     const data = await this.get<Field[]>('/api/field')
