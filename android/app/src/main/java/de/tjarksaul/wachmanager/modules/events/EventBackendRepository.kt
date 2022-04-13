@@ -11,6 +11,8 @@ import de.tjarksaul.wachmanager.iotClient.IotClient
 import de.tjarksaul.wachmanager.iotClient.IotConnectionState
 import de.tjarksaul.wachmanager.service.StationNameProvider
 import io.reactivex.Observable
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.subjects.BehaviorSubject
 import timber.log.Timber
 
@@ -19,6 +21,7 @@ class EventBackendRepository(
     private val stationNameProvider: StationNameProvider,
     private val gson: Gson,
 ) {
+    private val disposables = CompositeDisposable()
     private val subject: BehaviorSubject<String> = BehaviorSubject.create()
 
     fun observeEventUpdates(): Observable<String> = subject
@@ -29,23 +32,22 @@ class EventBackendRepository(
 
     fun createEvent(type: EventType, id: String, date: String) {
         Handler(Looper.getMainLooper()).post {
-            iotClient.getConnectionState().observeForever(object : Observer<IotConnectionState> {
-                override fun onChanged(it: IotConnectionState) {
+            val disposable = CompositeDisposable()
+            disposable += iotClient.getConnectionState().subscribe {
                     if (it == IotConnectionState.Connected) {
                         val event = PostEvent(type, id, date)
                         val stationName = stationNameProvider.currentStationName()
                         // todo: only publish once here
                         // notes for future me: use two observables and combine latest
                         iotClient.publish("${stationName}/event", gson.toJson(event))
-                        iotClient.getConnectionState().removeObserver(this)
+                        disposable.dispose()
                     }
                 }
-            })
         }
     }
 
     private fun subscribe() {
-        iotClient.getConnectionState().observeForever {
+        disposables += iotClient.getConnectionState().subscribe {
             when (it) {
                 is IotConnectionState.Connected -> {
                     iotClient.subscribe("events/${stationNameProvider.currentStationName()}",

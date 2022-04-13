@@ -1,18 +1,17 @@
 package de.tjarksaul.wachmanager.iotClient
 
 import android.annotation.SuppressLint
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.amazonaws.mobileconnectors.iot.*
 import com.amazonaws.regions.Regions
 import com.google.gson.Gson
+import io.reactivex.Observable
+import io.reactivex.subjects.BehaviorSubject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.nio.charset.Charset
-import java.util.*
 
 
 data class IotConfig(
@@ -30,9 +29,7 @@ class IotClient(private val gson: Gson, private val tempDirectory: String) : Cor
     private val LOG_TAG = "IotClient"
 
     private var connection: AWSIotMqttManager? = null
-    // todo: this should be a BehaviorSubject
-    private val connectionState: MutableLiveData<IotConnectionState> =
-        MutableLiveData(IotConnectionState.Initial)
+    private val connectionState: BehaviorSubject<IotConnectionState> = BehaviorSubject.createDefault(IotConnectionState.Initial)
     private var activeConfig: IotConfig? = null
 
     override val coroutineContext = Dispatchers.IO + SupervisorJob()
@@ -41,10 +38,10 @@ class IotClient(private val gson: Gson, private val tempDirectory: String) : Cor
         AWSIotMqttClientStatusCallback { status, throwable ->
             if (status == AWSIotMqttClientStatusCallback.AWSIotMqttClientStatus.ConnectionLost) {
                 Timber.tag(LOG_TAG).i(throwable, "connection interrupted")
-                connectionState.postValue(IotConnectionState.ConnectionLost())
+                connectionState.onNext(IotConnectionState.ConnectionLost())
             } else if (status == AWSIotMqttClientStatusCallback.AWSIotMqttClientStatus.Connected) {
                 Timber.tag(LOG_TAG).i("Connection restored/established")
-                connectionState.postValue(IotConnectionState.Connected)
+                connectionState.onNext(IotConnectionState.Connected)
             }
         }
 
@@ -147,7 +144,7 @@ class IotClient(private val gson: Gson, private val tempDirectory: String) : Cor
         }
     }
 
-    fun getConnectionState(): LiveData<IotConnectionState> = connectionState
+    fun getConnectionState(): Observable<IotConnectionState> = connectionState
     fun peekConnectionState(): IotConnectionState? = connectionState.value
 
     @Synchronized

@@ -11,6 +11,7 @@ import de.tjarksaul.wachmanager.modules.base.ViewModelEffect
 import de.tjarksaul.wachmanager.modules.base.ViewModelState
 import io.reactivex.rxkotlin.ofType
 import io.reactivex.rxkotlin.plusAssign
+import kotlinx.android.parcel.Parcelize
 import timber.log.Timber
 import java.util.*
 import kotlin.concurrent.schedule
@@ -184,14 +185,15 @@ internal class StationCheckViewModel(
     }
 
     private var shouldFetchLocally = false
-    private val timer = Timer("FETCH_LOCAL", false)
+    private var timer: Timer? = null
 
     private fun fetchData() {
         Timber.tag("StationCheckViewModel").i("Fetching data")
         shouldFetchLocally = true
 
         // as backup: get data from local data
-        timer.schedule(10_000) {
+        timer = Timer("FETCH_LOCAL", false)
+        timer?.schedule(10_000) {
             fetchFromLocalCache()
         }
 
@@ -224,7 +226,7 @@ internal class StationCheckViewModel(
 
         Timber.tag("StationCheckViewModel").i("Got %d fields from backend", data.size)
 
-        timer.cancel()
+        timer?.cancel()
         shouldFetchLocally = false
 
         state.set {

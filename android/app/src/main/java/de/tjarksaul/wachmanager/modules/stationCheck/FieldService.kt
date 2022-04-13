@@ -7,6 +7,8 @@ import de.tjarksaul.wachmanager.iotClient.IotClient
 import de.tjarksaul.wachmanager.iotClient.IotConnectionState
 import de.tjarksaul.wachmanager.service.StationNameProvider
 import io.reactivex.Observable
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.subjects.BehaviorSubject
 import timber.log.Timber
 
@@ -15,6 +17,8 @@ class FieldService(
     private val stationNameProvider: StationNameProvider,
     private val gson: Gson,
 ) {
+    private val disposables = CompositeDisposable()
+
     private val subject: BehaviorSubject<List<Field>> = BehaviorSubject.createDefault(listOf())
     val fieldsObservable: Observable<List<Field>> = subject
 
@@ -25,7 +29,7 @@ class FieldService(
     private fun subscribe() {
         val listType = object : TypeToken<ArrayList<Field>>() {}.type
 
-        iotClient.getConnectionState().observeForever {
+        disposables += iotClient.getConnectionState().subscribe {
             when (it) {
                 is IotConnectionState.Connected -> {
                     iotClient.subscribe("fields/${stationNameProvider.currentStationName()}",
@@ -54,7 +58,7 @@ class FieldService(
     }
 
     fun getFieldsWithEntries() {
-        iotClient.getConnectionState().observeForever {
+        disposables += iotClient.getConnectionState().subscribe {
             if (it == IotConnectionState.Connected) {
                 val stationName = stationNameProvider.currentStationName()
                 iotClient.publish("${stationName}/field/get", "")
