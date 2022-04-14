@@ -1,10 +1,10 @@
-import React, { FunctionComponent, useEffect, useState } from 'react'
+import React, { FunctionComponent, useState } from 'react'
+
 import { Link } from 'react-router-dom'
-import { useNavigationStore } from 'store'
-import { useAuth } from 'context'
+import { Permission } from 'dtos'
 import { QrButton } from './QrButton'
 import { Restricted } from '../auth/Restricted'
-import { Permission } from 'dtos'
+import { useAuth } from 'context'
 
 type NavlinkProps = {
   target: string
@@ -20,14 +20,8 @@ const Navlink: FunctionComponent<NavlinkProps> = ({ target, children }) => (
 
 const Navigation = () => {
   const [isExpanded, setExpanded] = useState(false)
-  const [currentWachtag, setCurrentWachtag] = useState('')
-  const navigationStore = useNavigationStore()
 
   const { logout } = useAuth()
-
-  useEffect(() => {
-    setCurrentWachtag(navigationStore.currentWachtag.format('DD.MM.Y'))
-  }, [navigationStore, currentWachtag])
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark">
@@ -51,7 +45,7 @@ const Navigation = () => {
         aria-expanded={isExpanded}
         aria-label="Toggle navigation"
       >
-        <span className="navbar-toggler-icon"/>
+        <span className="navbar-toggler-icon" />
       </button>
       <div className={'collapse navbar-collapse ' + (isExpanded ? 'show' : '')} id="navbarNav">
         <ul className="navbar-nav mr-auto mt-2 mt-lg-0">
@@ -61,11 +55,15 @@ const Navigation = () => {
           </Restricted>
         </ul>
         <ul className="nav navbar-nav flex-row justify-content-between ml-auto">
-          <QrButton/>
+          <QrButton />
           <li className="nav-item">
-            <button className="btn btn-outline-warning btn-sm nav-link d-inline m-0 p-2"
-                    onClick={logout} type="button" value="Abmelden"
-                    title="Benutzer abmelden">
+            <button
+              className="btn btn-outline-warning btn-sm nav-link d-inline m-0 p-2"
+              onClick={logout}
+              type="button"
+              value="Abmelden"
+              title="Benutzer abmelden"
+            >
               Abmelden
             </button>
           </li>

@@ -1,7 +1,7 @@
 import React from 'react'
-import { useObserver } from 'mobx-react-lite'
 import { SpecialEventType } from 'dtos'
 import { useDashboardStore } from 'store'
+import { useObserver } from 'mobx-react-lite'
 
 type SpecialEventViewProps = {
   type: SpecialEventType
@@ -15,7 +15,7 @@ const SpecialEvents: React.FC<SpecialEventViewProps> = ({ type }) => {
   return useObserver(() => (
     <>
       {accessor.map(event => (
-        <div className="card mb-3">
+        <div key={event.id} className="card mb-3">
           <div className="card-header">
             <h5 className="card-title">{event.title}</h5>
           </div>

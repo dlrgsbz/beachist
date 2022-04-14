@@ -1,19 +1,9 @@
+import { AdminView, StationState } from 'interfaces'
+import { ApiClient, sendEventToWukos } from 'modules/data'
+import { Entry, Field, NetworkEntry, NetworkSpecialEvent, SpecialEvent, SpecialEventType, StationInfo } from 'dtos'
 import { action, observable, runInAction } from 'mobx'
 import moment, { Moment } from 'moment'
-import {
-  Entry,
-  Field,
-  NetworkEntry,
-  NetworkSpecialEvent,
-  SpecialEvent,
-  SpecialEventType,
-  StationInfo,
-} from 'dtos'
-import { AdminView, StationState } from 'interfaces'
-import {
-  ApiClient,
-  sendEventToWukos,
-} from 'modules/data'
+
 import { DashboardService } from 'services'
 
 // noinspection PointlessArithmeticExpressionJS
@@ -33,7 +23,7 @@ class DashboardStore {
   @observable damages: SpecialEvent[] = []
   @observable specialEvents: SpecialEvent[] = []
 
-  @observable autoUpdateEnabled: boolean = true
+  @observable autoUpdateEnabled = true
   @observable view: AdminView = AdminView.stations
 
   private timeout: number | undefined
@@ -44,12 +34,11 @@ class DashboardStore {
      */
     private apiClient: ApiClient,
     private dashboardService: DashboardService,
-    ) {
-  }
+  ) {}
 
   async reloadData(): Promise<void> {
     this.setLoading(true)
-    let [networkEntries, events, enrichedStations, fields, networkSpecialEvents] = await Promise.all([
+    const [networkEntries, events, enrichedStations, fields, networkSpecialEvents] = await Promise.all([
       this.apiClient.fetchEntries(this.selectedDate),
       this.apiClient.fetchEvents(this.selectedDate),
       this.dashboardService.getStationsAndInfo(),
@@ -149,15 +138,14 @@ function createEntryMap(
 ): { entries: Map<string, Entry[]>; crews: Map<string, string> } {
   const crews = new Map<string, string>()
 
-  const theEntries: Entry[] = entries
-    .flatMap(entry => {
-      const station = stationMap.get(entry.station)
-      const field = fieldMap.get(entry.field)
-      if (!station || !field) {
-        return []
-      }
-      return [{ ...entry, station, field }]
-    })
+  const theEntries: Entry[] = entries.flatMap(entry => {
+    const station = stationMap.get(entry.station)
+    const field = fieldMap.get(entry.field)
+    if (!station || !field) {
+      return []
+    }
+    return [{ ...entry, station, field }]
+  })
 
   const entryMap = new Map<string, Entry[]>()
   theEntries.forEach(entry => {

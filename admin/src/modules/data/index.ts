@@ -1,4 +1,5 @@
-import moment from 'moment'
+import { AccessTokenNotFound, AuthService } from 'context/AuthServiceContext'
+import { ApiProvisioningRequest, ApiStationInfo } from './dtos'
 import {
   EventEntry,
   Field,
@@ -9,10 +10,10 @@ import {
   UserInfo,
   UserInfoWithToken,
 } from 'dtos'
-import { AccessTokenNotFound, AuthService } from 'context/AuthServiceContext'
+
 import axios from 'axios'
+import moment from 'moment'
 import { removeTokens } from 'lib/token'
-import { ApiProvisioningRequest, ApiStationInfo } from './dtos'
 
 export interface HttpHeaders {
   [header: string]: string
@@ -30,8 +31,7 @@ export interface HttpResponse<T> {
 }
 
 export class ApiClient {
-  constructor(private authService: AuthService) {
-  }
+  constructor(private authService: AuthService) {}
 
   private async request<T>(url: string, method: 'POST' | 'GET', options?: HttpOptions): Promise<HttpResponse<T>> {
     let token = ''
@@ -104,6 +104,7 @@ export class ApiClient {
   public async fetchEntries(date: moment.Moment): Promise<NetworkEntry[]> {
     const dateString = date.format('Y-MM-DD')
     const data = await this.get<NetworkEntry[]>(`/api/entry/${dateString}`)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return data.data.map((dt: any) => ({ ...dt, date: moment(dt.date) }))
   }
 
@@ -116,6 +117,7 @@ export class ApiClient {
   public async fetchSpecialEvents(date: moment.Moment): Promise<NetworkSpecialEvent[]> {
     const dateString = date.format('Y-MM-DD')
     const data = await this.get<NetworkSpecialEvent[]>(`/api/special/${dateString}`)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return data.data.map((dt: any) => ({ ...dt, date: moment(dt.date) }))
   }
 
@@ -155,7 +157,6 @@ export async function login(name: string, password: string): Promise<UserInfoWit
     throw error
   }
 }
-
 
 export function sendEventToWukos(event: SpecialEvent): void {
   const form = document.createElement('form')
