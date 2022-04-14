@@ -1,5 +1,6 @@
 {
-    "extends": "./tsconfig.json",
-    "include": ["./cdk"]
-  }
-  
+  "extends": "./tsconfig.json",
+  "include": [
+    "./cdk"
+  ]
+}
