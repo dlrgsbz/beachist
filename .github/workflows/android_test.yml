@@ -31,7 +31,8 @@ jobs:
 
       - name: run tests
         working-directory: android
-        run: ./gradlew lint testDebug --continue --stacktrace
+        # todo: re-add linting
+        run: ./gradlew testDebug --continue --stacktrace
 
   emulator_test:
     needs: determine_changes
