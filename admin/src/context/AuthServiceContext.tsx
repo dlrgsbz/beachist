@@ -1,10 +1,10 @@
-import { useConstant } from 'lib'
-import React from 'react'
-import jwtDecode from 'jwt-decode'
-
-import { UserInfo } from '../dtos'
-import { getUserData, login } from 'modules/data'
 import { getToken, removeTokens, setToken } from '../lib/token'
+import { getUserData, login } from 'modules/data'
+
+import React from 'react'
+import { UserInfo } from '../dtos'
+import jwtDecode from 'jwt-decode'
+import { useConstant } from 'lib'
 
 export class AuthService {
   public async login(username: string, password: string): Promise<UserInfo> {
@@ -51,7 +51,7 @@ export class AuthService {
   }
 
   public getAndValidateToken(): string {
-    let token = getToken()
+    const token = getToken()
 
     if (!token) {
       throw new AccessTokenNotFound('Could not find valid access token')
@@ -67,7 +67,7 @@ export class AuthService {
 
 const AuthServiceContext = React.createContext<AuthService>({} as AuthService)
 
-export const AuthServiceProvider: React.FC<any> = props => {
+export const AuthServiceProvider: React.FC = props => {
   const authService = useConstant<AuthService>(() => new AuthService())
 
   return <AuthServiceContext.Provider value={authService} {...props} />
@@ -92,5 +92,4 @@ export function isLoginTokenValid(token: string | null): boolean {
   return !isTokenExpired(token)
 }
 
-export class AccessTokenNotFound extends Error {
-}
+export class AccessTokenNotFound extends Error {}

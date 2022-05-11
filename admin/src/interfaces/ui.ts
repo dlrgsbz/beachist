@@ -1,7 +1,7 @@
-export enum Color {
-  green,
-  red,
-  yellow,
+export enum StationState {
+  okay,
+  notOkay,
+  missing,
 }
 
 export enum AdminView {

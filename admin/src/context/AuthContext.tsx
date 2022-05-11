@@ -1,9 +1,10 @@
-import { UserInfo } from '../dtos'
-import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react'
-import Loading from '../components/Loading'
-import { useIsMounted } from 'lib'
 import { AuthService, useAuthService } from './AuthServiceContext'
+import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react'
+
+import Loading from '../components/Loading'
+import { UserInfo } from '../dtos'
 import { getUserData } from 'modules/data'
+import { useIsMounted } from 'lib'
 
 export interface AuthContextType {
   user: UserInfo | null
@@ -12,8 +13,8 @@ export interface AuthContextType {
   tokenLogin: (token: string) => Promise<void>
 }
 
-const asyncNoop: (...args: any[]) => any = async (..._args: any[]) => {
-}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/no-unused-vars
+const asyncNoop: (...args: any[]) => any = async (..._: any[]) => {}
 
 const AuthContext = React.createContext<AuthContextType>({
   user: null,
@@ -56,6 +57,7 @@ export const AuthProvider: React.FC = props => {
       })
       .catch(e => {
         if (mounted) {
+          // eslint-disable-next-line no-console
           console.log('error', e)
         }
       })
@@ -67,18 +69,13 @@ export const AuthProvider: React.FC = props => {
   }, [authService, mounted])
 
   const login = useCallback(
-    (email: string, password: string) =>
-      authService
-        .login(email, password)
-        .then(userData => setUser(userData)),
+    (email: string, password: string) => authService.login(email, password).then(userData => setUser(userData)),
     [authService],
   )
 
-  const tokenLogin = useCallback((token: string) =>
-      authService
-        .tokenLogin(token)
-        .then(userData => setUser(userData)),
-    [authService]
+  const tokenLogin = useCallback(
+    (token: string) => authService.tokenLogin(token).then(userData => setUser(userData)),
+    [authService],
   )
 
   const logout = useCallback(() => authService.logout().then(() => setUser(null)), [authService])
@@ -94,7 +91,7 @@ export const AuthProvider: React.FC = props => {
   )
 
   if (loading || idle) {
-    return <Loading/>
+    return <Loading />
   }
 
   return <AuthContext.Provider value={value} {...props} />

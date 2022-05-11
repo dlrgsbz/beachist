@@ -12,6 +12,7 @@ abstract class StationRepository {
     abstract fun getStoredStationId(): String?
     abstract fun getStationId(): String
     abstract fun getCachedStations(): Observable<List<Station>>
+    abstract fun hasCrew(): Boolean
     abstract fun getCrew(): String
     abstract fun getLastUpdateDate(): Long
 
@@ -74,6 +75,10 @@ class StationRepositoryImpl(
                 this.putString(KeyCachedStations, stationString)
             }
         }
+    }
+
+    override fun hasCrew(): Boolean {
+        return getCrew().trim() !== ""
     }
 
     override fun getCrew(): String {
