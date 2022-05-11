@@ -20,7 +20,7 @@ internal class EventsListAdapter(
 
     var items: List<Event> by diffableList(
         compareContent = { a, b -> a == b },
-        compareId = { a, b -> a == b }
+        compareId = { a, b -> a.id == b.id }
     )
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {

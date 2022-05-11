@@ -18,4 +18,6 @@
     <string name="invalid_password">Passwort darf nicht leer sein</string>
     <string name="provision_failed">"Zuweisung fehlgeschlagen"</string>
     <string name="station_name">Station %1$s</string>
+    <!-- Strings related to Iot connection -->
+    <string name="disconnected">Verbindung getrennt</string>
 </resources>
