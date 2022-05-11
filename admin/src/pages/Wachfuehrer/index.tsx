@@ -1,18 +1,18 @@
 import React, { useEffect } from 'react'
-import { useObserver } from 'mobx-react-lite'
-import moment from 'moment'
-import DatePicker from '@mui/lab/DatePicker'
-import classNames from 'classnames'
-import { useDashboardStore } from 'store'
-import Loading from 'components/Loading'
-import { AdminView } from 'interfaces'
-import { SpecialEventType } from 'dtos'
-import StationInfo from './views/stationInfo'
-import SpecialEvents from './views/specialEvents'
 
+import { AdminView } from 'interfaces'
 import { ReactComponent as CheckedBox } from './img/done.svg'
+import DatePicker from '@mui/lab/DatePicker'
 import { ReactComponent as EmptyCheckbox } from './img/checkbox.svg'
+import Loading from 'components/Loading'
+import { SpecialEventType } from 'dtos'
+import SpecialEvents from './views/specialEvents'
+import StationInfo from './views/stationInfo'
 import { TextField } from '@mui/material'
+import classNames from 'classnames'
+import moment from 'moment'
+import { useDashboardStore } from 'store'
+import { useObserver } from 'mobx-react-lite'
 
 const Wachfuehrer: React.FC = () => {
   const dashboardStore = useDashboardStore()
@@ -34,7 +34,7 @@ const Wachfuehrer: React.FC = () => {
           onChange={onDateChange}
           maxDate={moment().endOf('day')}
           value={date}
-          renderInput={(params) => <TextField {...params} />}
+          renderInput={params => <TextField {...params} />}
         />
         <div className="btn-group-toggle float-sm-right" data-toggle="buttons">
           {

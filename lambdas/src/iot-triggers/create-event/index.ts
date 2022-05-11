@@ -1,9 +1,10 @@
+import { IotClient, iotClient } from "../../aws/iot";
+
 import axios from "axios";
-import { z } from "zod";
-import { iotClient, IotClient } from "../../aws/iot";
 import { config } from "../../config";
-import { logger } from "../../logger";
 import { dateSchema } from '../../schemas'
+import { logger } from "../../logger";
+import { z } from "zod";
 
 enum EventType {
   firstAid = 'firstAid',

@@ -5,9 +5,10 @@ import {
   UpdateThingShadowCommand,
   UpdateThingShadowCommandOutput,
 } from '@aws-sdk/client-iot-data-plane'
+
+import { Shadow } from '../types'
 import { config } from '../config'
 import { logger } from '../logger'
-import { Shadow } from '../types'
 
 export interface IotClient {
   updateShadow: (thingName: string, shadow: Shadow) => Promise<UpdateThingShadowCommandOutput>

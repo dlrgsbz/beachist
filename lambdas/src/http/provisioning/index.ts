@@ -1,6 +1,7 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda"
+import { IotClient, iotClient } from "../../aws/iot"
+
 import axios from "axios"
-import { iotClient, IotClient } from "../../aws/iot"
 import { config } from "../../config"
 import { logger } from "../../logger"
 

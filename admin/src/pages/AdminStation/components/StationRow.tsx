@@ -1,5 +1,6 @@
 import { ProvisioningRequest, StationInfo } from 'dtos'
 import React, { useCallback } from 'react'
+
 import { ProvisioningInfo } from './ProvisioningInfo'
 import { ProvisioningModalProps } from './ProvisioningModal'
 
@@ -32,16 +33,21 @@ export const StationRow: React.VFC<StationRowProps> = ({
     }
   }, [provision, setModal, station.name])
 
-  return <tr>
-    <td>{name}</td>
-    <td>{onlineString} ({onlineStateSinceString})</td>
-    <td>{appVersion ? `${appVersion} (${appVersionCode})` : 'unbekannt'}</td>
-    <td>
-      <ProvisioningInfo
-        loading={provisionLoading}
-        provisioning={provision}
-        createProvisioning={() => createProvisioning(id, name)}
-        setModal={onSetModal} />
-    </td>
-  </tr>
+  return (
+    <tr>
+      <td>{name}</td>
+      <td>
+        {onlineString} ({onlineStateSinceString})
+      </td>
+      <td>{appVersion ? `${appVersion} (${appVersionCode})` : 'unbekannt'}</td>
+      <td>
+        <ProvisioningInfo
+          loading={provisionLoading}
+          provisioning={provision}
+          createProvisioning={() => createProvisioning(id, name)}
+          setModal={onSetModal}
+        />
+      </td>
+    </tr>
+  )
 }

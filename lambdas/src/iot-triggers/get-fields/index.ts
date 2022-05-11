@@ -1,10 +1,10 @@
-import axios from "axios"
-import { z } from "zod"
-
 import { IotClient, iotClient } from '../../aws/iot'
+
+import axios from "axios"
 import { config } from "../../config"
-import { logger } from "../../logger"
 import { formatIso8601Date } from "../../util"
+import { logger } from "../../logger"
+import { z } from "zod"
 
 const schema = z.object({
   iotThingName: z.string(),

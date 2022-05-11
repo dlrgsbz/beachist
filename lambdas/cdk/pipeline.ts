@@ -1,8 +1,10 @@
 #!/usr/bin/env node
-import { Stack } from 'aws-cdk-lib';
+
 import { BuildEnvironmentVariableType, BuildSpec, LinuxBuildImage, Project, Source } from 'aws-cdk-lib/aws-codebuild';
 import { ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+
 import { Construct } from 'constructs';
+import { Stack } from 'aws-cdk-lib';
 import { StackProps } from './cdk';
 
 export class CodebuildStack extends Stack {

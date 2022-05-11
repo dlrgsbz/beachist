@@ -1,8 +1,9 @@
 #!/usr/bin/env node
+
 import { App } from 'aws-cdk-lib';
-import { Stage } from './config';
-import { InfraStack } from './infra';
 import { CodebuildStack } from './pipeline';
+import { InfraStack } from './infra';
+import { Stage } from './config';
 
 const app = new App();
 

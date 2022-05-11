@@ -1,11 +1,12 @@
-import React, { useState } from 'react'
-import { StationState } from 'interfaces'
-import { ConnectedIcon, DisconnectedIcon, SquareCheck, SquareEmpty, SquareX } from './components'
-import { useGeneratedId } from 'lib'
-import { Moment } from 'moment'
-import classNames from 'classnames'
-
 import './WachfuehrerTurmDetail.scss'
+
+import { ConnectedIcon, DisconnectedIcon, SquareCheck, SquareEmpty, SquareX } from './components'
+import React, { useState } from 'react'
+
+import { Moment } from 'moment'
+import { StationState } from 'interfaces'
+import classNames from 'classnames'
+import { useGeneratedId } from 'lib'
 
 interface WachfuehrerTurmDetailProps {
   title: string
@@ -39,38 +40,57 @@ const Title: React.FC<TitleProps> = ({ title, isVisible, setVisible, stationStat
         aria-controls={bodyId}
         onClick={() => setVisible(!isVisible)}
       >
-          <SquareX /> {title}
+        <SquareX /> {title}
       </button>
     )
   }
   if (stationState === StationState.missing) {
-      return <><SquareEmpty /> {title}</>
+    return (
+      <>
+        <SquareEmpty /> {title}
+      </>
+    )
   }
-    return <><SquareCheck /> {title}</>
+  return (
+    <>
+      <SquareCheck /> {title}
+    </>
+  )
 }
 
-export const WachfuehrerTurmDetail: React.FC<WachfuehrerTurmDetailProps> = ({ title, stationState, crew, isOnline, onlineStateSince, children }) => {
+export const WachfuehrerTurmDetail: React.FC<WachfuehrerTurmDetailProps> = ({
+  title,
+  stationState,
+  crew,
+  isOnline,
+  onlineStateSince,
+  children,
+}) => {
   const [isVisible, setVisible] = useState(false)
 
   const id = useGeneratedId('card')
   const bodyId = useGeneratedId('cardBody')
-  const className = classNames('collapse', {'show': isVisible})
+  const className = classNames('collapse', { show: isVisible })
 
   return (
     <div className="card">
-      <div className="card-header"  id={id} onClick={() => setVisible(!isVisible)}>
+      <div className="card-header" id={id} onClick={() => setVisible(!isVisible)}>
         <h5 className="mb-0">
-          <Title title={title} stationState={stationState} isVisible={isVisible} setVisible={setVisible} bodyId={bodyId} />
+          <Title
+            title={title}
+            stationState={stationState}
+            isVisible={isVisible}
+            setVisible={setVisible}
+            bodyId={bodyId}
+          />
         </h5>
         <OnlineStatus isOnline={isOnline} onlineStateSince={onlineStateSince} />
       </div>
       <div id={bodyId} className={className} aria-labelledby={id} data-parent="#accordion">
-          <div className="card-body">
-            {crew && <p>Besatzung: {crew}</p>}
-            {children && (
-              <ul>{children}</ul>
-            )}
-          </div>
+        <div className="card-body">
+          {crew && <p>Besatzung: {crew}</p>}
+          {children && <ul>{children}</ul>}
+        </div>
       </div>
     </div>
   )
@@ -81,5 +101,10 @@ const OnlineStatus: React.VFC<OnlineStatusProps> = ({ onlineStateSince, isOnline
   const Icon = isOnline ? ConnectedIcon : DisconnectedIcon
   const timeFrame = onlineStateSince?.fromNow(false) ?? 'noch nie gesehen'
 
-  return <div className="online-status"><Icon className="online-status-indicator" titleAccess={label} />{label} ({timeFrame})</div>
+  return (
+    <div className="online-status">
+      <Icon className="online-status-indicator" titleAccess={label} />
+      {label} ({timeFrame})
+    </div>
+  )
 }

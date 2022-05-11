@@ -1,6 +1,7 @@
+import { EnrichedStationsOutput, enrichStations, mapStationInfo } from './utils'
+
 import { ApiClient } from '../modules/data'
 import { StationInfoMap } from '../dtos'
-import { EnrichedStationsOutput, enrichStations, mapStationInfo } from './utils'
 
 export class DashboardService {
   constructor(private apiClient: ApiClient) {}

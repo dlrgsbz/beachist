@@ -1,16 +1,20 @@
-import { ApiStationInfo } from 'modules/data/dtos'
 import { StationInfo, StationInfoMap } from 'dtos'
+
+import { ApiStationInfo } from 'modules/data/dtos'
 import moment from 'moment'
 
-export const mapStationInfo = (data: Record<string, ApiStationInfo | null>): StationInfoMap => Object.entries(data).reduce((carry, [key, data]) => {
-  carry[key] = data ? {
-    online: data.online,
-    onlineStateSince: moment(data.date),
-    appVersion: data.version,
-    appVersionCode: data.versionCode,
-  } : null
-  return carry
-}, {} as StationInfoMap)
+export const mapStationInfo = (data: Record<string, ApiStationInfo | null>): StationInfoMap =>
+  Object.entries(data).reduce((carry, [key, data]) => {
+    carry[key] = data
+      ? {
+          online: data.online,
+          onlineStateSince: moment(data.date),
+          appVersion: data.version,
+          appVersionCode: data.versionCode,
+        }
+      : null
+    return carry
+  }, {} as StationInfoMap)
 
 export interface EnrichedStationsOutput {
   stations: StationInfo[]

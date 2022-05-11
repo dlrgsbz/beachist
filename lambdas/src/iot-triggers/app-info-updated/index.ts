@@ -1,7 +1,7 @@
-import { z } from 'zod'
 import axios from 'axios'
 import { config } from '../../config'
 import { logger } from '../../logger'
+import { z } from 'zod'
 
 const schema = z.object({
   stationId: z.string().uuid(),

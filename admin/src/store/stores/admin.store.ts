@@ -1,6 +1,7 @@
-import { action, observable } from 'mobx'
+import { AsyncState, Result, createAsyncState, runWithAsyncState } from 'lib'
 import { ProvisioningRequest, ProvisioningRequestMap, StationInfo } from 'dtos'
-import { AsyncState, createAsyncState, Result, runWithAsyncState } from 'lib'
+import { action, observable } from 'mobx'
+
 import { AdminService } from 'services'
 
 class AdminStore {
@@ -12,10 +13,7 @@ class AdminStore {
 
   @action.bound
   async fetchData(): Promise<void> {
-    await Promise.all([
-      this.fetchStations(),
-      this.fetchProvisioningRequests(),
-    ])
+    await Promise.all([this.fetchStations(), this.fetchProvisioningRequests()])
   }
 
   @action.bound

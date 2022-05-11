@@ -1,13 +1,15 @@
-import React from 'react'
 import 'moment/locale/de'
+
 import { AuthProvider, useAuth } from './context'
-import { AuthenticatedApp } from './AuthenticatedApp'
-import { UnauthenticatedApp } from './UnauthenticatedApp'
+
 import { AuthServiceProvider } from './context/AuthServiceContext'
-import { SnackbarProvider } from 'notistack'
-import StoreProvider from 'store'
+import { AuthenticatedApp } from './AuthenticatedApp'
 import DateAdapter from '@mui/lab/AdapterMoment'
 import { LocalizationProvider } from '@mui/lab'
+import React from 'react'
+import { SnackbarProvider } from 'notistack'
+import StoreProvider from 'store'
+import { UnauthenticatedApp } from './UnauthenticatedApp'
 
 const AppRender = () => {
   const { user } = useAuth()

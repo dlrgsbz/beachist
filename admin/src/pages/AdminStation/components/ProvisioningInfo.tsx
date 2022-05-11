@@ -22,14 +22,22 @@ export const ProvisioningInfo: React.VFC<ProvisioningInfoProps> = ({
   }
 
   if (!provisioning) {
-    return <button className='btn btn-link' onClick={onCreateProvisioning}>Neue Zuweisung</button>
+    return (
+      <button className="btn btn-link" onClick={onCreateProvisioning}>
+        Neue Zuweisung
+      </button>
+    )
   }
 
   const expiresAt = provisioning.expiresAt.fromNow(false)
   const expiresAtAbsolute = provisioning.expiresAt.format('L LTS')
-  return <>
-    <button className='btn btn-link' onClick={() => setModal()}>Passwort anzeigen</button>
-    <br />
-    läuft <abbr title={expiresAtAbsolute}>{expiresAt}</abbr> ab
-  </>
+  return (
+    <>
+      <button className="btn btn-link" onClick={() => setModal()}>
+        Passwort anzeigen
+      </button>
+      <br />
+      läuft <abbr title={expiresAtAbsolute}>{expiresAt}</abbr> ab
+    </>
+  )
 }
