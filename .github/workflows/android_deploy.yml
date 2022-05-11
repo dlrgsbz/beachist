@@ -58,6 +58,7 @@ jobs:
       - name: Assemble release build
         working-directory: android
         env:
+          KEYSTORE_FILE: './project_resources/release.keystore'
           KEYSTORE_PASSWORD: ${{ secrets.CLIENT_KEYSTORE_PASSWORD }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
