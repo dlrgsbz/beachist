@@ -44,7 +44,7 @@ jobs:
         working-directory: android
         env:
           backendUrl: ${{ secrets.APP_BACKEND_URL }}
-          nprovisioningUrl: ${{ secrets.APP_PROVISIONING_URL }}
+          provisioningUrl: ${{ secrets.APP_PROVISIONING_URL }}
           databaseName: ${{ secrets.APP_DATABASE_NAME }}
           CLIENT_KEYSTORE_BASE_64: ${{ secrets.CLIENT_KEYSTORE_BASE_64 }}
           GITHUB_RUN_NUMBER: ${{ github.run_number }}
