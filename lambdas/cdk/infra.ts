@@ -48,6 +48,7 @@ export class InfraStack extends Stack {
     this.createGetFieldsHandler()
     this.createCreateEntryHandler()
     this.createCreateEventHandler()
+    this.createCreateSpecialEventHandler()
     this.createProvisioningHandler()
     this.createInfoHandler()
     this.createUpdateCrewHandler()
@@ -129,6 +130,29 @@ export class InfraStack extends Stack {
           FROM '+/event'`,
       ),
       actions: [new LambdaFunctionAction(createEventHandler)],
+    })
+  }
+
+  private createCreateSpecialEventHandler() {
+    const createSpecialEventHandler = this.lambdaFunction(
+      `${this.props.prefix}-create-special-event`,
+      path.join('iot-triggers', 'create-special-event'),
+      `createSpecialEventHandler`,
+      this.lambdaEnvs,
+    )
+
+    addIotPublishToTopicRole(createSpecialEventHandler)
+
+    new TopicRule(this, 'create-special-event-rule', {
+      topicRuleName: `beachist${this.props.stage}CreateSpecialEventRule`,
+      sql: IotSql.fromStringAsVer20160323(
+        `SELECT 
+            date, note, title, type, notifier, 
+            topic(1) AS iotThingName, 
+            get_thing_shadow(topic(1), ${this.getThingShadowRoleArn}).state.desired.stationId AS stationId,
+          FROM '+/special-event'`,
+      ),
+      actions: [new LambdaFunctionAction(createSpecialEventHandler)],
     })
   }
 

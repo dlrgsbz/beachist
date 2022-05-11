@@ -2,166 +2,145 @@ package de.tjarksaul.wachmanager.modules.specialEvents
 
 import android.app.Activity
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
 import android.widget.RadioButton
-import android.widget.RadioGroup
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.FragmentManager
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.textfield.TextInputLayout
 import de.tjarksaul.wachmanager.R
-import de.tjarksaul.wachmanager.api.HTTPRepo
-import de.tjarksaul.wachmanager.api.RequestCallback
-import de.tjarksaul.wachmanager.dtos.IdResponse
-import de.tjarksaul.wachmanager.dtos.NetworkState
 import de.tjarksaul.wachmanager.dtos.SpecialEventKind
 import de.tjarksaul.wachmanager.modules.base.BaseFragment
+import de.tjarksaul.wachmanager.util.StackName
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.ofType
+import io.reactivex.rxkotlin.plusAssign
+import io.reactivex.subjects.PublishSubject
+import kotlinx.android.synthetic.main.fragment_add_special_event.*
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
-class AddSpecialEventFragment(val viewModel: SpecialEventsViewModel) : BaseFragment(),
-    View.OnClickListener, TextWatcher {
-    private lateinit var titleText: EditText
-    private lateinit var noteText: EditText
-    private lateinit var notifierText: EditText
-    private lateinit var radioGroup: RadioGroup
+internal class AddSpecialEventFragment : BaseFragment() {
+    private val disposables = CompositeDisposable()
 
-    private lateinit var titleInputLayout: TextInputLayout
-    private lateinit var nameInputLayout: TextInputLayout
+    private val viewModel: AddSpecialEventViewModel by viewModel()
+
+    private val actions: PublishSubject<AddSpecialEventAction> = PublishSubject.create()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
-        val root = inflater.inflate(R.layout.fragment_add_special_event, container, false)
-
-        titleText = root.findViewById(R.id.editTextTextSpecialTitle)
-        titleText.addTextChangedListener(this)
-        noteText = root.findViewById(R.id.editTextSpecialDetails)
-        notifierText = root.findViewById(R.id.editTextSpecialNotifier)
-        notifierText.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                val notifier = notifierText.text.toString().trim()
-
-                if (notifier == "" || notifier.length < 2) {
-                    nameInputLayout.isErrorEnabled = true
-                    nameInputLayout.error = "Bitte mindestens 2 Zeichen eingeben"
-                } else {
-                    nameInputLayout.isHintEnabled = true
-                    nameInputLayout.isErrorEnabled = false
-                }
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-        })
-        radioGroup = root.findViewById(R.id.specialRadioGroup)
-
-        titleInputLayout = root.findViewById(R.id.textInputLayoutSpecialTitle)
-
-        titleInputLayout.isHintEnabled = true
-        titleInputLayout.hint = "Kurze Beschreibung"
-
-        nameInputLayout = root.findViewById(R.id.textInputLayoutSpecialNotifier)
-        nameInputLayout.isHintEnabled = true
-        nameInputLayout.hint = "Meldende*r"
-
-        root.findViewById<FloatingActionButton>(R.id.save_special_event_fab)
-            .setOnClickListener(this)
-
-        return root
+        return inflater.inflate(R.layout.fragment_add_special_event, container, false)
     }
 
-    override fun onClick(v: View?) {
-        var error = false
-        val title = titleText.text.toString().trim()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        if (title == "" || title.length < 8) {
-            error = true
+        setupView()
+        setupBindings()
+    }
+
+    private fun setupView() {
+        textInputLayoutSpecialTitle.isHintEnabled = true
+        textInputLayoutSpecialTitle.hint = getString(R.string.special_event_title_hint)
+
+        textInputLayoutSpecialNotifier.isHintEnabled = true
+        textInputLayoutSpecialNotifier.hint = getString(R.string.special_event_notifier_hint)
+    }
+
+    private fun setupBindings() {
+        viewModel.attach(actions)
+
+        disposables += viewModel.stateOf { titleError }
+            .subscribe { onTitleErrorChanged(it) }
+
+        disposables += viewModel.stateOf { notifierError }
+            .subscribe { onNotifierErrorChanged(it) }
+
+        disposables += viewModel.stateOf { kindError }
+            .subscribe { onKindErrorChanged(it) }
+
+        disposables += viewModel.stateOf { saveButtonEnabled }
+            .subscribe { saveSpecialEventButton.isEnabled = it }
+
+        disposables += viewModel.effects()
+            .ofType<AddSpecialEventEffect.PopView>()
+            .subscribe { onPopView() }
+
+        disposables += viewModel.effects()
+            .ofType<AddSpecialEventEffect.IncompleteError>()
+            .subscribe { onIncompleteError() }
+
+        disposables += viewModel.effects()
+            .ofType<AddSpecialEventEffect.HideKeyboard>()
+            .subscribe { onHideKeyboard() }
+
+        editTextTextSpecialTitle.doAfterTextChanged {
+            actions.onNext(AddSpecialEventAction.TitleUpdated(it.toString()))
         }
 
-        val notifier = notifierText.text.toString().trim()
-
-        if (notifier == "" || notifier.length < 2) {
-            error = true
+        editTextSpecialNotifier.doAfterTextChanged {
+            actions.onNext(AddSpecialEventAction.NotifierUpdated(it.toString()))
         }
 
-        val selectedButtonId = radioGroup.checkedRadioButtonId
-        val lastButton = radioGroup.getChildAt(radioGroup.childCount - 1) as RadioButton
-        if (selectedButtonId == -1) {
-            lastButton.error = "Bitte Typ der Meldung auswählen"
-            error = true
-        } else {
-            lastButton.error = null
+        editTextSpecialDetails.doAfterTextChanged {
+            actions.onNext(AddSpecialEventAction.NotesUpdated(it.toString()))
         }
 
-        // todo: body validation?
-
-        if (error) {
-            Snackbar.make(radioGroup, "Bitte alle Felder ausfüllen", 5000).show()
-            return
+        specialRadioGroup.setOnCheckedChangeListener { _, selectedId ->
+            val kind = if (selectedId == R.id.button_damage) SpecialEventKind.damage else SpecialEventKind.event
+            actions.onNext(AddSpecialEventAction.KindUpdated(kind))
         }
 
-        val kind =
-            if (selectedButtonId == R.id.button_damage) SpecialEventKind.damage else SpecialEventKind.event
-
-
-        val note = noteText.text.toString().trim()
-        val id = viewModel.addEntry(title, note, notifier, kind)
-
-        val stationId = getStoredStationId()
-        if (stationId === null) {
-            return
+        saveSpecialEventButton.setOnClickListener {
+            actions.onNext(AddSpecialEventAction.SaveSpecialEvent)
         }
+    }
 
-        HTTPRepo().createSpecialEvent(
-            stationId,
-            title,
-            note,
-            notifier,
-            kind,
-            callback = object : RequestCallback<IdResponse> {
-                override fun onFailure() {
-                    viewModel.updateEntryFromNetwork(id, id, NetworkState.failed)
-                }
+    private fun onTitleErrorChanged(error: Int?) {
+        error?.let {
+            textInputLayoutSpecialTitle.isErrorEnabled = true
+            textInputLayoutSpecialTitle.error = getString(it)
+        } ?: kotlin.run {
+            textInputLayoutSpecialTitle.isErrorEnabled = false
+            textInputLayoutSpecialTitle.isHintEnabled = true
+        }
+    }
 
-                override fun onResponse(response: IdResponse) {
-                    viewModel.updateEntryFromNetwork(id, response.id, NetworkState.successful)
-                }
-            })
+    private fun onNotifierErrorChanged(error: Int?) {
+        error?.let {
+            textInputLayoutSpecialNotifier.isErrorEnabled = true
+            textInputLayoutSpecialNotifier.error = getString(it)
+        } ?: kotlin.run {
+            textInputLayoutSpecialNotifier.isErrorEnabled = false
+            textInputLayoutSpecialNotifier.isHintEnabled = true
+        }
+    }
 
-        val imm: InputMethodManager =
-            requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(titleText.rootView.windowToken, 0);
+    private fun onKindErrorChanged(error: Int?) {
+        val radioButton = specialRadioGroup.getChildAt(specialRadioGroup.childCount - 1) as RadioButton
+        radioButton.error = error?.let { getString(error) }
+    }
+
+    private fun onPopView() {
+        // todo: move this to a navigator?
         requireActivity().supportFragmentManager.popBackStack(
-            "ShowAddSpecialEventsView",
+            StackName.ShowAddSpecialEventsView.name,
             FragmentManager.POP_BACK_STACK_INCLUSIVE
         )
     }
 
-    override fun afterTextChanged(s: Editable?) {
-        val title = titleText.text.toString().trim()
-
-        if (title == "" || title.length < 8) {
-            titleInputLayout.isErrorEnabled = true
-            titleInputLayout.error = "Bitte mindestens 8 Zeichen eingeben"
-        } else {
-            titleInputLayout.isHintEnabled = true
-            titleInputLayout.isErrorEnabled = false
-        }
+    private fun onHideKeyboard() {
+        val imm = requireActivity().getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(editTextTextSpecialTitle.rootView.windowToken, 0)
     }
 
-    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-
-    }
-
-    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+    private fun onIncompleteError() {
+        val text = getText(R.string.special_event_error_incomplete)
+        Snackbar.make(specialRadioGroup, text, 5000).show()
     }
 }

@@ -2,16 +2,40 @@ package de.tjarksaul.wachmanager.modules.specialEvents
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import de.tjarksaul.wachmanager.dtos.NetworkState
 import de.tjarksaul.wachmanager.dtos.SpecialEvent
 import de.tjarksaul.wachmanager.dtos.SpecialEventKind
+import de.tjarksaul.wachmanager.modules.base.BaseViewModel
+import de.tjarksaul.wachmanager.modules.base.ViewModelAction
+import de.tjarksaul.wachmanager.modules.base.ViewModelEffect
+import de.tjarksaul.wachmanager.modules.base.ViewModelState
+import io.reactivex.rxkotlin.ofType
+import io.reactivex.rxkotlin.plusAssign
 import java.text.SimpleDateFormat
 import java.util.*
 
-class SpecialEventsViewModel : ViewModel() {
-    fun updateData(data: MutableList<SpecialEvent>) {
-        _events.value = data
+internal class SpecialEventsViewModel :
+    BaseViewModel<SpecialEventListAction, SpecialEventListState, SpecialEventListEffect>(emptyState) {
+    companion object {
+        private val emptyState = SpecialEventListState()
+    }
+
+    override fun handleActions() {
+        disposables += actions.ofType<SpecialEventListAction.CreateEvent>()
+            .subscribe { onCreateSpecialEvent() }
+
+        disposables += actions.ofType<SpecialEventListAction.Refetch>()
+            .subscribe { onRefetch() }
+
+        // todo: subscribe to updates
+    }
+
+    private fun onCreateSpecialEvent() {
+        // todo: push to add view
+    }
+
+    private fun onRefetch() {
+        // todo: send mqtt message to get all events
     }
 
     fun addEntry(title: String, note: String, notifier: String, kind: SpecialEventKind): String {
@@ -46,16 +70,26 @@ class SpecialEventsViewModel : ViewModel() {
         }
     }
 
-    fun getDate(): String {
+    private fun getDate(): String {
         val simpleDateFormat =
             SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.getDefault())
         return simpleDateFormat.format(Date())
     }
 
-    private var iterator: Int = 1
-
     private val _events = MutableLiveData<MutableList<SpecialEvent>>().apply {
         value = emptyList<SpecialEvent>().toMutableList()
     }
-    val events: LiveData<MutableList<SpecialEvent>> = _events
 }
+
+internal sealed class SpecialEventListAction : ViewModelAction {
+    object Refetch : SpecialEventListAction()
+    object CreateEvent : SpecialEventListAction()
+}
+
+internal sealed class SpecialEventListEffect : ViewModelEffect {
+    object ShowCreateEventView : SpecialEventListEffect()
+}
+
+internal data class SpecialEventListState(
+    val eventItems: List<SpecialEvent> = listOf(),
+) : ViewModelState

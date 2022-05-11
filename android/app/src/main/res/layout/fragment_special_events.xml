@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".modules.events.EventsFragment">
 
-    <ListView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/specialEventList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

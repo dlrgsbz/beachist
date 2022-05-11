@@ -5,48 +5,74 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ListView
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import de.tjarksaul.wachmanager.R
 import de.tjarksaul.wachmanager.modules.base.BaseFragment
+import de.tjarksaul.wachmanager.util.StackName
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.ofType
+import io.reactivex.rxkotlin.plusAssign
+import io.reactivex.subjects.PublishSubject
+import kotlinx.android.synthetic.main.fragment_special_events.*
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class SpecialEventsFragment : BaseFragment() {
-    private val specialEventsViewModel: SpecialEventsViewModel by viewModels()
+    private val disposables = CompositeDisposable()
 
-    private lateinit var listView: ListView
+    private val viewModel: SpecialEventsViewModel by viewModel()
+
+    private val actions: PublishSubject<SpecialEventListAction> = PublishSubject.create()
+    private val adapter: SpecialEventsListAdapter by lazy { SpecialEventsListAdapter() }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
-        val root = inflater.inflate(R.layout.fragment_special_events, container, false)
-        listView = root.findViewById(R.id.specialEventList)
+        return inflater.inflate(R.layout.fragment_special_events, container, false)
+    }
 
-        specialEventsViewModel.events.observe(viewLifecycleOwner, Observer { items ->
-            val adapter = activity?.applicationContext?.let { ctx ->
-                SpecialEventsListAdapter(ctx, items, requireActivity())
-            }
-            listView.adapter = adapter
-        })
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        val button = root.findViewById<FloatingActionButton>(R.id.add_special_event_fab)
-        button.setOnClickListener {
-            val fragmentManager: FragmentManager = requireActivity().supportFragmentManager
-            val transaction = fragmentManager.beginTransaction()
-            transaction.replace(
-                android.R.id.content,
-                AddSpecialEventFragment(specialEventsViewModel)
-            )
+        setupView()
+        setupBindings()
 
-            transaction.addToBackStack("ShowAddSpecialEventsView")
+        actions.onNext(SpecialEventListAction.Refetch)
+    }
 
-            transaction.commit()
+    private fun setupView() {
+//        val layoutManager = LinearLayoutManager(activity)
+//        specialEventList.layoutManager
+        specialEventList.adapter = adapter
+
+
+    }
+
+    private fun setupBindings() {
+        viewModel.attach(actions)
+
+        disposables += viewModel.stateOf { eventItems }
+            .subscribe { adapter.items = it }
+
+        add_special_event_fab.setOnClickListener {
+            actions.onNext(SpecialEventListAction.CreateEvent)
         }
 
-        return root
+        disposables += viewModel.effects()
+            .ofType<SpecialEventListEffect.ShowCreateEventView>()
+            .subscribe { onShowCreateEventView() }
+    }
+
+    private fun onShowCreateEventView() {
+        val transaction = requireActivity().supportFragmentManager.beginTransaction()
+        transaction.replace(
+            android.R.id.content,
+            AddSpecialEventFragment(viewModel)
+        )
+
+        transaction.addToBackStack(StackName.ShowAddSpecialEventsView.name)
+
+        transaction.commit()
     }
 }

@@ -1,46 +1,61 @@
 package de.tjarksaul.wachmanager.modules.specialEvents
 
-import android.app.Activity
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.recyclerview.widget.RecyclerView
 import de.tjarksaul.wachmanager.R
+import de.tjarksaul.wachmanager.diffableList
 import de.tjarksaul.wachmanager.dtos.NetworkState
 import de.tjarksaul.wachmanager.dtos.SpecialEvent
 import de.tjarksaul.wachmanager.dtos.SpecialEventKind
+import io.reactivex.Observer
+import kotlinx.android.synthetic.main.item_special_event.view.*
 
 
-class SpecialEventsListAdapter(
-    context: Context,
-    items: List<SpecialEvent>,
-//    private val itemClickCallback: ((String, Boolean, StateKind?, Int?, String?) -> Unit)?,
-    private val parentActivity: Activity
-) : ArrayAdapter<SpecialEvent>(context, R.layout.item_special_event, items) {
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        val view = convertView ?: LayoutInflater.from(context)
+internal class SpecialEventsListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    var items: List<SpecialEvent> by diffableList(
+        compareContent = { a, b -> a == b },
+        compareId = { a, b -> a.id == b.id }
+    )
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_special_event, parent, false)
 
-        val item = getItem(position) ?: return view
+        return SpecialEventHolder(view)
+    }
 
+    override fun getItemCount(): Int = items.size
 
-        val nameView: TextView = view.findViewById(R.id.special_event_item_name)
-        val dateView: TextView = view.findViewById(R.id.special_event_item_date)
-        val typeView: TextView = view.findViewById(R.id.special_event_item_type)
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        when (holder) {
+            is SpecialEventHolder -> holder.bind(
+                items[position],
+            )
+        }
+    }
+}
 
-        nameView.text = item.title
-        dateView.text = item.printableDate
-        typeView.text = if (item.kind == SpecialEventKind.damage)  "Schadenmeldung" else "Besonderes Vorkommnis"
+internal class SpecialEventHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+    fun bind(specialEvent: SpecialEvent) {
+        with(specialEvent) {
+            val nameView: TextView = itemView.special_event_item_name
+            val dateView: TextView = itemView.special_event_item_date
+            val typeView: TextView = itemView.special_event_item_type
 
-        addNetworkIndicator(view, item.networkState)
+            nameView.text = this.title
+            dateView.text = this.printableDate
+            typeView.text =
+                if (this.kind == SpecialEventKind.damage) "Schadenmeldung" else "Besonderes Vorkommnis"
 
-        return view
+            addNetworkIndicator(itemView, this.networkState)
+        }
     }
 
     private fun addNetworkIndicator(view: View, networkState: NetworkState) {
-        val loadingIndicatorContainer =
-            view.findViewById<LinearLayout>(R.id.loading_indicator_container)
+        val loadingIndicatorContainer = view.loading_indicator_container
 
         loadingIndicatorContainer.removeAllViews()
 
@@ -48,17 +63,17 @@ class SpecialEventsListAdapter(
         when (networkState) {
             NetworkState.pending -> {
                 val progressBar =
-                    ProgressBar(context, null, android.R.attr.progressBarStyleSmall)
+                    ProgressBar(view.context, null, android.R.attr.progressBarStyleSmall)
                 progressBar.isIndeterminate = true
                 indicatorView = progressBar
             }
             NetworkState.failed -> {
-                val imageView = ImageView(context)
+                val imageView = ImageView(view.context)
                 imageView.setImageResource(R.drawable.ic_baseline_error_outline_24)
                 indicatorView = imageView
             }
             NetworkState.successful -> {
-                val imageView = ImageView(context)
+                val imageView = ImageView(view.context)
                 imageView.setImageResource(R.drawable.ic_baseline_check_circle_outline_24)
                 indicatorView = imageView
             }
@@ -67,25 +82,4 @@ class SpecialEventsListAdapter(
         indicatorView.visibility = View.VISIBLE
         loadingIndicatorContainer.addView(indicatorView, 100, 100)
     }
-
-//    private fun showNoteInput(itemId: String, resultStateKind: StateKind) {
-//        val builder: AlertDialog.Builder = AlertDialog.Builder(parentActivity)
-//        builder.setTitle("Bitte das Problem genauer beschreiben")
-//
-//        val input = EditText(parentActivity)
-//        input.inputType = InputType.TYPE_CLASS_TEXT
-//        builder.setView(input)
-//
-//        builder.setPositiveButton(
-//            "OK"
-//        ) { _, _ ->
-//            val note = input.text.toString()
-//            itemClickCallback?.invoke(itemId, false, resultStateKind, null, note)
-//        }
-//        builder.setNegativeButton(
-//            "Cancel"
-//        ) { dialog, _ -> dialog.cancel() }
-//
-//        builder.show()
-//    }
 }
