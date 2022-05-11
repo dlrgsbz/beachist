@@ -1,148 +1,131 @@
 package de.tjarksaul.wachmanager.modules.stationCheck
 
+import android.app.AlertDialog
 import android.os.Bundle
-import android.util.Log
+import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ListView
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
+import android.widget.EditText
 import de.tjarksaul.wachmanager.R
-import de.tjarksaul.wachmanager.api.HTTPRepo
-import de.tjarksaul.wachmanager.dtos.Entry
-import de.tjarksaul.wachmanager.dtos.Field
-import de.tjarksaul.wachmanager.dtos.IdResponse
-import de.tjarksaul.wachmanager.dtos.StateKind
 import de.tjarksaul.wachmanager.modules.base.BaseFragment
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.ofType
+import io.reactivex.rxkotlin.plusAssign
+import io.reactivex.subjects.PublishSubject
+import kotlinx.android.synthetic.main.fragment_station_check.*
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.component.KoinComponent
+import timber.log.Timber
 
 
-class StationCheckFragment : BaseFragment() {
+class StationCheckFragment : BaseFragment(), KoinComponent {
+    private val disposable = CompositeDisposable()
 
-    private val httpRepo = HTTPRepo()
+    private val viewModel: StationCheckViewModel by viewModel()
 
-    private val fieldCallback = object : Callback<MutableList<Field>> {
-        override fun onFailure(call: Call<MutableList<Field>>?, t: Throwable?) {
-            Log.e("MainActivity", "Problem calling Github API {${t?.message}}")
-            showInternetConnectionError()
-        }
-
-        override fun onResponse(
-            call: Call<MutableList<Field>>?,
-            response: Response<MutableList<Field>>?
-        ) {
-            response?.isSuccessful.let {
-                val data = response?.body() ?: emptyList<Field>().toMutableList()
-                stationCheckViewModel.updateData(data)
-
-                httpRepo.getEntries(getStationId(), entryCallback)
-            }
-        }
+    private val actions: PublishSubject<StationCheckAction> = PublishSubject.create()
+    private val adapter: StationCheckListAdapter by lazy {
+        StationCheckListAdapter(
+            actions
+        )
     }
-
-    private val entryCallback = object : Callback<MutableList<Entry>> {
-        override fun onFailure(call: Call<MutableList<Entry>>?, t: Throwable?) {
-            Log.e("MainActivity", "Problem calling Github API {${t?.message}}")
-            showInternetConnectionError()
-        }
-
-        override fun onResponse(
-            call: Call<MutableList<Entry>>?,
-            response: Response<MutableList<Entry>>?
-        ) {
-            response?.isSuccessful.let {
-                val data = response?.body() ?: emptyList<Entry>().toMutableList()
-                stationCheckViewModel.addEntries(data)
-            }
-        }
-    }
-
-    private val updateCallback = object : Callback<IdResponse> {
-        override fun onFailure(call: Call<IdResponse>?, t: Throwable?) {
-            Log.e("MainActivity", "Problem calling Github API {${t?.message}}")
-            showInternetConnectionError()
-        }
-
-        override fun onResponse(call: Call<IdResponse>?, response: Response<IdResponse>?) {
-            response?.isSuccessful.let {
-                val data = response?.body()
-                // todo: do something that makes sense
-//                if (data != null) {
-//                    stationCheckViewModel.updateValue(data.field, data.state ?: true, data.stateKind, data.amount, data.note)
-//                }
-            }
-        }
-    }
-
-
-    val stationCheckViewModel: StationCheckViewModel by viewModels()
 
     override fun onSaveInstanceState(outState: Bundle) {
-        stationCheckViewModel.saveState()
+        viewModel.saveState()
 
         super.onSaveInstanceState(outState)
     }
-
-    private lateinit var listView: ListView
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        if (stationCheckViewModel.needsRefresh()) {
-            val stationId = getStoredStationId()
-            if ((stationId != null) && isNetworkConnected()) {
-                httpRepo.getFields(stationId, fieldCallback)
-            } else {
-                showInternetConnectionError()
+        return inflater.inflate(R.layout.fragment_station_check, container, false)
+
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        setupView()
+        setupBindings()
+
+        actions.onNext(StationCheckAction.Refresh)
+    }
+
+    private fun setupView() {
+        stationCheckList.adapter = adapter
+    }
+
+    private fun setupBindings() {
+        viewModel.attach(actions)
+
+        disposable += viewModel.stateOf { entries }
+            .doOnNext { Timber.tag("StationCheckFragment").d("%s", it) }
+            .subscribe {
+                adapter.items = it
+                adapter.notifyDataSetChanged()
             }
+
+        disposable += viewModel.effects()
+            .ofType<StationCheckEffect.ShowNoteBox>()
+            .subscribe { showNoteInput(it.id) }
+
+        disposable += viewModel.effects()
+            .ofType<StationCheckEffect.ShowAmountBox>()
+            .subscribe { showAmountInput(it.id) }
+    }
+
+    private fun showNoteInput(itemId: String) {
+        val activity = requireActivity()
+        val builder: AlertDialog.Builder = AlertDialog.Builder(activity)
+        builder.setTitle("Bitte das Problem genauer beschreiben")
+
+        val input = EditText(activity)
+        input.inputType = InputType.TYPE_CLASS_TEXT
+        builder.setView(input)
+
+        builder.setPositiveButton(
+            "OK"
+        ) { _, _ ->
+            val note = input.text.toString()
+            actions.onNext(StationCheckAction.AddItemNote(itemId, note))
         }
 
-        val root = inflater.inflate(R.layout.fragment_station_check, container, false)
-        listView = root.findViewById(R.id.stationCheckList)
-        stationCheckViewModel.entries.observe(viewLifecycleOwner, Observer {
-            val adapter = activity?.applicationContext?.let { it1 ->
-                StationCheckListAdapter(
-                    it1,
-                    it,
-                    itemClickCallback = fun(
-                        id: String,
-                        state: Boolean,
-                        stateKind: StateKind?,
-                        amount: Int?,
-                        note: String?
-                    ) {
-                        val index = listView.firstVisiblePosition
-                        val v = listView.getChildAt(0)
-                        val top = v?.top ?: 0
-                        val stationId = getStoredStationId()
+        builder.setNegativeButton(
+            "Cancel"
+        ) { dialog, _ -> dialog.cancel() }
 
-                        if (stationId !== null && (state || stateKind !== null)) {
-                            httpRepo.updateEntry(
-                                id,
-                                stationId,
-                                state,
-                                stateKind,
-                                amount,
-                                note,
-                                getCrew(),
-                                updateCallback
-                            )
-                        }
+        builder.show()
+    }
 
-                        stationCheckViewModel.updateValue(id, state, stateKind, amount, note)
+    private fun showAmountInput(itemId: String) {
+        val activity = requireActivity()
+        val builder: AlertDialog.Builder = AlertDialog.Builder(activity)
+        builder.setTitle("Wie viel ist noch vorhanden?")
 
-                        listView.setSelectionFromTop(index, top)
-                    },
-                    parentActivity = requireActivity()
-                )
+        val input = EditText(activity)
+        input.inputType = InputType.TYPE_CLASS_NUMBER
+        input.setText("0")
+        builder.setView(input)
+
+        builder.setPositiveButton(
+            "OK"
+        ) { _, _ ->
+            val amount = try {
+                input.text.toString().toInt()
+            } catch (e: NumberFormatException) {
+                0
             }
-            listView.adapter = adapter
-        })
-        return root
+
+            actions.onNext(StationCheckAction.AddItemAmount(itemId, amount))
+        }
+        builder.setNegativeButton(
+            "Cancel"
+        ) { dialog, _ -> dialog.cancel() }
+
+        builder.show()
     }
 }

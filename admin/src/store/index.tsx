@@ -1,10 +1,11 @@
 import React, { ReactNode } from 'react'
-import RootStore from './stores/root.store'
-import AdminStore from 'store/stores/admin.store'
-import NavigationStore from 'store/stores/navigation.store'
-import { AuthStore } from './stores/auth.store'
-import { useAuthService } from '../context/AuthServiceContext'
+
+import AdminStore from './stores/admin.store'
 import { ApiClient } from '../modules/data'
+import { AuthStore } from './stores/auth.store'
+import DashboardStore from 'store/stores/dashboard.store'
+import RootStore from './stores/root.store'
+import { useAuthService } from '../context/AuthServiceContext'
 
 const StoreContext = React.createContext<RootStore | null>(null)
 
@@ -32,8 +33,8 @@ export function useAdminStore(): AdminStore {
   return useStore().adminStore
 }
 
-export function useNavigationStore(): NavigationStore {
-  return useStore().navigationStore
+export function useDashboardStore(): DashboardStore {
+  return useStore().dashboardStore
 }
 
 export function useAuthStore(): AuthStore {

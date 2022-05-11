@@ -1,0 +1,22 @@
+.card-header {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  justify-content: space-between;
+  cursor: pointer;
+
+  h5 {
+    user-select: none;
+  }
+}
+
+.online-status {
+  font-size: smaller;
+  display: flex;
+  align-items: center;
+}
+
+.online-status-indicator {
+  font-size: xx-small;
+  margin-right: 4px;
+}

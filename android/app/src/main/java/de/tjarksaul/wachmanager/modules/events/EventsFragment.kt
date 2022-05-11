@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import de.tjarksaul.wachmanager.GlobalAction
 import de.tjarksaul.wachmanager.R
 import de.tjarksaul.wachmanager.modules.base.BaseFragment
 import io.reactivex.disposables.CompositeDisposable
@@ -23,7 +22,6 @@ class EventsFragment : BaseFragment() {
     private val viewModel: EventViewModel by viewModel()
 
     private val actions: PublishSubject<EventListAction> = PublishSubject.create()
-    private val globalActions: PublishSubject<GlobalAction> = PublishSubject.create()
     private val adapter: EventsListAdapter by lazy { EventsListAdapter(actions) }
 
     override fun onCreateView(
@@ -48,7 +46,7 @@ class EventsFragment : BaseFragment() {
         setupView()
         setupBindings()
 
-        globalActions.onNext(GlobalAction.Refetch)
+        actions.onNext(EventListAction.Refetch)
     }
 
     private fun setupView() {
@@ -65,17 +63,16 @@ class EventsFragment : BaseFragment() {
 
     private fun setupBindings() {
         viewModel.attach(actions)
-        viewModel.globalStore.attach(globalActions)
 
         firstAidButton.setOnClickListener {
-            globalActions.onNext(GlobalAction.AddEventClicked)
+            actions.onNext(EventListAction.AddEventClicked)
         }
 
         undoButton.setOnClickListener {
-            globalActions.onNext(GlobalAction.CancelClicked)
+            actions.onNext(EventListAction.CancelClicked)
         }
 
-        disposable += viewModel.globalStore.stateOf { canAdd }
+        disposable += viewModel.stateOf { canAdd }
             .subscribe { canAdd ->
                 if (undoButton !== null) {
                     undoButton.visibility = if (canAdd) View.INVISIBLE else View.VISIBLE
@@ -85,7 +82,7 @@ class EventsFragment : BaseFragment() {
                 }
             }
 
-        disposable += viewModel.globalStore.stateOf { eventItems }
+        disposable += viewModel.stateOf { eventItems }
             .subscribe { adapter.items = it }
     }
 }

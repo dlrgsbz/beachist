@@ -1,129 +1,92 @@
 package de.tjarksaul.wachmanager.modules.stationCheck
 
-import android.app.Activity
-import android.app.AlertDialog
-import android.content.Context
-import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.Button
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.recyclerview.widget.RecyclerView
 import de.tjarksaul.wachmanager.R
+import de.tjarksaul.wachmanager.diffableList
 import de.tjarksaul.wachmanager.dtos.Field
 import de.tjarksaul.wachmanager.dtos.StateKind
+import io.reactivex.Observer
 
 
-class StationCheckListAdapter(
-    context: Context,
-    var items: List<Field>,
-    private val itemClickCallback: ((String, Boolean, StateKind?, Int?, String?) -> Unit)?,
-    val parentActivity: Activity
-) : ArrayAdapter<Field>(context, 0, items) {
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        val view = convertView ?: LayoutInflater.from(context)
+internal class StationCheckListAdapter(private val actions: Observer<StationCheckAction>) :
+    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    var items: List<Field> by diffableList(
+        compareContent = { a, b -> a == b },
+        compareId = { a, b -> a.id == b.id }
+    )
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_station_check_item, parent, false)
 
-        val item = getItem(position) ?: return view
-
-
-        val nameView: TextView = view.findViewById(R.id.station_check_item_name)
-        val requiredView: TextView = view.findViewById(R.id.station_check_item_required)
-        val noteView: TextView = view.findViewById(R.id.station_check_item_note)
-
-        val outerConstraintLayout: ConstraintLayout = view.findViewById(R.id.inner_container)
-        if (item.parent !== null) {
-            outerConstraintLayout.setPadding(25, 0, 0, 0)
-        } else {
-            outerConstraintLayout.setPadding(0, 0, 0, 0)
-        }
-
-        nameView.text = item.name
-        requiredView.text = item.required?.toString() ?: ""
-
-        val innerConstraintLayout: ConstraintLayout = view.findViewById(R.id.button_container)
-
-        val constraintSet = ConstraintSet()
-        constraintSet.clone(outerConstraintLayout)
-        constraintSet.clear(innerConstraintLayout.id, ConstraintSet.TOP)
-        constraintSet.clear(innerConstraintLayout.id, ConstraintSet.BOTTOM)
-
-        if (item.note !== null) {
-            noteView.visibility = View.VISIBLE
-            noteView.text = item.note
-
-            constraintSet.connect(
-                innerConstraintLayout.id,
-                ConstraintSet.TOP,
-                noteView.id,
-                ConstraintSet.BOTTOM,
-                1
-            );
-        } else {
-            noteView.visibility = View.INVISIBLE
-            noteView.text = ""
-
-            constraintSet.connect(
-                innerConstraintLayout.id,
-                ConstraintSet.TOP,
-                nameView.id,
-                ConstraintSet.BOTTOM,
-                1
-            );
-        }
-
-        constraintSet.applyTo(outerConstraintLayout)
-
-        setButtonState(view, item)
-
-        return view
+        return StationCheckItemHolder(view)
     }
 
-    private fun setButtonState(view: View, item: Field) {
-        setProblemTypeButtonState(view, item)
+    override fun getItemCount(): Int = items.size
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        when (holder) {
+            is StationCheckItemHolder -> holder.bind(items[position], actions)
+        }
+    }
+}
+
+const val CHECKED_PREFIX = "✓ "
+const val UNCHECKED_PREFIX = ""
+
+internal class StationCheckItemHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    fun bind(field: Field, actions: Observer<StationCheckAction>) {
+        with(field) {
+            val nameView: TextView = itemView.findViewById(R.id.station_check_item_name)
+            val requiredView: TextView = itemView.findViewById(R.id.station_check_item_required)
+            val noteView: TextView = itemView.findViewById(R.id.station_check_item_note)
+
+            val outerConstraintLayout: ConstraintLayout =
+                itemView.findViewById(R.id.inner_container)
+
+            outerConstraintLayout.setPadding(if (parent !== null) 25 else 0, 0, 0, 0)
+
+            nameView.text = this.name
+            requiredView.text = this.required?.toString() ?: ""
+
+            constraintSet(outerConstraintLayout, itemView, noteView, nameView)
+                .applyTo(outerConstraintLayout)
+
+            setButtonState(itemView, this, actions)
+        }
+    }
+
+    private fun setButtonState(view: View, item: Field, actions: Observer<StationCheckAction>) {
+        setProblemTypeButtonState(view, item, actions)
 
         val okayButton: Button = view.findViewById(R.id.button_okay)
         val problemButton: Button = view.findViewById(R.id.button_problem)
 
-        okayButton.setOnClickListener { itemClickCallback?.invoke(item.id, true, null, null, null) }
-        problemButton.setOnClickListener {
-            itemClickCallback?.invoke(
-                item.id,
-                false,
-                null,
-                null,
-                null
-            )
-        }
+        okayButton.setOnClickListener { actions.onNext(StationCheckAction.MarkItemOkay(item.id)) }
+        problemButton.setOnClickListener { actions.onNext(StationCheckAction.MarkItemNotOkay(item.id)) }
 
-        if (item.entry == null || item.entry?.state == null) {
-            okayButton.isPressed = false
-            okayButton.text = "In Ordnung"
-            problemButton.isPressed = false
-            problemButton.text = "Problem"
-
-
-            return
-        }
-
-        if (item.entry?.state != null && item.entry!!.state!!) {
-            okayButton.isPressed = true
-            okayButton.text = "✓ In Ordnung"
-            problemButton.isPressed = false
-            problemButton.text = "Problem"
-        } else {
-            okayButton.isPressed = false
-            okayButton.text = "In Ordnung"
-            problemButton.isPressed = true
-            problemButton.text = "✓ Problem"
+        with(item.entry?.state) {
+            markButtons(this, okayButton, problemButton)
         }
     }
 
-    private fun setProblemTypeButtonState(view: View, item: Field) {
+    private fun setProblemTypeButtonState(
+        view: View,
+        item: Field,
+        actions: Observer<StationCheckAction>
+    ) {
         val problemGroup: LinearLayout = view.findViewById(R.id.problem_type_container)
-        if (item.entry == null || (item.entry?.state != null && item.entry!!.state!!)) {
+        if (!item.hasProblem()) {
             problemGroup.visibility = View.INVISIBLE
+            return
         } else {
             problemGroup.visibility = View.VISIBLE
         }
@@ -133,93 +96,95 @@ class StationCheckListAdapter(
         val otherButton: Button = view.findViewById(R.id.button_other)
 
         tooLittleButton.setOnClickListener {
-            // show modal to ask for amount
-
-            if (item.required != null && item.required == 1) {
-                itemClickCallback?.invoke(item.id, false, StateKind.tooLittle, 0, null)
-            } else {
-                val builder: AlertDialog.Builder = AlertDialog.Builder(parentActivity)
-                builder.setTitle("Wie viel ist noch vorhanden?")
-
-                val input = EditText(parentActivity)
-                input.inputType = InputType.TYPE_CLASS_NUMBER
-                input.setText("0")
-                builder.setView(input)
-
-                builder.setPositiveButton(
-                    "OK"
-                ) { _, _ ->
-                    val amount = try {
-                        input.text.toString().toInt()
-                    } catch (e: NumberFormatException) {
-                        0
-                    }
-                    itemClickCallback?.invoke(item.id, false, StateKind.tooLittle, amount, null)
-                }
-                builder.setNegativeButton(
-                    "Cancel"
-                ) { dialog, _ -> dialog.cancel() }
-
-                builder.show()
-            }
+            actions.onNext(StationCheckAction.MarkItemTooLittle(item.id))
         }
 
         brokenButton.setOnClickListener {
-            showNoteInput(item.id, StateKind.broken)
+            actions.onNext(StationCheckAction.MarkItemBroken(item.id))
         }
 
         otherButton.setOnClickListener {
-            showNoteInput(item.id, StateKind.other)
+            actions.onNext(StationCheckAction.MarkItemOther(item.id))
         }
 
-        item.entry?.stateKind?.let {
-            when (it) {
-                StateKind.broken -> {
-                    tooLittleButton.isPressed = false
-                    tooLittleButton.text = "zu wenig"
-                    otherButton.isPressed = false
-                    otherButton.text = "anderes"
-                    brokenButton.isPressed = true
-                    brokenButton.text = "✓ defekt"
-                }
-                StateKind.tooLittle -> {
-                    tooLittleButton.isPressed = true
-                    tooLittleButton.text = "✓ zu wenig"
-                    otherButton.isPressed = false
-                    otherButton.text = "anderes"
-                    brokenButton.isPressed = false
-                    brokenButton.text = "defekt"
-                }
-                StateKind.other -> {
-                    tooLittleButton.isPressed = false
-                    tooLittleButton.text = "zu wenig"
-                    otherButton.isPressed = true
-                    otherButton.text = "✓ anderes"
-                    brokenButton.isPressed = false
-                    brokenButton.text = "defekt"
-                }
-            }
+        with(item.entry?.stateKind) {
+            markStateKindButtons(this, tooLittleButton, otherButton, brokenButton)
         }
     }
 
-    private fun showNoteInput(itemId: String, resultStateKind: StateKind) {
-        val builder: AlertDialog.Builder = AlertDialog.Builder(parentActivity)
-        builder.setTitle("Bitte das Problem genauer beschreiben")
-
-        val input = EditText(parentActivity)
-        input.inputType = InputType.TYPE_CLASS_TEXT
-        builder.setView(input)
-
-        builder.setPositiveButton(
-            "OK"
-        ) { _, _ ->
-            val note = input.text.toString()
-            itemClickCallback?.invoke(itemId, false, resultStateKind, null, note)
-        }
-        builder.setNegativeButton(
-            "Cancel"
-        ) { dialog, _ -> dialog.cancel() }
-
-        builder.show()
+    private fun markButtons(state: Boolean?, okayButton: Button, problemButton: Button) {
+        val okayPrefix = if (state == true) CHECKED_PREFIX else UNCHECKED_PREFIX
+        val notOkayPrefix = if (state == false) CHECKED_PREFIX else UNCHECKED_PREFIX
+        okayButton.updateText("${okayPrefix}In Ordnung")
+        problemButton.updateText("${notOkayPrefix}Problem")
     }
+
+    private fun markStateKindButtons(
+        stateKind: StateKind?,
+        tooLittleButton: Button,
+        otherButton: Button,
+        brokenButton: Button
+    ) {
+        val tooLittlePrefix =
+            if (stateKind == StateKind.tooLittle) CHECKED_PREFIX else UNCHECKED_PREFIX
+        val otherPrefix = if (stateKind == StateKind.other) CHECKED_PREFIX else UNCHECKED_PREFIX
+        val brokenPrefix = if (stateKind == StateKind.broken) CHECKED_PREFIX else UNCHECKED_PREFIX
+        tooLittleButton.updateText("${tooLittlePrefix}zu wenig")
+        otherButton.updateText("${otherPrefix}anderes")
+        brokenButton.updateText("${brokenPrefix}defekt")
+    }
+}
+
+private fun Button.updateText(text: String) {
+    this.isPressed = false
+    this.text = text
+}
+
+private fun Field.hasProblem(): Boolean {
+    val entry = this.entry ?: return false
+
+    if (entry.state == null) {
+        return false
+    }
+
+    return !entry.state
+}
+
+private fun Field.constraintSet(
+    outerConstraintLayout: ConstraintLayout,
+    itemView: View,
+    noteView: TextView,
+    nameView: TextView
+): ConstraintSet {
+    val innerConstraintLayout: ConstraintLayout = itemView.findViewById(R.id.button_container)
+
+    val constraintSet = ConstraintSet()
+    constraintSet.clone(outerConstraintLayout)
+    constraintSet.clear(innerConstraintLayout.id, ConstraintSet.TOP)
+    constraintSet.clear(innerConstraintLayout.id, ConstraintSet.BOTTOM)
+
+    if (this.note !== null) {
+        noteView.visibility = View.VISIBLE
+        noteView.text = this.note
+
+        constraintSet.connect(
+            innerConstraintLayout.id,
+            ConstraintSet.TOP,
+            noteView.id,
+            ConstraintSet.BOTTOM,
+            1
+        )
+    } else {
+        noteView.visibility = View.INVISIBLE
+        noteView.text = ""
+
+        constraintSet.connect(
+            innerConstraintLayout.id,
+            ConstraintSet.TOP,
+            nameView.id,
+            ConstraintSet.BOTTOM,
+            1
+        )
+    }
+    return constraintSet
 }

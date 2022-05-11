@@ -12,7 +12,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class HTTPRepo {
+class HTTPRepo internal constructor() {
     private val service: WachmanagerService
 
     companion object {

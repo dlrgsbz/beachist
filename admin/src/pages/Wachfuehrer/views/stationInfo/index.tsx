@@ -1,12 +1,12 @@
+import Legend from '../../Legend'
 import React from 'react'
+import { WachfuehrerTurmDetail } from '../../WachfuehrerTurmDetail'
+import { useDashboardStore } from 'store'
 import { useObserver } from 'mobx-react-lite'
 import { useTranslation } from 'react-i18next'
-import { useAdminStore } from 'store'
-import Legend from '../../Legend'
-import { WachfuehrerTurmDetail } from '../../WachfuehrerTurmDetail'
 
 const StationInfo: React.FC = () => {
-  const adminStore = useAdminStore()
+  const adminStore = useDashboardStore()
 
   const { t } = useTranslation()
 
@@ -22,14 +22,16 @@ const StationInfo: React.FC = () => {
           <WachfuehrerTurmDetail
             key={station.id}
             title={station.name}
-            color={adminStore.color(station.id)}
+            stationState={adminStore.stationState(station.id)}
             crew={adminStore.crews.get(station.id)}
+            onlineStateSince={station.onlineStateSince}
+            isOnline={station.online}
           >
             {adminStore
               .stationEntries(station.id)
               .filter(entry => !entry.state)
               .map(entry => (
-                <li>
+                <li key={entry.id}>
                   {entry.field.name}: {entry.stateKind && t('statekind_' + entry.stateKind.toString())} (
                   {entry.stateKind === 'tooLittle' && (entry.amount ?? 0) + ' noch vorhanden'}
                   {entry.stateKind === 'broken' && entry.note}

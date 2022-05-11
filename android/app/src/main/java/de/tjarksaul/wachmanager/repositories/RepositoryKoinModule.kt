@@ -5,7 +5,7 @@ import androidx.room.Room
 import com.google.gson.Gson
 import de.tjarksaul.wachmanager.BuildConfig
 import org.koin.android.ext.koin.androidContext
-import org.koin.dsl.module.module
+import org.koin.dsl.module
 
 val repositoryKoinModule = module {
     single {

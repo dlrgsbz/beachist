@@ -22,10 +22,4 @@
         android:name="de.tjarksaul.wachmanager.modules.specialEvents.SpecialEventsFragment"
         android:label="@string/title_special_events"
         tools:layout="@layout/fragment_special_events" />
-
-    <fragment
-        android:id="@+id/navigation_settings"
-        android:name="de.tjarksaul.wachmanager.modules.settings.SettingsFragment"
-        android:label="@string/title_settings"
-        tools:layout="@layout/fragment_settings" />
 </navigation>

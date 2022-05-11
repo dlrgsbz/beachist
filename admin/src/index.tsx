@@ -6,7 +6,11 @@ import * as serviceWorker from './serviceWorker'
 import i18n from 'modules/i18n'
 import moment from 'moment'
 
-moment.locale(i18n.language)
+moment.locale(i18n.language, {
+  relativeTime: {
+    past: 'seit %s',
+  }
+})
 
 ReactDOM.render(
   <App/>,

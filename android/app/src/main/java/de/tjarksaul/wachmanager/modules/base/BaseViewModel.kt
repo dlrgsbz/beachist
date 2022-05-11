@@ -26,12 +26,10 @@ abstract class BaseViewModel<
     //The used disposable to kill all running task.
     protected val disposables = CompositeDisposable()
 
-
     /**
      * This handles the initialization of all Action callbacks for the [Action].
      */
     protected abstract fun handleActions()
-
 
     /**
      * This attaches a stream of actions to the ViewModel.
