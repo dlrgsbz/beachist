@@ -55,7 +55,6 @@ class MainActivity: AppCompatActivity(), ServiceConnection {
             setOf(
                 R.id.navigation_home,
                 R.id.navigation_dashboard,
-                R.id.navigation_settings,
                 R.id.navigation_special_events
             )
         )
