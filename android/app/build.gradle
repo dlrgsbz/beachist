@@ -24,7 +24,14 @@ android {
     }
 
     signingConfigs {
-        release {}
+        release {
+            keyAlias System.getenv("KEY_ALIAS") ?: "beachist"
+            keyPassword System.getenv("KEY_PASSWORD") ?: "verysecret"
+            storeFile file(System.getenv("KEYSTORE_FILE") ?: "../mock-keystore.ks")
+            storePassword System.getenv("KEYSTORE_PASSWORD") ?: "verysecret"
+            v1SigningEnabled false
+            v2SigningEnabled true
+        }
     }
 
     buildTypes {
@@ -33,7 +40,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
 
             // todo: maybe default to ngrok here
             buildConfigField("String", "BACKEND_URL", props.getProperty("backendUrl"))
@@ -57,26 +64,6 @@ android {
     }
     buildFeatures {
         viewBinding true
-    }
-}
-
-allprojects {
-    afterEvaluate { project ->
-        def propsFile = rootProject.file('project_resources/keystore.properties')
-        def configName = 'release'
-
-        if (propsFile.exists() && android.signingConfigs.hasProperty(configName)) {
-            def props = new Properties()
-            props.load(new FileInputStream(propsFile))
-            android.signingConfigs[configName].storeFile = file(props['KEYSTORE_FILE'])
-            android.signingConfigs[configName].storePassword = props['KEYSTORE_PASSWORD']
-            android.signingConfigs[configName].keyAlias = props['KEY_ALIAS']
-            android.signingConfigs[configName].keyPassword = props['KEY_PASSWORD']
-            android.signingConfigs[configName].v1SigningEnabled = false
-            android.signingConfigs[configName].v2SigningEnabled = true
-
-            android.buildTypes[configName].signingConfig = android.signingConfigs[configName]
-        }
     }
 }
 
