@@ -57,6 +57,7 @@ export const AuthProvider: React.FC = props => {
       })
       .catch(e => {
         if (mounted) {
+          // eslint-disable-next-line no-console
           console.log('error', e)
         }
       })
