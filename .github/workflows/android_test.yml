@@ -27,7 +27,7 @@ jobs:
       - name: Setup configs
         working-directory: android
         run: |
-          echo -e "backendUrl=\"https://example.com\"\ndatabaseName=\"wachmanager-test\"" > ./project_resources/config.properties
+          echo -e "backendUrl=\"https://example.com\"\ndatabaseName=\"wachmanager-test\"\nprovisioningUrl=\"https://verysecret.lambda-url.eu-central-1.on.aws/\"" > ./project_resources/config.properties
 
       - name: run tests
         working-directory: android
