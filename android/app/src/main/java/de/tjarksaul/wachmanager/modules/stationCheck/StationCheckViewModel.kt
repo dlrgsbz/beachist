@@ -264,7 +264,6 @@ internal sealed class StationCheckEffect : ViewModelEffect {
     data class ShowNoteBox(val id: String) : StationCheckEffect()
 }
 
-@Parcelize
 internal data class StationCheckState(
     val entries: List<Field> = listOf(),
     val lastUpdated: Date? = null
