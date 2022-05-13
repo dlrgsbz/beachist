@@ -1,5 +1,6 @@
 package de.tjarksaul.wachmanager.modules.stationCheck
 
+import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import de.tjarksaul.wachmanager.dtos.Entry
 import de.tjarksaul.wachmanager.dtos.Field
@@ -264,10 +265,11 @@ internal sealed class StationCheckEffect : ViewModelEffect {
     data class ShowNoteBox(val id: String) : StationCheckEffect()
 }
 
+@Parcelize
 internal data class StationCheckState(
     val entries: List<Field> = listOf(),
     val lastUpdated: Date? = null
-) : ViewModelState
+) : ViewModelState, Parcelable
 
 private fun RxViewState<StationCheckState>.withFieldId(id: String, callback: (Field) -> Unit) {
     this.get { state ->
