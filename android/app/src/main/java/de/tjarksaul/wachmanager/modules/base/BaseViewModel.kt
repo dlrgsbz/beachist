@@ -1,5 +1,6 @@
 package de.tjarksaul.wachmanager.modules.base
 
+import android.os.Parcelable
 import androidx.lifecycle.ViewModel
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -136,7 +137,7 @@ interface ViewModelAction
 /**
  * The States the Viewmodel handles.
  */
-interface ViewModelState
+interface ViewModelState: Parcelable
 
 /**
  * The One-Time effects that may occur in the UI.
