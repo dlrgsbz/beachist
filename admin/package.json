@@ -4,7 +4,7 @@
   "private": true,
   "proxy": "http://localhost:8000",
   "dependencies": {
-    "@date-io/moment": "^2.13.2",
+    "@date-io/moment": "^2.14.0",
     "@emotion/react": "^11.9.0",
     "@emotion/styled": "^11.8.1",
     "@mui/icons-material": "^5.6.2",
@@ -12,7 +12,7 @@
     "@mui/material": "^5.6.4",
     "axios": "^0.26.1",
     "classnames": "^2.3.1",
-    "i18next": "^21.7.1",
+    "i18next": "^21.8.2",
     "jwt-decode": "^3.1.2",
     "mobx": "^5.15.7",
     "mobx-react-lite": "^2.2.2",
@@ -60,10 +60,9 @@
     "@types/classnames": "^2.3.1",
     "@types/qrcode.react": "^1.0.2",
     "@types/react": "^17.0.45",
-    "@types/react-dom": "^17.0.16",
+    "@types/react-dom": "^17.0.17",
     "@types/react-router-dom": "^5.3.3",
     "@types/uuid": "^8.3.4",
-    "prettier": "~2.6.2",
     "@typescript-eslint/eslint-plugin": "~5.19.0",
     "@typescript-eslint/parser": "~5.19.0",
     "eslint-plugin-react": "~7.29.4",
@@ -71,7 +70,8 @@
     "import-sort-cli": "~6.0.0",
     "import-sort-parser-babylon": "~6.0.0",
     "import-sort-parser-typescript": "~6.0.0",
-    "import-sort-style-module": "~6.0.0"
+    "import-sort-style-module": "~6.0.0",
+    "prettier": "~2.6.2"
   },
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx}": [
