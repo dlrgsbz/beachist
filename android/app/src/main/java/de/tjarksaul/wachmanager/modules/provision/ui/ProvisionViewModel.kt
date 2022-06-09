@@ -22,7 +22,11 @@ class ProvisionViewModel(private val provisionRepository: ProvisionRepository) :
     val provisionResult: LiveData<ProvisionResult> = _loginResult
 
     fun provision(stationNumber: String, password: String) {
-        val number = stationNumber.toInt()
+        val number = stationNumber.toIntOrNull()
+        if (number == null) {
+            _loginResult.value = ProvisionResult(error = R.string.provision_enter_station)
+            return
+        }
 
         disposable += provisionRepository.provision(number, password)
             .subscribe {
