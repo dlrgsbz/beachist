@@ -2,6 +2,7 @@ import { IotClient, iotClient } from '../../aws/iot'
 
 import axios from "axios"
 import { config } from '../../config'
+import { ensureEnv } from '../../util'
 import { logger } from '../../logger'
 import { z } from "zod"
 
@@ -38,6 +39,10 @@ export const handler = async (event: Partial<CreateEntryInput>, iotClient: IotCl
 
         const { iotThingName, fieldId, stationId, ...rest } = validatedEvent
 
+        if (!ensureEnv(iotThingName)) {
+          return
+        }
+    
         const result = await axios.post(`${config.BACKEND_URL}station/${stationId}/field/${fieldId}/entry`, rest)
 
         const topic = `entry/${iotThingName}/success`

@@ -147,8 +147,10 @@ export class InfraStack extends Stack {
       this.lambdaEnvs,
     )
 
+    addIotPublishToTopicRole(appInfoUpdatedHandler)
+
     return new TopicRule(this, `${this.props.prefix}-app-info-rule`, {
-      topicRuleName: `vgb${this.props.stage}AppInfoTopicRule`,
+      topicRuleName: `beachist${this.props.stage}AppInfoTopicRule`,
       sql: IotSql.fromStringAsVer20160323(
         `SELECT current.state.reported.appVersionCode AS appVersionCode,
                 current.state.reported.appVersion     AS appVersion,
@@ -277,7 +279,7 @@ const addIotShadowUpdateRole = (f: LambdaFunction) => {
 const addIotPublishToTopicRole = (f: LambdaFunction) => {
   f.addToRolePolicy(
     new PolicyStatement({
-      actions: ['iot:Publish', 'iot:Connect'],
+      actions: ['iot:Publish', 'iot:RetainPublish', 'iot:Connect'],
       resources: ['*'],
       effect: Effect.ALLOW,
     }),
