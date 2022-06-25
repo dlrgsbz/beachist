@@ -1,8 +1,7 @@
 import { IotClient, iotClient } from '../../aws/iot'
 
-import axios from "axios"
-import { config } from "../../config"
-import { formatIso8601Date } from "../../util"
+import { ensureEnv } from '../../util'
+import { getFields } from '../../lib'
 import { logger } from "../../logger"
 import { z } from "zod"
 
@@ -12,20 +11,6 @@ const schema = z.object({
 })
 
 type GetFieldsInput = z.infer<typeof schema>
-
-/**
- * this type is incomplete on purpose because we only need this here
- */
-interface Field {
-  id: string // uuid
-}
-
-/**
- * this type is incomplete on purpose because we only need this here
- */
-interface Entry {
-  field: string // uuid
-}
 
 export const getFieldsHandler = async (event: Partial<GetFieldsInput>): Promise<void> => {
   await handler(event, iotClient)
@@ -39,40 +24,26 @@ export const handler = async (event: Partial<GetFieldsInput>, iotClient: IotClie
 
     const { iotThingName, stationId } = validatedEvent
 
+    if (!ensureEnv(iotThingName)) {
+      return
+    }
+
     logger.debug(`Field request from ${iotThingName}`)
 
-    const date = formatIso8601Date(new Date())
-
-    const [fieldResult, entryResult] = await Promise.all([
-      axios.get<Field[]>(`${config.BACKEND_URL}station/${stationId}/field`),
-      axios.get<Entry[]>(`${config.BACKEND_URL}entry/${date}/${stationId}`),
-    ])
-
-    const fields = reduceFields(fieldResult.data, entryResult.data)
+    const fields = await getFields(stationId)
 
     const topic = `fields/${iotThingName}`
 
     logger.debug(`Got ${fields.length} results, publishing to ${topic}`)
 
-    await iotClient.publish(topic, JSON.stringify(fields))
+    await iotClient.publish(topic, JSON.stringify(fields), true)
   } catch (err) {
     if (err instanceof Error) {
-      logger.error(err.message)
+      logger.error(JSON.stringify(err))
     } else {
       logger.error(`Error: ${err}`)
     }
   }
-}
-
-const reduceFields = (fields: Field[], entries: Entry[]) => {
-  return fields.map(field => {
-    const entry = entries.find(entry => entry.field === field.id)
-
-    return {
-      ...field,
-      entry,
-    }
-  })
 }
 
 const validateGetFieldsInput = (event: Partial<GetFieldsInput>): GetFieldsInput => {

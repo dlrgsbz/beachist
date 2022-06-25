@@ -12,7 +12,7 @@ import { logger } from '../logger'
 
 export interface IotClient {
   updateShadow: (thingName: string, shadow: Shadow) => Promise<UpdateThingShadowCommandOutput>
-  publish: (topic: string, data: string) => Promise<void>
+  publish: (topic: string, data: string, retain?: boolean) => Promise<void>
   getOrCreateThing: (thingName: string) => Promise<string | undefined>
   setupCertificate: (thingName: string) => Promise<IotCertificateKey | undefined>
   getEndpoints: () => Promise<IotEndpoints | undefined>
@@ -36,8 +36,8 @@ class IotClientImpl implements IotClient {
     this.dataClient = dataClient
   }
 
-  async publish(topic: string, data: string): Promise<void> {
-    await this.dataClient.send(new PublishCommand({ topic, payload: Buffer.from(data, 'utf-8') }))
+  async publish(topic: string, data: string, retain = false): Promise<void> {
+    await this.dataClient.send(new PublishCommand({ topic, payload: Buffer.from(data, 'utf-8'), retain }))
   }
 
   async getOrCreateThing(thingName: string): Promise<string | undefined> {
