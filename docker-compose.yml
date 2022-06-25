@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  database:
+    image: mariadb:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: hiuSafohFu7chaigh3ohLauquiechohb
+      MYSQL_DATABASE: beachist
+    # command: sh -c 'sed -i /skip-name-resolve/d /etc/mysql/conf.d/docker.cnf && exec docker-entrypoint.sh mysqld'
+    volumes:
+      - database:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+volumes:
+  database:
