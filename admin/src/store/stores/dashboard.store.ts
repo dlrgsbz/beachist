@@ -41,16 +41,16 @@ class DashboardStore {
     const [networkEntries, events, enrichedStations, fields, networkSpecialEvents] = await Promise.all([
       this.apiClient.fetchEntries(this.selectedDate),
       this.apiClient.fetchEvents(this.selectedDate),
-      this.dashboardService.getStationsAndInfo(),
+      this.dashboardService.getStationsAndInfo(this.selectedDate),
       this.apiClient.fetchFields(),
       this.apiClient.fetchSpecialEvents(this.selectedDate),
     ])
 
-    const { stations, stationMap } = enrichedStations
+    const { stations, stationMap, crews } = enrichedStations
     const fieldMap = new Map<string, Field>()
     fields.forEach(field => fieldMap.set(field.id, field))
 
-    const { entries, crews } = createEntryMap(networkEntries, stationMap, fieldMap)
+    const entries = createEntryMap(networkEntries, stationMap, fieldMap)
 
     const specialEvents = createSpecialEventMap(networkSpecialEvents, stationMap)
 
@@ -135,9 +135,7 @@ function createEntryMap(
   entries: NetworkEntry[],
   stationMap: Map<string, StationInfo>,
   fieldMap: Map<string, Field>,
-): { entries: Map<string, Entry[]>; crews: Map<string, string> } {
-  const crews = new Map<string, string>()
-
+): Map<string, Entry[]> {
   const theEntries: Entry[] = entries.flatMap(entry => {
     const station = stationMap.get(entry.station)
     const field = fieldMap.get(entry.field)
@@ -153,17 +151,12 @@ function createEntryMap(
     if (!stationEntries) {
       stationEntries = []
     }
-    if (entry.crew) {
-      crews.set(entry.station.id, entry.crew)
-    }
+
     stationEntries.push(entry)
     entryMap.set(entry.station.id, stationEntries)
   })
 
-  return {
-    entries: entryMap,
-    crews,
-  }
+  return entryMap
 }
 
 interface SpecialEventMap {

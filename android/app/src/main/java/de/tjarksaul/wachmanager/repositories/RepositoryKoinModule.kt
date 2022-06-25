@@ -16,17 +16,6 @@ val repositoryKoinModule = module {
     }
 
     single {
-        StationRepositoryImpl(
-            context = get(),
-            gson = Gson(),
-            sharedPreferences = androidContext().getSharedPreferences(
-                BuildConfig.SHARED_PREFS_NAME,
-                Context.MODE_PRIVATE
-            )
-        ) as StationRepository
-    }
-
-    single {
         EventRepository(
             database = get()
         )

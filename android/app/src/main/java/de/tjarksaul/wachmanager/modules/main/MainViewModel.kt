@@ -1,33 +1,44 @@
 package de.tjarksaul.wachmanager.modules.main
 
-import android.text.format.DateUtils
 import de.tjarksaul.wachmanager.modules.auth.AuthRepository
 import de.tjarksaul.wachmanager.modules.auth.State
 import de.tjarksaul.wachmanager.modules.base.BaseViewModel
 import de.tjarksaul.wachmanager.modules.base.ViewModelAction
 import de.tjarksaul.wachmanager.modules.base.ViewModelEffect
 import de.tjarksaul.wachmanager.modules.base.ViewModelState
-import de.tjarksaul.wachmanager.repositories.StationRepository
+import de.tjarksaul.wachmanager.modules.crew.repository.CrewRepository
 import io.reactivex.Observable
 import io.reactivex.rxkotlin.ofType
 import io.reactivex.rxkotlin.plusAssign
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.util.concurrent.TimeUnit
+import kotlin.coroutines.CoroutineContext
 
+@ExperimentalCoroutinesApi()
 internal class MainViewModel(
-    private val stationRepository: StationRepository,
+    private val crewRepository: CrewRepository,
     private val authRepository: AuthRepository,
 ) : BaseViewModel<MainViewAction, MainViewState, MainViewEffect>(
     emptyState
-) {
-    override fun handleActions() {
-        disposables += Observable.interval(1000L, TimeUnit.MILLISECONDS).timeInterval()
-            .subscribe { actions.onNext(MainViewAction.CheckStationSelection) }
+), CoroutineScope {
+    private val parentJob = SupervisorJob()
+    override val coroutineContext: CoroutineContext = Dispatchers.IO + parentJob
 
+    override fun handleActions() {
         disposables += actions.ofType<MainViewAction.CheckStationSelection>()
             .subscribe { onCheckStationSelection() }
 
         disposables += authRepository.getState()
             .subscribe { onAuthRepositoryState(it) }
+
+        actions.onNext(MainViewAction.CheckStationSelection)
     }
 
     private fun onAuthRepositoryState(authState: State?) {
@@ -47,21 +58,23 @@ internal class MainViewModel(
     }
 
     private fun onCheckStationSelection() {
-        val date = stationRepository.getLastUpdateDate()
+        crewRepository.hasCrew().mapLatest { hasCrew ->
+            Timber.d("hasCrew: $hasCrew")
+            val shouldShowCrewInput = !hasCrew
+            state.get { currentState ->
+                val shouldShowProvisioning = currentState.shouldShowProvisioning
 
-        val shouldShowCrewInput = !DateUtils.isToday(date) || !stationRepository.hasCrew()
+                val currentView = when {
+                    shouldShowProvisioning -> MainViewCurrentView.Provision
+                    shouldShowCrewInput -> MainViewCurrentView.CrewInput
+                    else -> MainViewCurrentView.TabbedView
+                }
 
-        state.get {
-            val shouldShowProvisioning = it.shouldShowProvisioning
-
-            val currentView = when {
-                shouldShowProvisioning -> MainViewCurrentView.Provision
-                shouldShowCrewInput -> MainViewCurrentView.CrewInput
-                else -> MainViewCurrentView.TabbedView
+                launch(Dispatchers.Main) {
+                    state.set { copy(currentView = currentView) }
+                }
             }
-
-            state.set { copy(currentView = currentView) }
-        }
+        }.launchIn(this)
     }
 
     companion object {

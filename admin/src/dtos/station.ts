@@ -41,3 +41,9 @@ export interface FieldValue {
   stateKind?: FieldValueBrokenKind
   description?: string
 }
+
+export interface CrewInfo {
+  station: string
+  crew: string
+  date: Moment
+}
