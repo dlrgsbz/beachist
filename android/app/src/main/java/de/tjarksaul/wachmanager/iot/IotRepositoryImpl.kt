@@ -1,16 +1,21 @@
 package de.tjarksaul.wachmanager.iot
 
-import android.os.Handler
-import android.os.Looper
-import androidx.lifecycle.LiveData
 import com.google.gson.Gson
-import de.tjarksaul.wachmanager.iotClient.*
+import de.tjarksaul.wachmanager.iotClient.IotClient
+import de.tjarksaul.wachmanager.iotClient.IotConfig
+import de.tjarksaul.wachmanager.iotClient.IotConnectionState
+import de.tjarksaul.wachmanager.iotClient.ShadowData
+import de.tjarksaul.wachmanager.iotClient.toJson
 import de.tjarksaul.wachmanager.modules.shared.AppVersionRepository
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.subjects.BehaviorSubject
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import kotlin.coroutines.CoroutineContext
 
@@ -49,43 +54,26 @@ class IotRepositoryImpl(
         }
         this.config = config
 
-
-//        launch(coroutineContext) {
-//            while (iotClient.peekConnectionState() == null || iotClient.peekConnectionState() != IotConnectionState.Connected) {
-//                Timber.tag("IotRepository").d("waiting for connection....")
-//                delay(3 * 1_000L)
-//            }
-//            Timber.tag("IotRepository").i("updating shadow")
-//            iotClient.publish(
-//                "\$aws/things/${config.clientId}/shadow/update",
-//                ShadowData(
-//                    connected = true,
-//                    appVersion = versionRepo.getAppVersionName(),
-//                    appVersionCode = versionRepo.getAppVersionCode(),
-//                ).toJson(gson = gson)
-//            )
-
-            disposable += connection.subscribe {
-                Timber.tag("IotRepository").i("Connection state changed to $it")
-                if (it == ConnectionState.Connected) {
-                    launch(coroutineContext) {
-                        // we want to make sure that the LWT gets processed first
-                        delay(1_000L)
-                        Timber.tag("IotRepository").i("updating shadow")
-                        iotClient.publish(
-                            "\$aws/things/${config.clientId}/shadow/update",
-                            ShadowData(
-                                connected = true,
-                                appVersion = versionRepo.getAppVersionName(),
-                                appVersionCode = versionRepo.getAppVersionCode(),
-                            ).toJson(gson = gson)
-                        )
-                    }
+        disposable += connection.subscribe {
+            Timber.tag("IotRepository").i("Connection state changed to $it")
+            if (it == ConnectionState.Connected) {
+                launch(coroutineContext) {
+                    // we want to make sure that the LWT gets processed first
+                    delay(1_000L)
+                    Timber.tag("IotRepository").i("updating shadow")
+                    iotClient.publish(
+                        "\$aws/things/${config.clientId}/shadow/update",
+                        ShadowData(
+                            connected = true,
+                            appVersion = versionRepo.getAppVersionName(),
+                            appVersionCode = versionRepo.getAppVersionCode(),
+                        ).toJson(gson = gson)
+                    )
                 }
             }
+        }
 
         iotClient.connect(config)
-//        }
     }
 
     override fun disconnect() {

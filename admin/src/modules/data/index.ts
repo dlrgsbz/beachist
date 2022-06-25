@@ -1,6 +1,7 @@
 import { AccessTokenNotFound, AuthService } from 'context/AuthServiceContext'
 import { ApiProvisioningRequest, ApiStationInfo } from './dtos'
 import {
+  CrewInfo,
   EventEntry,
   Field,
   NetworkEntry,
@@ -117,6 +118,13 @@ export class ApiClient {
   public async fetchSpecialEvents(date: moment.Moment): Promise<NetworkSpecialEvent[]> {
     const dateString = date.format('Y-MM-DD')
     const data = await this.get<NetworkSpecialEvent[]>(`/api/special/${dateString}`)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return data.data.map((dt: any) => ({ ...dt, date: moment(dt.date) }))
+  }
+
+  public async fetchCrews(date: moment.Moment): Promise<CrewInfo[]> {
+    const dateString = date.format('Y-MM-DD')
+    const data = await this.get<CrewInfo[]>(`/api/crew/${dateString}`)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return data.data.map((dt: any) => ({ ...dt, date: moment(dt.date) }))
   }

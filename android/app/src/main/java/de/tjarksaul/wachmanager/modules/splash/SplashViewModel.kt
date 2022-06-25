@@ -1,27 +1,22 @@
 package de.tjarksaul.wachmanager.modules.splash
 
 import android.annotation.SuppressLint
-import de.tjarksaul.wachmanager.R
-import de.tjarksaul.wachmanager.api.Async
-import de.tjarksaul.wachmanager.dtos.Station
 import de.tjarksaul.wachmanager.modules.auth.AuthRepository
 import de.tjarksaul.wachmanager.modules.auth.State
 import de.tjarksaul.wachmanager.modules.base.BaseViewModel
 import de.tjarksaul.wachmanager.modules.base.ViewModelAction
 import de.tjarksaul.wachmanager.modules.base.ViewModelEffect
 import de.tjarksaul.wachmanager.modules.base.ViewModelState
-import de.tjarksaul.wachmanager.modules.station.GetStationsUseCase
-import de.tjarksaul.wachmanager.repositories.StationRepository
+import de.tjarksaul.wachmanager.modules.crew.repository.CrewRepository
 import io.reactivex.Observable
 import io.reactivex.rxkotlin.ofType
 import io.reactivex.rxkotlin.plusAssign
-import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 
 internal class SplashViewModel(
-    private val stationRepository: StationRepository,
+    private val crewRepository: CrewRepository,
     private val authRepository: AuthRepository,
 ) : BaseViewModel<SplashViewAction, SplashViewState, SplashViewEffect>(emptyState) {
     override fun handleActions() {
@@ -71,8 +66,7 @@ internal class SplashViewModel(
         state.get {
             val crewNames = it.crewName
 
-            stationRepository.saveCrew(crewNames)
-            stationRepository.saveLastUpdateDate(Date().time)
+            crewRepository.saveCrew(crewNames)
 
             effects.onNext(SplashViewEffect.Dismiss)
         }

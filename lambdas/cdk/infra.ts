@@ -50,6 +50,7 @@ export class InfraStack extends Stack {
     this.createCreateEventHandler()
     this.createProvisioningHandler()
     this.createInfoHandler()
+    this.createUpdateCrewHandler()
     this.createLastWillTopic()
   }
 
@@ -85,6 +86,26 @@ export class InfraStack extends Stack {
           FROM '+/field/get'`,
       ),
       actions: [new LambdaFunctionAction(getFieldsHandler)],
+    })
+  }
+
+  private createUpdateCrewHandler() {
+    const updateCrewHandler = this.lambdaFunction(
+      `${this.props.prefix}-update-crew`,
+      path.join('iot-triggers', 'update-crew'),
+      `updateCrewHandler`,
+      this.lambdaEnvs,
+    )
+
+    new TopicRule(this, 'update-crew-rule', {
+      topicRuleName: `beachist${this.props.stage}UpdateCrewRule`,
+      sql: IotSql.fromStringAsVer20160323(
+        `SELECT
+            crew, date, 
+            get_thing_shadow(topic(1), ${this.getThingShadowRoleArn}).state.desired.stationId AS stationId,
+          FROM '+/crew'`,
+      ),
+      actions: [new LambdaFunctionAction(updateCrewHandler)],
     })
   }
 

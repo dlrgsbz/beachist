@@ -16,7 +16,7 @@ export class AdminService {
 
     const stationsInfoMap = mapStationInfo(stationsInfo)
 
-    return enrichStations(stations, stationsInfoMap).stations
+    return enrichStations(stations, stationsInfoMap, []).stations
   }
 
   public async getProvisioningRequests(): Promise<ProvisioningRequestMap> {
