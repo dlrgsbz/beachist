@@ -12,7 +12,7 @@ import org.koin.dsl.module
 @ExperimentalCoroutinesApi()
 val crewModule = module {
     single {
-        CrewRepositoryImpl(get()) as CrewRepository
+        CrewRepositoryImpl(get(), get()) as CrewRepository
     }
 
     single {

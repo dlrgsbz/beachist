@@ -3,10 +3,9 @@ package de.tjarksaul.wachmanager.modules.crew.repository
 import android.annotation.SuppressLint
 import de.tjarksaul.wachmanager.modules.crew.database.CrewInfo
 import de.tjarksaul.wachmanager.modules.crew.database.CrewInfoDao
+import de.tjarksaul.wachmanager.util.DateFormatProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import java.text.DateFormat
-import java.text.SimpleDateFormat
 import java.util.*
 
 interface CrewRepository {
@@ -19,6 +18,7 @@ interface CrewRepository {
 
 class CrewRepositoryImpl(
     private val crewInfoDao: CrewInfoDao,
+    private val dateFormatProvider: DateFormatProvider,
 ) : CrewRepository {
     override fun hasCrew(): Flow<Boolean> {
         return getCrew().map { it !== null && it !== "" }
@@ -41,7 +41,6 @@ class CrewRepositoryImpl(
     @SuppressLint("SimpleDateFormat")
     private fun getToday(): String {
         val date = Calendar.getInstance().time
-        val dateFormat: DateFormat = SimpleDateFormat("yyyy-MM-dd")
-        return dateFormat.format(date)
+        return dateFormatProvider.getIso8601DateFormat().format(date)
     }
 }

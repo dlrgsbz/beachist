@@ -13,6 +13,9 @@ use App\Interfaces\StationNotFoundException;
 use App\Interfaces\StationReader;
 use DateTime;
 use DateTimeInterface;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use Psr\Log\LoggerInterface;
+use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 
 class SpecialEventService {
@@ -27,15 +30,23 @@ class SpecialEventService {
     }
 
     /** @throws */
-    public function create(string $stationId, string $title, string $note, string $notifier, SpecialEventType $type, DateTime $date = null): UuidInterface {
+    public function create(string $stationId, string $title, string $note, string $notifier, SpecialEventType $type, DateTime $date = null, string $id = null): UuidInterface {
         $station = $this->stationReader->getStation($stationId);
         if (!$station) {
             throw new StationNotFoundException();
         }
 
-        $event = new SpecialEvent($station, $title, $note, $notifier, $type, $date);
+        $uuid = null;
+        if ($id) {
+            $uuid = Uuid::fromString($id);
+        }
+        $event = new SpecialEvent($station, $title, $note, $notifier, $type, $date, $uuid);
 
-        return $this->specialEventWriter->create($event);
+        try {
+            return $this->specialEventWriter->create($event);
+        } catch (UniqueConstraintViolationException $e) {
+            return $event->id;
+        }
     }
 
     public function get(DateTimeInterface $date): array {

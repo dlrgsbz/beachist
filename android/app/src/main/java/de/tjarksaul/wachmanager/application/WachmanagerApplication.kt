@@ -11,10 +11,12 @@ import de.tjarksaul.wachmanager.modules.events.eventsKoinModule
 import de.tjarksaul.wachmanager.modules.main.mainKoinModule
 import de.tjarksaul.wachmanager.modules.provision.provisionModule
 import de.tjarksaul.wachmanager.modules.shared.sharedModule
+import de.tjarksaul.wachmanager.modules.specialEvents.specialEventsModule
 import de.tjarksaul.wachmanager.modules.splash.splashKoinModule
 import de.tjarksaul.wachmanager.modules.station.stationKoinModule
 import de.tjarksaul.wachmanager.modules.stationCheck.stationCheckModule
 import de.tjarksaul.wachmanager.repositories.repositoryKoinModule
+import de.tjarksaul.wachmanager.util.utilModule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
@@ -41,6 +43,8 @@ class WachmanagerApplication: Application() {
                 provisionModule,
                 authModule,
                 crewModule,
+                utilModule,
+                specialEventsModule,
                 appModule,
             )
         }
