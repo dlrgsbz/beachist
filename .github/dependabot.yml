@@ -7,6 +7,13 @@ updates:
   # disable dependabot because we're doing the updates ourselves
   open-pull-requests-limit: 0
 
+- directory: '/lambdas'
+  package-ecosystem: 'npm'
+  schedule:
+    interval: 'daily'
+  # disable dependabot because we're doing the updates ourselves
+  open-pull-requests-limit: 0
+
 - directory: '/backend'
   package-ecosystem: 'composer'
   schedule:
