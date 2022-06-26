@@ -25,7 +25,7 @@
     "dama/doctrine-test-bundle": "^6.5",
     "symfony/browser-kit": "5.1.*",
     "symfony/maker-bundle": "^1.33",
-    "symfony/phpunit-bridge": "^5.2"
+    "symfony/phpunit-bridge": "^6.1"
   },
   "config": {
     "optimize-autoloader": true,
