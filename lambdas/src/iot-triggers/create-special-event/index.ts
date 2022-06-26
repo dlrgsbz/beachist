@@ -1,8 +1,7 @@
 import { ApiClient, apiClient } from '../../api/client'
 import { IotClient, iotClient } from '../../aws/iot'
 
-import axios from 'axios'
-import { config } from '../../config'
+import { ensureEnv } from '../../util'
 import { logger } from '../../logger'
 import { z } from 'zod'
 
@@ -14,10 +13,11 @@ enum SpecialEventType {
 const schema = z.object({
   iotThingName: z.string(),
   stationId: z.string().uuid(),
+  id: z.string().uuid().optional(),
   date: z.string().optional(), // todo: validate date consistent with backend
   note: z.string(),
   title: z.string().min(8),
-  type: z.nativeEnum(SpecialEventType),
+  kind: z.nativeEnum(SpecialEventType),
   notifier: z.string().min(2),
 })
 
@@ -31,16 +31,27 @@ const handler = async (event: Partial<CreateSpecialEventInput>, iotClient: IotCl
   try {
     const validatedEvent = validateCreateSpecialEventPayload(event)
 
-    const { iotThingName, stationId, ...rest } = validatedEvent
+    const { iotThingName, stationId, kind, note, notifier, title, date, id } = validatedEvent
 
-    const id = await apiClient.createSpecialEvent(stationId, rest)
+    if (!ensureEnv(iotThingName)) {
+      return
+    }
+
+    const specialEvent = {
+      type: kind,
+      note, notifier, title, date, id,
+    }
+
+    logger.debug(`Publishing event ${JSON.stringify(specialEvent)}`)
+
+    const createdId = await apiClient.createSpecialEvent(stationId, specialEvent)
 
     const topic = `special-event/${iotThingName}/success`
-    await iotClient.publish(topic, id)
+    await iotClient.publish(topic, createdId)
   } catch (err) {
     // todo: maybe retry on some errors
     if (err instanceof Error) {
-      logger.error(err.message)
+      logger.error(err.message, JSON.stringify(err))
     } else {
       logger.error(`Error: ${err}`)
     }

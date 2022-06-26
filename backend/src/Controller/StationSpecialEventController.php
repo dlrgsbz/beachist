@@ -17,7 +17,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Constraints as Assert;
 use function App\Functions\validate;
 
-const DATE_FORMAT = 'Y-m-d\TH:i:sP';
+const DATE_FORMAT = 'Y-m-d\TH:i:s\Z';
 
 /**
  * @Route("/api/station/{stationId}/special")
@@ -44,16 +44,16 @@ class StationSpecialEventController {
         $type = SpecialEventType::make($request->request->get('type'));
         $date = $request->request->get('date');
         $date = $date ? DateTime::createFromFormat(DATE_FORMAT, $date) : null;
+        $id = $request->request->get('id');
 
         try {
-            $id = $this->specialEventService->create($stationId, $title, $note, $notifier, $type, $date);
+            $id = $this->specialEventService->create($stationId, $title, $note, $notifier, $type, $date, $id);
         } catch (StationNotFoundException $e) {
             return new JsonResponse(['errors' => ['station not found']], 404);
         }
 
         return new JsonResponse(['id' => $id], 201);
     }
-
 }
 
 function validateCreateSpecialEventRequest(ParameterBag $request): ?Response {
@@ -61,6 +61,10 @@ function validateCreateSpecialEventRequest(ParameterBag $request): ?Response {
 
     if ($request->get('date') !== null) {
         $constraints['date'] = new Assert\DateTime(['format' => DATE_FORMAT]);
+    }
+
+    if ($request->get('id') !== null) {
+        $constraints['id'] = new Assert\Uuid();
     }
 
     $constraints['note'] = new Assert\NotBlank();

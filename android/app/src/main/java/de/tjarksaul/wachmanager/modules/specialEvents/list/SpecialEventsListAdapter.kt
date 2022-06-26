@@ -1,20 +1,23 @@
-package de.tjarksaul.wachmanager.modules.specialEvents
+package de.tjarksaul.wachmanager.modules.specialEvents.list
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.ImageView
+import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import de.tjarksaul.wachmanager.R
 import de.tjarksaul.wachmanager.diffableList
 import de.tjarksaul.wachmanager.dtos.NetworkState
 import de.tjarksaul.wachmanager.dtos.SpecialEvent
 import de.tjarksaul.wachmanager.dtos.SpecialEventKind
-import io.reactivex.Observer
+import de.tjarksaul.wachmanager.util.DateFormatProvider
 import kotlinx.android.synthetic.main.item_special_event.view.*
 
 
-internal class SpecialEventsListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+internal class SpecialEventsListAdapter(private val formatProvider: DateFormatProvider) :
+    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     var items: List<SpecialEvent> by diffableList(
         compareContent = { a, b -> a == b },
         compareId = { a, b -> a.id == b.id }
@@ -24,7 +27,7 @@ internal class SpecialEventsListAdapter : RecyclerView.Adapter<RecyclerView.View
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_special_event, parent, false)
 
-        return SpecialEventHolder(view)
+        return SpecialEventHolder(view, formatProvider)
     }
 
     override fun getItemCount(): Int = items.size
@@ -38,7 +41,8 @@ internal class SpecialEventsListAdapter : RecyclerView.Adapter<RecyclerView.View
     }
 }
 
-internal class SpecialEventHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+internal class SpecialEventHolder(itemView: View, private val formatProvider: DateFormatProvider) :
+    RecyclerView.ViewHolder(itemView) {
     fun bind(specialEvent: SpecialEvent) {
         with(specialEvent) {
             val nameView: TextView = itemView.special_event_item_name
@@ -46,7 +50,7 @@ internal class SpecialEventHolder(itemView: View): RecyclerView.ViewHolder(itemV
             val typeView: TextView = itemView.special_event_item_type
 
             nameView.text = this.title
-            dateView.text = this.printableDate
+            dateView.text = this.printableDate(formatProvider)
             typeView.text =
                 if (this.kind == SpecialEventKind.damage) "Schadenmeldung" else "Besonderes Vorkommnis"
 
@@ -82,4 +86,8 @@ internal class SpecialEventHolder(itemView: View): RecyclerView.ViewHolder(itemV
         indicatorView.visibility = View.VISIBLE
         loadingIndicatorContainer.addView(indicatorView, 100, 100)
     }
+}
+
+private fun SpecialEvent.printableDate(formatProvider: DateFormatProvider): String {
+    return formatProvider.getTimeFormatForDate(date).format(date)
 }

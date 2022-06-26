@@ -21,8 +21,7 @@ class SpecialEvent implements JsonSerializable {
     /**
      * @ORM\Id
      * @ORM\Column(type="uuid", unique=true)
-     * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class=UuidGenerator::class)
+     * @ORM\GeneratedValue(strategy="NONE")
      */
     public UuidInterface $id;
 
@@ -57,8 +56,11 @@ class SpecialEvent implements JsonSerializable {
      */
     public DateTimeInterface $date;
 
-    public function __construct(Station $station, string $title, string $note, string $notifier, SpecialEventType $type, DateTimeInterface $date = null) {
-        $this->id = Uuid::uuid4();
+    public function __construct(Station $station, string $title, string $note, string $notifier, SpecialEventType $type, DateTimeInterface $date = null, UuidInterface $id = null) {
+        if (!$id) {
+            $id = Uuid::uuid4();
+        }
+        $this->id = $id;
         $this->title = $title;
         $this->station = $station;
         $this->note = $note;

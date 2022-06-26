@@ -147,9 +147,9 @@ export class InfraStack extends Stack {
       topicRuleName: `beachist${this.props.stage}CreateSpecialEventRule`,
       sql: IotSql.fromStringAsVer20160323(
         `SELECT 
-            date, note, title, type, notifier, 
+            date, note, title, kind, notifier, id,
             topic(1) AS iotThingName, 
-            get_thing_shadow(topic(1), ${this.getThingShadowRoleArn}).state.desired.stationId AS stationId,
+            get_thing_shadow(topic(1), ${this.getThingShadowRoleArn}).state.desired.stationId AS stationId
           FROM '+/special-event'`,
       ),
       actions: [new LambdaFunctionAction(createSpecialEventHandler)],

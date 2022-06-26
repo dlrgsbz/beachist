@@ -1,4 +1,4 @@
-package de.tjarksaul.wachmanager.modules.specialEvents
+package de.tjarksaul.wachmanager.modules.specialEvents.add
 
 import android.app.Activity
 import android.os.Bundle
@@ -101,29 +101,38 @@ internal class AddSpecialEventFragment : BaseFragment() {
         }
     }
 
-    private fun onTitleErrorChanged(error: Int?) {
-        error?.let {
-            textInputLayoutSpecialTitle.isErrorEnabled = true
-            textInputLayoutSpecialTitle.error = getString(it)
-        } ?: kotlin.run {
-            textInputLayoutSpecialTitle.isErrorEnabled = false
-            textInputLayoutSpecialTitle.isHintEnabled = true
+    private fun onTitleErrorChanged(error: ErrorState) {
+        when (error) {
+            ErrorState.NoError -> {
+                textInputLayoutSpecialTitle.isErrorEnabled = false
+                textInputLayoutSpecialTitle.isHintEnabled = true
+            }
+            is ErrorState.HasError -> {
+                textInputLayoutSpecialTitle.isErrorEnabled = true
+                textInputLayoutSpecialTitle.error = getString(error.error)
+            }
         }
     }
 
-    private fun onNotifierErrorChanged(error: Int?) {
-        error?.let {
-            textInputLayoutSpecialNotifier.isErrorEnabled = true
-            textInputLayoutSpecialNotifier.error = getString(it)
-        } ?: kotlin.run {
-            textInputLayoutSpecialNotifier.isErrorEnabled = false
-            textInputLayoutSpecialNotifier.isHintEnabled = true
+    private fun onNotifierErrorChanged(error: ErrorState) {
+        when (error) {
+            ErrorState.NoError -> {
+                textInputLayoutSpecialNotifier.isErrorEnabled = false
+                textInputLayoutSpecialNotifier.isHintEnabled = true
+            }
+            is ErrorState.HasError -> {
+                textInputLayoutSpecialNotifier.isErrorEnabled = true
+                textInputLayoutSpecialNotifier.error = getString(error.error)
+            }
         }
     }
 
-    private fun onKindErrorChanged(error: Int?) {
+    private fun onKindErrorChanged(error: ErrorState) {
         val radioButton = specialRadioGroup.getChildAt(specialRadioGroup.childCount - 1) as RadioButton
-        radioButton.error = error?.let { getString(error) }
+        radioButton.error = when (error) {
+            ErrorState.NoError -> null
+            is ErrorState.HasError ->getString(error.error)
+        }
     }
 
     private fun onPopView() {
