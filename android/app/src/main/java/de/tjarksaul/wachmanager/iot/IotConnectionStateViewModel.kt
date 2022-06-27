@@ -1,9 +1,9 @@
 package de.tjarksaul.wachmanager.iot
 
-import de.tjarksaul.wachmanager.modules.base.BaseViewModel
-import de.tjarksaul.wachmanager.modules.base.ViewModelAction
-import de.tjarksaul.wachmanager.modules.base.ViewModelEffect
-import de.tjarksaul.wachmanager.modules.base.ViewModelState
+import app.beachist.shared.base.BaseViewModel
+import app.beachist.shared.base.ViewModelAction
+import app.beachist.shared.base.ViewModelEffect
+import app.beachist.shared.base.ViewModelState
 import io.reactivex.rxkotlin.plusAssign
 import timber.log.Timber
 

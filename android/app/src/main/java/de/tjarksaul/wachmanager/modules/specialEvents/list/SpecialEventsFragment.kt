@@ -4,8 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import de.tjarksaul.wachmanager.R
-import de.tjarksaul.wachmanager.modules.base.BaseFragment
 import de.tjarksaul.wachmanager.modules.specialEvents.add.AddSpecialEventFragment
 import de.tjarksaul.wachmanager.util.StackName
 import io.reactivex.disposables.CompositeDisposable
@@ -19,7 +19,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 @ExperimentalCoroutinesApi
-class SpecialEventsFragment : BaseFragment() {
+class SpecialEventsFragment : Fragment() {
     private val disposables = CompositeDisposable()
 
     private val viewModel: SpecialEventsViewModel by viewModel()

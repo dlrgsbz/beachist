@@ -7,8 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import androidx.fragment.app.Fragment
 import de.tjarksaul.wachmanager.R
-import de.tjarksaul.wachmanager.modules.base.BaseFragment
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.ofType
 import io.reactivex.rxkotlin.plusAssign
@@ -19,7 +19,7 @@ import org.koin.core.component.KoinComponent
 import timber.log.Timber
 
 
-class StationCheckFragment : BaseFragment(), KoinComponent {
+class StationCheckFragment : Fragment() {
     private val disposable = CompositeDisposable()
 
     private val viewModel: StationCheckViewModel by viewModel()

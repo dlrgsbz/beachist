@@ -5,11 +5,11 @@ import androidx.lifecycle.SavedStateHandle
 import de.tjarksaul.wachmanager.dtos.Entry
 import de.tjarksaul.wachmanager.dtos.Field
 import de.tjarksaul.wachmanager.dtos.StateKind
-import de.tjarksaul.wachmanager.modules.base.BaseViewModel
-import de.tjarksaul.wachmanager.modules.base.RxViewState
-import de.tjarksaul.wachmanager.modules.base.ViewModelAction
-import de.tjarksaul.wachmanager.modules.base.ViewModelEffect
-import de.tjarksaul.wachmanager.modules.base.ViewModelState
+import app.beachist.shared.base.BaseViewModel
+import app.beachist.shared.base.RxViewState
+import app.beachist.shared.base.ViewModelAction
+import app.beachist.shared.base.ViewModelEffect
+import app.beachist.shared.base.ViewModelState
 import io.reactivex.rxkotlin.ofType
 import io.reactivex.rxkotlin.plusAssign
 import kotlinx.android.parcel.Parcelize

@@ -1,4 +1,4 @@
-package de.tjarksaul.wachmanager.modules.base
+package app.beachist.shared.base
 
 import androidx.lifecycle.ViewModel
 import io.reactivex.Observable

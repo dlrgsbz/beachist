@@ -8,11 +8,11 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.RadioButton
 import androidx.core.widget.doAfterTextChanged
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.google.android.material.snackbar.Snackbar
 import de.tjarksaul.wachmanager.R
 import de.tjarksaul.wachmanager.dtos.SpecialEventKind
-import de.tjarksaul.wachmanager.modules.base.BaseFragment
 import de.tjarksaul.wachmanager.util.StackName
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.ofType
@@ -22,7 +22,7 @@ import kotlinx.android.synthetic.main.fragment_add_special_event.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
-internal class AddSpecialEventFragment : BaseFragment() {
+internal class AddSpecialEventFragment : Fragment() {
     private val disposables = CompositeDisposable()
 
     private val viewModel: AddSpecialEventViewModel by viewModel()

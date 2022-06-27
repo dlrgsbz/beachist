@@ -2,10 +2,10 @@ package de.tjarksaul.wachmanager.modules.events
 
 import de.tjarksaul.wachmanager.dtos.EventType
 import de.tjarksaul.wachmanager.dtos.NetworkState
-import de.tjarksaul.wachmanager.modules.base.BaseViewModel
-import de.tjarksaul.wachmanager.modules.base.ViewModelAction
-import de.tjarksaul.wachmanager.modules.base.ViewModelEffect
-import de.tjarksaul.wachmanager.modules.base.ViewModelState
+import app.beachist.shared.base.BaseViewModel
+import app.beachist.shared.base.ViewModelAction
+import app.beachist.shared.base.ViewModelEffect
+import app.beachist.shared.base.ViewModelState
 import de.tjarksaul.wachmanager.repositories.EventRepository
 import io.reactivex.rxkotlin.ofType
 import io.reactivex.rxkotlin.plusAssign

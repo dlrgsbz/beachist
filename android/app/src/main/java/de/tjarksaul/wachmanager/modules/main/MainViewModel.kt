@@ -2,12 +2,11 @@ package de.tjarksaul.wachmanager.modules.main
 
 import de.tjarksaul.wachmanager.modules.auth.AuthRepository
 import de.tjarksaul.wachmanager.modules.auth.State
-import de.tjarksaul.wachmanager.modules.base.BaseViewModel
-import de.tjarksaul.wachmanager.modules.base.ViewModelAction
-import de.tjarksaul.wachmanager.modules.base.ViewModelEffect
-import de.tjarksaul.wachmanager.modules.base.ViewModelState
+import app.beachist.shared.base.BaseViewModel
+import app.beachist.shared.base.ViewModelAction
+import app.beachist.shared.base.ViewModelEffect
+import app.beachist.shared.base.ViewModelState
 import de.tjarksaul.wachmanager.modules.crew.repository.CrewRepository
-import io.reactivex.Observable
 import io.reactivex.rxkotlin.ofType
 import io.reactivex.rxkotlin.plusAssign
 import kotlinx.coroutines.CoroutineScope
@@ -18,7 +17,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
 import kotlin.coroutines.CoroutineContext
 
 @ExperimentalCoroutinesApi()

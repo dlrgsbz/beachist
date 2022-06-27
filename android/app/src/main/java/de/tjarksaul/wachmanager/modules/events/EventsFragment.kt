@@ -5,10 +5,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import de.tjarksaul.wachmanager.R
-import de.tjarksaul.wachmanager.modules.base.BaseFragment
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.subjects.PublishSubject
@@ -16,7 +16,7 @@ import kotlinx.android.synthetic.main.fragment_events.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
-class EventsFragment : BaseFragment() {
+class EventsFragment : Fragment() {
     private val disposable = CompositeDisposable()
 
     private val viewModel: EventViewModel by viewModel()
@@ -29,14 +29,6 @@ class EventsFragment : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        if (!isNetworkConnected()) {
-            AlertDialog.Builder(context).setTitle("Keine Internetverbindung")
-                .setMessage("Please check your internet connection and try again")
-                .setPositiveButton(android.R.string.ok) { _, _ -> }
-                .setIcon(android.R.drawable.ic_dialog_alert).show()
-        }
-
-
         return inflater.inflate(R.layout.fragment_events, container, false)
     }
 

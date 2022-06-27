@@ -3,10 +3,10 @@ package de.tjarksaul.wachmanager.modules.splash
 import android.annotation.SuppressLint
 import de.tjarksaul.wachmanager.modules.auth.AuthRepository
 import de.tjarksaul.wachmanager.modules.auth.State
-import de.tjarksaul.wachmanager.modules.base.BaseViewModel
-import de.tjarksaul.wachmanager.modules.base.ViewModelAction
-import de.tjarksaul.wachmanager.modules.base.ViewModelEffect
-import de.tjarksaul.wachmanager.modules.base.ViewModelState
+import app.beachist.shared.base.BaseViewModel
+import app.beachist.shared.base.ViewModelAction
+import app.beachist.shared.base.ViewModelEffect
+import app.beachist.shared.base.ViewModelState
 import de.tjarksaul.wachmanager.modules.crew.repository.CrewRepository
 import io.reactivex.Observable
 import io.reactivex.rxkotlin.ofType

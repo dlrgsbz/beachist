@@ -8,8 +8,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import androidx.fragment.app.Fragment
 import de.tjarksaul.wachmanager.R
-import de.tjarksaul.wachmanager.modules.base.BaseFragment
 import de.tjarksaul.wachmanager.modules.main.MainActivity
 import de.tjarksaul.wachmanager.util.TextChangeListener
 import io.reactivex.disposables.CompositeDisposable
@@ -19,7 +19,7 @@ import kotlinx.android.synthetic.main.fragment_splash.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
-class SplashFragment : BaseFragment() {
+class SplashFragment : Fragment() {
     private val disposable = CompositeDisposable()
 
     private val actions: PublishSubject<SplashViewAction> = PublishSubject.create()

@@ -1,4 +1,4 @@
-package de.tjarksaul.wachmanager.modules.base
+package app.beachist.shared.base
 
 import io.reactivex.Maybe
 import io.reactivex.Observable
