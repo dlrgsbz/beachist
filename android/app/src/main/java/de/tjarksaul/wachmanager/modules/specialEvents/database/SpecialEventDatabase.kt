@@ -4,8 +4,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
-import de.tjarksaul.wachmanager.repositories.converters.Converters
-import de.tjarksaul.wachmanager.util.DateFormatProvider
+import app.beachist.shared.date.DateFormatProvider
 import java.util.*
 
 @Database(
@@ -21,8 +20,8 @@ class SpecialEventConverters {
     private val dateFormatProvider = DateFormatProvider()
 
     @TypeConverter
-    fun toDate(dateString: String) = dateFormatProvider.getIso8601DateTimeFormat().parse(dateString)
+    fun toDate(dateString: String): Date? = dateFormatProvider.getIso8601DateTimeFormat().parse(dateString)
 
     @TypeConverter
-    fun fromDate(date: Date) = dateFormatProvider.getIso8601DateTimeFormat().format(date)
+    fun fromDate(date: Date): String = dateFormatProvider.getIso8601DateTimeFormat().format(date)
 }

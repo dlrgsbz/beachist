@@ -1,4 +1,4 @@
-package de.tjarksaul.wachmanager.modules.shared
+package app.beachist.shared
 
 import android.content.Context
 import android.os.Build

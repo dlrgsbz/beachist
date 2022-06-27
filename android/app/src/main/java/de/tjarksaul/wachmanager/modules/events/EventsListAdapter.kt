@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import de.tjarksaul.wachmanager.R
 import app.beachist.shared.recyclerview.diffableList
 import de.tjarksaul.wachmanager.dtos.NetworkState
-import de.tjarksaul.wachmanager.util.formatDateTime
+import app.beachist.shared.date.formatDateTime
 import io.reactivex.Observer
 import kotlinx.android.synthetic.main.item_event.view.*
 

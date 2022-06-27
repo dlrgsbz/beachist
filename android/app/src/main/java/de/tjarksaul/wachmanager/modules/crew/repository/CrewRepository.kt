@@ -3,7 +3,7 @@ package de.tjarksaul.wachmanager.modules.crew.repository
 import android.annotation.SuppressLint
 import de.tjarksaul.wachmanager.modules.crew.database.CrewInfo
 import de.tjarksaul.wachmanager.modules.crew.database.CrewInfoDao
-import de.tjarksaul.wachmanager.util.DateFormatProvider
+import app.beachist.shared.date.DateFormatProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.util.*

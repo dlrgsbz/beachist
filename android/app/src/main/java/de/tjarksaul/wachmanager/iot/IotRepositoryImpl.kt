@@ -6,7 +6,7 @@ import de.tjarksaul.wachmanager.iotClient.IotConfig
 import de.tjarksaul.wachmanager.iotClient.IotConnectionState
 import de.tjarksaul.wachmanager.iotClient.ShadowData
 import de.tjarksaul.wachmanager.iotClient.toJson
-import de.tjarksaul.wachmanager.modules.shared.AppVersionRepository
+import app.beachist.shared.AppVersionRepository
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign

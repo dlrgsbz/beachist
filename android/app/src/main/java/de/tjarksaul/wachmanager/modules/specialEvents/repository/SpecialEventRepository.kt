@@ -4,7 +4,7 @@ import de.tjarksaul.wachmanager.dtos.NetworkState
 import de.tjarksaul.wachmanager.dtos.SpecialEvent
 import de.tjarksaul.wachmanager.modules.specialEvents.database.DbSpecialEvent
 import de.tjarksaul.wachmanager.modules.specialEvents.database.SpecialEventDao
-import de.tjarksaul.wachmanager.util.DateFormatProvider
+import app.beachist.shared.date.DateFormatProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.util.*

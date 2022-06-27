@@ -7,7 +7,7 @@ import de.tjarksaul.wachmanager.iotClient.IotClient
 import de.tjarksaul.wachmanager.iotClient.IotConnectionState
 import de.tjarksaul.wachmanager.modules.specialEvents.repository.SpecialEventRepository
 import de.tjarksaul.wachmanager.service.StationNameProvider
-import de.tjarksaul.wachmanager.util.DateFormatProvider
+import app.beachist.shared.date.DateFormatProvider
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import kotlinx.coroutines.CoroutineScope

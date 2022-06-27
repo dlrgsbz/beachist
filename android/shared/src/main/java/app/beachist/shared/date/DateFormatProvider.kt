@@ -1,4 +1,4 @@
-package de.tjarksaul.wachmanager.util
+package app.beachist.shared.date
 
 import android.annotation.SuppressLint
 import android.text.format.DateUtils
@@ -19,5 +19,12 @@ class DateFormatProvider {
     fun getTimeFormatForDate(date: Date): DateFormat {
         val format = if (DateUtils.isToday(date.time)) "HH:mm" else "dd.mm.YYYY HH:mm"
         return SimpleDateFormat(format)
+    }
+
+    fun getShortDateTimeFormat(): DateFormat {
+        return SimpleDateFormat.getDateTimeInstance(
+            DateFormat.SHORT,
+            DateFormat.SHORT
+        )
     }
 }

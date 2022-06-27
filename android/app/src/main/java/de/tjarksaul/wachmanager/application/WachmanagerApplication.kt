@@ -1,6 +1,7 @@
 package de.tjarksaul.wachmanager.application
 
 import android.app.Application
+import app.beachist.shared.sharedModule
 import de.tjarksaul.wachmanager.api.apiKoinModule
 import de.tjarksaul.wachmanager.appModule
 import de.tjarksaul.wachmanager.iot.iotModule
@@ -10,20 +11,18 @@ import de.tjarksaul.wachmanager.modules.crew.crewModule
 import de.tjarksaul.wachmanager.modules.events.eventsKoinModule
 import de.tjarksaul.wachmanager.modules.main.mainKoinModule
 import de.tjarksaul.wachmanager.modules.provision.provisionModule
-import de.tjarksaul.wachmanager.modules.shared.sharedModule
 import de.tjarksaul.wachmanager.modules.specialEvents.specialEventsModule
 import de.tjarksaul.wachmanager.modules.splash.splashKoinModule
 import de.tjarksaul.wachmanager.modules.station.stationKoinModule
 import de.tjarksaul.wachmanager.modules.stationCheck.stationCheckModule
 import de.tjarksaul.wachmanager.repositories.repositoryKoinModule
-import de.tjarksaul.wachmanager.util.utilModule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 import timber.log.Timber
 
 @ExperimentalCoroutinesApi
-class WachmanagerApplication: Application() {
+class WachmanagerApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
@@ -43,7 +42,6 @@ class WachmanagerApplication: Application() {
                 provisionModule,
                 authModule,
                 crewModule,
-                utilModule,
                 specialEventsModule,
                 appModule,
             )
