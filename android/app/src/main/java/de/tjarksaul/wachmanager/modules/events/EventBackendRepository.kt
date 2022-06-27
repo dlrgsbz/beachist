@@ -2,13 +2,10 @@ package de.tjarksaul.wachmanager.modules.events
 
 import android.os.Handler
 import android.os.Looper
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.Observer
 import com.google.gson.Gson
 import de.tjarksaul.wachmanager.dtos.EventType
-import de.tjarksaul.wachmanager.iotClient.IotClient
-import de.tjarksaul.wachmanager.iotClient.IotConnectionState
+import app.beachist.iot_client.client.IotClient
+import app.beachist.iot_client.client.IotConnectionState
 import de.tjarksaul.wachmanager.service.StationNameProvider
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable

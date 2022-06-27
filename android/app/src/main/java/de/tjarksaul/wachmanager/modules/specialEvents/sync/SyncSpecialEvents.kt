@@ -3,8 +3,8 @@ package de.tjarksaul.wachmanager.modules.specialEvents.sync
 import com.google.gson.Gson
 import de.tjarksaul.wachmanager.dtos.NetworkState
 import de.tjarksaul.wachmanager.dtos.SpecialEvent
-import de.tjarksaul.wachmanager.iotClient.IotClient
-import de.tjarksaul.wachmanager.iotClient.IotConnectionState
+import app.beachist.iot_client.client.IotClient
+import app.beachist.iot_client.client.IotConnectionState
 import de.tjarksaul.wachmanager.modules.specialEvents.repository.SpecialEventRepository
 import de.tjarksaul.wachmanager.service.StationNameProvider
 import app.beachist.shared.date.DateFormatProvider

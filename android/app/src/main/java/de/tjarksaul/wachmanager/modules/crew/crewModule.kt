@@ -26,6 +26,6 @@ val crewModule = module {
     }
 
     single(createdAtStart = true) {
-        CrewApiImpl(get(), get(), get(), Gson())
+        CrewApiImpl(get(), get(), get(), get())
     }
 }

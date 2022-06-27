@@ -1,13 +1,12 @@
 package de.tjarksaul.wachmanager.modules.crew.api
 
 import com.google.gson.Gson
-import de.tjarksaul.wachmanager.iotClient.IotClient
-import de.tjarksaul.wachmanager.iotClient.IotConnectionState
+import app.beachist.iot_client.client.IotClient
+import app.beachist.iot_client.client.IotConnectionState
 import de.tjarksaul.wachmanager.modules.crew.repository.CrewRepository
 import de.tjarksaul.wachmanager.service.StationNameProvider
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi

@@ -1,4 +1,4 @@
-package de.tjarksaul.wachmanager.iotClient
+package app.beachist.iot_client.client
 
 import timber.log.Timber
 

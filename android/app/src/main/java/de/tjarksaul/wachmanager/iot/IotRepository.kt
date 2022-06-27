@@ -4,7 +4,7 @@ import io.reactivex.Observable
 
 interface IotRepository {
     fun observeConnection(): Observable<ConnectionState>
-    fun connect(config: de.tjarksaul.wachmanager.iotClient.IotConfig)
+    fun connect(config: app.beachist.iot_client.client.IotConfig)
     fun disconnect()
 }
 

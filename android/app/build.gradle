@@ -71,6 +71,7 @@ android {
 
 dependencies {
     implementation project(':shared')
+    implementation project(':iot-client')
 
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
@@ -90,9 +91,6 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     implementation 'com.squareup.retrofit2:adapter-rxjava2:2.6.0'
     implementation "com.squareup.okhttp3:logging-interceptor:4.8.1"
-
-    implementation 'com.amazonaws:aws-android-sdk-core:2.43.0'
-    implementation 'com.amazonaws:aws-android-sdk-iot:2.43.0'
 
     implementation "io.reactivex.rxjava2:rxjava:$rxjava_version"
     implementation "io.reactivex.rxjava2:rxkotlin:$rxkotlin_version"

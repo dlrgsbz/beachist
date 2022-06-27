@@ -3,7 +3,7 @@ package de.tjarksaul.wachmanager.modules.stationCheck
 import com.google.gson.Gson
 import de.tjarksaul.wachmanager.dtos.PostEntry
 import de.tjarksaul.wachmanager.dtos.StateKind
-import de.tjarksaul.wachmanager.iotClient.IotClient
+import app.beachist.iot_client.client.IotClient
 import de.tjarksaul.wachmanager.service.StationNameProvider
 
 class EntryService(

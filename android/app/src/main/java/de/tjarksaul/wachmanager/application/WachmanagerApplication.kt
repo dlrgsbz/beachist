@@ -5,7 +5,7 @@ import app.beachist.shared.sharedModule
 import de.tjarksaul.wachmanager.api.apiKoinModule
 import de.tjarksaul.wachmanager.appModule
 import de.tjarksaul.wachmanager.iot.iotModule
-import de.tjarksaul.wachmanager.iotClient.iotClientModule
+import app.beachist.iot_client.iotClientModule
 import de.tjarksaul.wachmanager.modules.auth.authModule
 import de.tjarksaul.wachmanager.modules.crew.crewModule
 import de.tjarksaul.wachmanager.modules.events.eventsKoinModule

@@ -1,11 +1,11 @@
 package de.tjarksaul.wachmanager.iot
 
 import com.google.gson.Gson
-import de.tjarksaul.wachmanager.iotClient.IotClient
-import de.tjarksaul.wachmanager.iotClient.IotConfig
-import de.tjarksaul.wachmanager.iotClient.IotConnectionState
-import de.tjarksaul.wachmanager.iotClient.ShadowData
-import de.tjarksaul.wachmanager.iotClient.toJson
+import app.beachist.iot_client.client.IotClient
+import app.beachist.iot_client.client.IotConfig
+import app.beachist.iot_client.client.IotConnectionState
+import app.beachist.iot_client.client.ShadowData
+import app.beachist.iot_client.client.toJson
 import app.beachist.shared.AppVersionRepository
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable

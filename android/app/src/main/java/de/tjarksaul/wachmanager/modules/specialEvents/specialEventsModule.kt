@@ -16,7 +16,7 @@ import org.koin.dsl.module
 @ExperimentalCoroutinesApi
 val specialEventsModule = module {
     single(createdAtStart = true) {
-        SyncSpecialEvents(get(), get(), get(), get(), Gson())
+        SyncSpecialEvents(get(), get(), get(), get(), get())
     }
 
     single {

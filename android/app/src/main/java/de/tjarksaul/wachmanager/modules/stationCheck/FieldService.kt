@@ -3,8 +3,8 @@ package de.tjarksaul.wachmanager.modules.stationCheck
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import de.tjarksaul.wachmanager.dtos.Field
-import de.tjarksaul.wachmanager.iotClient.IotClient
-import de.tjarksaul.wachmanager.iotClient.IotConnectionState
+import app.beachist.iot_client.client.IotClient
+import app.beachist.iot_client.client.IotConnectionState
 import de.tjarksaul.wachmanager.service.StationNameProvider
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable

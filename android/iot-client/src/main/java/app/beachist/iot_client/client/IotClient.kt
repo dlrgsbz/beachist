@@ -1,8 +1,7 @@
-package de.tjarksaul.wachmanager.iotClient
+package app.beachist.iot_client.client
 
 import android.annotation.SuppressLint
 import com.amazonaws.mobileconnectors.iot.*
-import com.amazonaws.regions.Regions
 import com.google.gson.Gson
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
@@ -18,7 +17,6 @@ data class IotConfig(
     val iotEndpoint: String,
     val clientId: String,
     val certificateId: String,
-    val region: Regions,
     val certificatePem: String,
     val privateKey: String,
 )

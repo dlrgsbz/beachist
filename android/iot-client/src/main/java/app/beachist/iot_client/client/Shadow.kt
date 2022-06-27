@@ -1,4 +1,4 @@
-package de.tjarksaul.wachmanager.iotClient
+package app.beachist.iot_client.client
 
 import com.google.gson.Gson
 import com.google.gson.JsonObject
