@@ -8,7 +8,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import de.tjarksaul.wachmanager.R
-import de.tjarksaul.wachmanager.diffableList
+import app.beachist.shared.recyclerview.diffableList
 import de.tjarksaul.wachmanager.dtos.NetworkState
 import de.tjarksaul.wachmanager.dtos.SpecialEvent
 import de.tjarksaul.wachmanager.dtos.SpecialEventKind

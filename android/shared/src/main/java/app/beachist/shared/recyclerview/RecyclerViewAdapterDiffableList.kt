@@ -1,4 +1,4 @@
-package de.tjarksaul.wachmanager
+package app.beachist.shared.recyclerview
 
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView

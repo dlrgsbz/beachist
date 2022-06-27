@@ -12,4 +12,5 @@ dependencies {
     implementation "io.reactivex.rxjava2:rxkotlin:$rxkotlin_version"
     implementation "io.reactivex.rxjava2:rxandroid:$rxandroid_version"
     implementation "com.jakewharton.timber:timber:$timber_version"
+    implementation 'androidx.recyclerview:recyclerview:1.2.1'
 }

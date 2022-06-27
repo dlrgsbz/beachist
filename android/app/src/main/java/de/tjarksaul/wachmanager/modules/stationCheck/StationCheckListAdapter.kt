@@ -10,7 +10,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.recyclerview.widget.RecyclerView
 import de.tjarksaul.wachmanager.R
-import de.tjarksaul.wachmanager.diffableList
+import app.beachist.shared.recyclerview.diffableList
 import de.tjarksaul.wachmanager.dtos.Field
 import de.tjarksaul.wachmanager.dtos.StateKind
 import io.reactivex.Observer
