@@ -1,4 +1,4 @@
-package de.tjarksaul.wachmanager.iot
+package app.beachist.iot.repository
 
 import io.reactivex.Observable
 

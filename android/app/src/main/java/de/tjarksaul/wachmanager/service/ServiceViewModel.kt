@@ -1,6 +1,6 @@
 package de.tjarksaul.wachmanager.service
 
-import de.tjarksaul.wachmanager.iot.IotRepository
+import app.beachist.iot.repository.IotRepository
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import app.beachist.iot_client.client.IotConfig

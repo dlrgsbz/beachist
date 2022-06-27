@@ -1,5 +1,8 @@
-package de.tjarksaul.wachmanager.iot
+package app.beachist.iot
 
+import app.beachist.iot.repository.IotRepository
+import app.beachist.iot.repository.IotRepositoryImpl
+import app.beachist.iot.ui.IotConnectionStateViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.bind
 import org.koin.dsl.module

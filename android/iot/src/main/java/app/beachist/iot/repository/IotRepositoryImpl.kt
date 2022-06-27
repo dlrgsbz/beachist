@@ -1,4 +1,4 @@
-package de.tjarksaul.wachmanager.iot
+package app.beachist.iot.repository
 
 import com.google.gson.Gson
 import app.beachist.iot_client.client.IotClient
@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import kotlin.coroutines.CoroutineContext
 
-class IotRepositoryImpl(
+internal class IotRepositoryImpl(
     private val gson: Gson,
     private val iotClient: IotClient,
     private val versionRepo: AppVersionRepository,

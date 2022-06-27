@@ -4,7 +4,7 @@ import android.app.Application
 import app.beachist.shared.sharedModule
 import de.tjarksaul.wachmanager.api.apiKoinModule
 import de.tjarksaul.wachmanager.appModule
-import de.tjarksaul.wachmanager.iot.iotModule
+import app.beachist.iot.iotModule
 import app.beachist.iot_client.iotClientModule
 import de.tjarksaul.wachmanager.modules.auth.authModule
 import de.tjarksaul.wachmanager.modules.crew.crewModule
@@ -37,7 +37,7 @@ class WachmanagerApplication : Application() {
                 stationCheckModule,
                 splashKoinModule,
                 iotClientModule,
-                iotModule,
+                app.beachist.iot.iotModule,
                 sharedModule,
                 provisionModule,
                 authModule,

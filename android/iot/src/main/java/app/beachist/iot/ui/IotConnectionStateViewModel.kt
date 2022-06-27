@@ -1,5 +1,7 @@
-package de.tjarksaul.wachmanager.iot
+package app.beachist.iot.ui
 
+import app.beachist.iot.repository.ConnectionState
+import app.beachist.iot.repository.IotRepository
 import app.beachist.shared.base.BaseViewModel
 import app.beachist.shared.base.ViewModelAction
 import app.beachist.shared.base.ViewModelEffect
