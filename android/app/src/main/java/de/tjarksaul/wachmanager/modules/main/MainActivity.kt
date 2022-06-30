@@ -14,8 +14,8 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import de.tjarksaul.wachmanager.R
 import de.tjarksaul.wachmanager.modules.events.EventService
-import de.tjarksaul.wachmanager.modules.provision.ui.ProvisionFragment
 import app.beachist.crew.ui.CrewNameFragment
+import app.beachist.provision.ui.ProvisionFragment
 import de.tjarksaul.wachmanager.service.BeachistService
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign

@@ -1,4 +1,4 @@
-package de.tjarksaul.wachmanager.modules.provision.ui
+package app.beachist.provision.ui
 
 /**
  * User details post authentication that is exposed to the UI

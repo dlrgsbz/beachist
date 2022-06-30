@@ -1,18 +1,30 @@
 apply from: "$rootDir/library.gradle"
+apply from: "$rootDir/gradle/readProps.gradle"
 // This allows importing XML views
 apply plugin: 'kotlin-android-extensions'
+// This allows serialization
+apply plugin: 'kotlinx-serialization'
 
 android {
-    namespace 'app.beachist.iot'
+    namespace 'app.beachist.provision'
 
     buildFeatures {
         viewBinding true
+    }
+
+    buildTypes {
+        release {
+            buildConfigField("String", "PROVISIONING_URL", props.getProperty("provisioningUrl"))
+        }
+        debug {
+            buildConfigField("String", "PROVISIONING_URL", props.getProperty("provisioningUrl"))
+        }
     }
 }
 
 dependencies {
     implementation project(":shared")
-    implementation project(":iot-client")
+    implementation project(":auth")
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
@@ -28,6 +40,12 @@ dependencies {
     implementation "io.insert-koin:koin-core:$koin_version"
     implementation "io.insert-koin:koin-android:$koin_version"
 
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.6.0'
+    implementation "com.squareup.okhttp3:logging-interceptor:4.8.1"
+
     implementation "com.google.code.gson:gson:$gson_version"
+    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 }

@@ -1,7 +1,7 @@
-package de.tjarksaul.wachmanager.modules.provision.data
+package app.beachist.provision.data
 
-import de.tjarksaul.wachmanager.modules.provision.data.model.ProvisionRequest
-import de.tjarksaul.wachmanager.modules.provision.data.model.ProvisionResponse
+import app.beachist.provision.data.model.ProvisionRequest
+import app.beachist.provision.data.model.ProvisionResponse
 import io.reactivex.Observable
 import retrofit2.http.Body
 import retrofit2.http.Header

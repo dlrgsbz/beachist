@@ -1,7 +1,7 @@
-package de.tjarksaul.wachmanager.modules.provision.data
+package app.beachist.provision.data
 
 import com.google.gson.Gson
-import de.tjarksaul.wachmanager.BuildConfig
+import app.beachist.provision.BuildConfig
 import io.reactivex.schedulers.Schedulers
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor

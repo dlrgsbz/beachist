@@ -1,10 +1,10 @@
-package de.tjarksaul.wachmanager.modules.provision.data
+package app.beachist.provision.data
 
 import android.util.Base64
-import de.tjarksaul.wachmanager.api.Async
-import de.tjarksaul.wachmanager.api.toAsync
-import de.tjarksaul.wachmanager.modules.provision.data.model.ProvisionRequest
-import de.tjarksaul.wachmanager.modules.provision.data.model.ProvisionResponse
+import app.beachist.provision.data.model.ProvisionRequest
+import app.beachist.provision.data.model.ProvisionResponse
+import app.beachist.shared.async.Async
+import app.beachist.shared.async.toAsync
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 

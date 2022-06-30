@@ -1,9 +1,9 @@
-package de.tjarksaul.wachmanager.modules.provision.data
+package app.beachist.provision.data
 
-import de.tjarksaul.wachmanager.api.Async
 import app.beachist.auth.repository.AuthRepository
 import app.beachist.auth.dto.Certificate
-import de.tjarksaul.wachmanager.modules.provision.data.model.ProvisionResponse
+import app.beachist.provision.data.model.ProvisionResponse
+import app.beachist.shared.async.Async
 import io.reactivex.Observable
 
 class ProvisionRepository(

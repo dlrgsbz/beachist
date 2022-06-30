@@ -1,4 +1,4 @@
-package de.tjarksaul.wachmanager.modules.provision.ui
+package app.beachist.provision.ui
 
 /**
  * Data validation state of the login form.

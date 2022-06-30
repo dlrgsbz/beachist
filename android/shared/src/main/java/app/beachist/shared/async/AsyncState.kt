@@ -1,8 +1,6 @@
-package de.tjarksaul.wachmanager.api
+package app.beachist.shared.async
 
 import io.reactivex.Observable
-import timber.log.Timber
-import java.util.concurrent.TimeUnit
 
 sealed class Async<out T> {
     class Running<out T> : Async<T>()
@@ -19,23 +17,6 @@ fun <T, R> Observable<Async<T>>.mapData(body: (T) -> R): Observable<Async<R>> {
         }
     }
 }
-
-//fun <T, R> Observable<Async<T>>.mapDataNotNull(body: (T) -> R?): Observable<Async<R>> {
-//    return this.mapNotNull { item ->
-//        when (item) {
-//            is Async.Success -> {
-//                val data = body(item.data)
-//                if (data != null) {
-//                    Async.Success(data, item.isCacheResponse)
-//                } else {
-//                    null
-//                }
-//            }
-//            is Async.Failure -> Async.Failure(item.error)
-//            is Async.Running -> Async.Running<R>()
-//        }
-//    }
-//}
 
 fun <T, R> Observable<Async<T>>.flatMapData(body: (T) -> Observable<R>): Observable<Async<R>> {
     return this.flatMap {

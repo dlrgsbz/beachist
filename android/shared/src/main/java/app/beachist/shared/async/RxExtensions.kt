@@ -1,4 +1,4 @@
-package de.tjarksaul.wachmanager.api
+package app.beachist.shared.async
 
 import io.reactivex.Maybe
 import io.reactivex.Observable

@@ -3,6 +3,7 @@ include ':shared'
 include ':iot-client'
 include ':auth'
 
+include ':provision'
 include ':crew'
 include ':iot'
 include ':app'

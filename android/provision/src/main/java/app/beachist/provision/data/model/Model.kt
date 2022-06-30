@@ -1,4 +1,4 @@
-package de.tjarksaul.wachmanager.modules.provision.data.model
+package app.beachist.provision.data.model
 
 import kotlinx.serialization.Serializable
 

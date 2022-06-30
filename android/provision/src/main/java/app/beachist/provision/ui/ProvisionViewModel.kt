@@ -1,13 +1,13 @@
-package de.tjarksaul.wachmanager.modules.provision.ui
+package app.beachist.provision.ui
 
 import android.os.Handler
 import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import de.tjarksaul.wachmanager.R
-import de.tjarksaul.wachmanager.api.Async
-import de.tjarksaul.wachmanager.modules.provision.data.ProvisionRepository
+import app.beachist.provision.R
+import app.beachist.provision.data.ProvisionRepository
+import app.beachist.shared.async.Async
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import timber.log.Timber

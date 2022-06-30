@@ -14,7 +14,7 @@ import timber.log.Timber
 
 class FieldService(
     private val iotClient: IotClient,
-    private val stationNameProvider: app.beachist.auth.station.StationNameProvider,
+    private val stationNameProvider: StationNameProvider,
     private val gson: Gson,
 ) {
     private val disposables = CompositeDisposable()

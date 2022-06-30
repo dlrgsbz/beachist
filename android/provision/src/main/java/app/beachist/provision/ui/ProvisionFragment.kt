@@ -1,4 +1,4 @@
-package de.tjarksaul.wachmanager.modules.provision.ui
+package app.beachist.provision.ui
 
 import android.os.Bundle
 import android.text.Editable
@@ -11,7 +11,8 @@ import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import de.tjarksaul.wachmanager.databinding.FragmentProvisionBinding
+import app.beachist.provision.R
+import app.beachist.provision.databinding.FragmentProvisionBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ProvisionFragment : Fragment() {
@@ -110,12 +111,10 @@ class ProvisionFragment : Fragment() {
 
     private fun updateUiWithUser(model: ProvisionDataView) {
         val station = model.thingName.split("-").last()
-        val welcome = "Erfolgreich Station $station zugeordnet"
-        // TODO : initiate successful logged in experience
+        val welcome = getString(R.string.provision_successful_provision, station)
+
         val appContext = context?.applicationContext ?: return
         Toast.makeText(appContext, welcome, Toast.LENGTH_LONG).show()
-
-        // todo: navigate back to the main activity
     }
 
     private fun showLoginFailed(@StringRes errorString: Int) {
