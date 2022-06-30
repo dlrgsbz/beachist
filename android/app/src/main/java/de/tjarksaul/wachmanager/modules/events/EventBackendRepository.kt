@@ -6,7 +6,7 @@ import com.google.gson.Gson
 import de.tjarksaul.wachmanager.dtos.EventType
 import app.beachist.iot_client.client.IotClient
 import app.beachist.iot_client.client.IotConnectionState
-import de.tjarksaul.wachmanager.service.StationNameProvider
+import app.beachist.auth.station.StationNameProvider
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign

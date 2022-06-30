@@ -6,7 +6,7 @@ import de.tjarksaul.wachmanager.dtos.SpecialEvent
 import app.beachist.iot_client.client.IotClient
 import app.beachist.iot_client.client.IotConnectionState
 import de.tjarksaul.wachmanager.modules.specialEvents.repository.SpecialEventRepository
-import de.tjarksaul.wachmanager.service.StationNameProvider
+import app.beachist.auth.station.StationNameProvider
 import app.beachist.shared.date.DateFormatProvider
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
@@ -25,7 +25,7 @@ import kotlin.coroutines.CoroutineContext
 class SyncSpecialEvents(
     private val repository: SpecialEventRepository,
     private val iotClient: IotClient,
-    private val stationNameProvider: StationNameProvider,
+    private val stationNameProvider: app.beachist.auth.station.StationNameProvider,
     private val formatProvider: DateFormatProvider,
     private val gson: Gson,
 ) : CoroutineScope {

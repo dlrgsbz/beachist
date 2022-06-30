@@ -6,13 +6,12 @@ import de.tjarksaul.wachmanager.api.apiKoinModule
 import de.tjarksaul.wachmanager.appModule
 import app.beachist.iot.iotModule
 import app.beachist.iot_client.iotClientModule
-import de.tjarksaul.wachmanager.modules.auth.authModule
-import de.tjarksaul.wachmanager.modules.crew.crewModule
+import app.beachist.auth.authModule
+import app.beachist.crew.crewModule
 import de.tjarksaul.wachmanager.modules.events.eventsKoinModule
 import de.tjarksaul.wachmanager.modules.main.mainKoinModule
 import de.tjarksaul.wachmanager.modules.provision.provisionModule
 import de.tjarksaul.wachmanager.modules.specialEvents.specialEventsModule
-import de.tjarksaul.wachmanager.modules.splash.splashKoinModule
 import de.tjarksaul.wachmanager.modules.station.stationKoinModule
 import de.tjarksaul.wachmanager.modules.stationCheck.stationCheckModule
 import de.tjarksaul.wachmanager.repositories.repositoryKoinModule
@@ -35,9 +34,8 @@ class WachmanagerApplication : Application() {
                 mainKoinModule,
                 stationKoinModule,
                 stationCheckModule,
-                splashKoinModule,
                 iotClientModule,
-                app.beachist.iot.iotModule,
+                iotModule,
                 sharedModule,
                 provisionModule,
                 authModule,

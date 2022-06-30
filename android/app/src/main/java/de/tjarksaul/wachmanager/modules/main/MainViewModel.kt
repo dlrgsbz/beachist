@@ -1,12 +1,12 @@
 package de.tjarksaul.wachmanager.modules.main
 
-import de.tjarksaul.wachmanager.modules.auth.AuthRepository
-import de.tjarksaul.wachmanager.modules.auth.State
+import app.beachist.auth.repository.AuthRepository
+import app.beachist.auth.repository.State
 import app.beachist.shared.base.BaseViewModel
 import app.beachist.shared.base.ViewModelAction
 import app.beachist.shared.base.ViewModelEffect
 import app.beachist.shared.base.ViewModelState
-import de.tjarksaul.wachmanager.modules.crew.repository.CrewRepository
+import app.beachist.crew.repository.CrewRepository
 import io.reactivex.rxkotlin.ofType
 import io.reactivex.rxkotlin.plusAssign
 import kotlinx.coroutines.CoroutineScope

@@ -15,17 +15,19 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import de.tjarksaul.wachmanager.R
 import de.tjarksaul.wachmanager.modules.events.EventService
 import de.tjarksaul.wachmanager.modules.provision.ui.ProvisionFragment
-import de.tjarksaul.wachmanager.modules.splash.SplashFragment
+import app.beachist.crew.ui.CrewNameFragment
 import de.tjarksaul.wachmanager.service.BeachistService
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.subjects.PublishSubject
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+@ExperimentalCoroutinesApi
 class MainActivity: AppCompatActivity(), ServiceConnection {
 
     private val viewModel: MainViewModel by viewModel()
-    private var splashFragment: SplashFragment? = null
+    private var crewNameFragment: CrewNameFragment? = null
     private var provisionFragment: ProvisionFragment? = null
     private val disposable = CompositeDisposable()
     private val actions: PublishSubject<MainViewAction> = PublishSubject.create()
@@ -71,20 +73,24 @@ class MainActivity: AppCompatActivity(), ServiceConnection {
 
     private fun onViewChange(view: MainViewCurrentView) {
         when (view) {
-            MainViewCurrentView.CrewInput -> setupSplashView()
+            MainViewCurrentView.CrewInput -> setupCrewView()
             MainViewCurrentView.Provision -> setupProvisioningView()
             MainViewCurrentView.TabbedView -> goToStationView()
         }
     }
 
-    private fun setupSplashView() {
-        val fragment = SplashFragment()
+    private fun setupCrewView() {
+        val fragment = CrewNameFragment()
+
+        disposable += fragment.dismissPublisher.subscribe {
+            goToStationView()
+        }
 
         supportFragmentManager.beginTransaction()
             .add(android.R.id.content, fragment)
             .commit()
 
-        splashFragment = fragment
+        crewNameFragment = fragment
     }
 
     private fun setupProvisioningView() {
@@ -97,10 +103,10 @@ class MainActivity: AppCompatActivity(), ServiceConnection {
         provisionFragment = fragment
     }
 
-    fun goToStationView() {
+    private fun goToStationView() {
         val fragment = when {
             provisionFragment != null -> provisionFragment
-            splashFragment != null -> splashFragment
+            crewNameFragment != null -> crewNameFragment
             else -> null
         } ?: return
 
@@ -108,7 +114,7 @@ class MainActivity: AppCompatActivity(), ServiceConnection {
             .remove(fragment)
             .commit()
 
-        splashFragment = null
+        crewNameFragment = null
         provisionFragment = null
     }
 

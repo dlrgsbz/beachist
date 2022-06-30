@@ -4,7 +4,7 @@ import app.beachist.iot.repository.IotRepository
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import app.beachist.iot_client.client.IotConfig
-import de.tjarksaul.wachmanager.modules.auth.AuthRepository
+import app.beachist.auth.repository.AuthRepository
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 

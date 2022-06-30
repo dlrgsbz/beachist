@@ -21,6 +21,10 @@ class DateFormatProvider {
         return SimpleDateFormat(format)
     }
 
+    fun getReadableDateFormat(): DateFormat {
+        return SimpleDateFormat("dd.MM.yyyy")
+    }
+
     fun getShortDateTimeFormat(): DateFormat {
         return SimpleDateFormat.getDateTimeInstance(
             DateFormat.SHORT,

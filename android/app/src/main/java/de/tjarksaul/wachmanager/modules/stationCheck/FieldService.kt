@@ -5,7 +5,7 @@ import com.google.gson.reflect.TypeToken
 import de.tjarksaul.wachmanager.dtos.Field
 import app.beachist.iot_client.client.IotClient
 import app.beachist.iot_client.client.IotConnectionState
-import de.tjarksaul.wachmanager.service.StationNameProvider
+import app.beachist.auth.station.StationNameProvider
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
@@ -14,7 +14,7 @@ import timber.log.Timber
 
 class FieldService(
     private val iotClient: IotClient,
-    private val stationNameProvider: StationNameProvider,
+    private val stationNameProvider: app.beachist.auth.station.StationNameProvider,
     private val gson: Gson,
 ) {
     private val disposables = CompositeDisposable()

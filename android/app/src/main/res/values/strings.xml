@@ -26,5 +26,4 @@
     <string name="invalid_password">Passwort darf nicht leer sein</string>
     <string name="provision_failed">"Zuweisung fehlgeschlagen"</string>
     <string name="provision_enter_station">"Bitte Station auswählen"</string>
-    <string name="station_name">Station %1$s</string>
 </resources>

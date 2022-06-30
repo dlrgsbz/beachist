@@ -1,8 +1,8 @@
 package de.tjarksaul.wachmanager.modules.provision.data
 
 import de.tjarksaul.wachmanager.api.Async
-import de.tjarksaul.wachmanager.modules.auth.AuthRepository
-import de.tjarksaul.wachmanager.modules.auth.Certificate
+import app.beachist.auth.repository.AuthRepository
+import app.beachist.auth.dto.Certificate
 import de.tjarksaul.wachmanager.modules.provision.data.model.ProvisionResponse
 import io.reactivex.Observable
 

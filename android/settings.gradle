@@ -1,7 +1,9 @@
 include ':shared'
 
 include ':iot-client'
+include ':auth'
 
+include ':crew'
 include ':iot'
 include ':app'
 rootProject.name = "Beachist"
