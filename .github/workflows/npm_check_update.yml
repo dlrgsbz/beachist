@@ -22,18 +22,14 @@ jobs:
       working-directory: admin
       run: |
         npm ci
-        # do not upgrade exact versions, only ranges
-        # https://github.com/raineorshine/npm-check-updates/issues/436#issuecomment-728247093
-        npx ncu -u --packageFile package.json --filterVersion "/^[~^<>]| - |\.x$/"
+        npx ncu
         npm install
         npm update
     - name: Update Dependencies
       working-directory: lambdas
       run: |
         npm ci
-        # do not upgrade exact versions, only ranges
-        # https://github.com/raineorshine/npm-check-updates/issues/436#issuecomment-728247093
-        npx ncu -u --packageFile package.json --filterVersion "/^[~^<>]| - |\.x$/"
+        npx ncu
         npm install
         npm update
     - name: Create Pull Request
