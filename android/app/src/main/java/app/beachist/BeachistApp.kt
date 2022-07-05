@@ -1,4 +1,4 @@
-package de.tjarksaul.wachmanager.application
+package app.beachist
 
 import android.app.Application
 import app.beachist.shared.sharedModule
@@ -18,12 +18,12 @@ import org.koin.core.context.startKoin
 import timber.log.Timber
 
 @ExperimentalCoroutinesApi
-class WachmanagerApplication : Application() {
+class BeachistApp : Application() {
     override fun onCreate() {
         super.onCreate()
 
         startKoin {
-            androidContext(this@WachmanagerApplication.applicationContext)
+            androidContext(this@BeachistApp.applicationContext)
             modules(
                 eventsModule,
                 mainKoinModule,
