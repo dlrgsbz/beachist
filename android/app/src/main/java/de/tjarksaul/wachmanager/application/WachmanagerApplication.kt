@@ -7,12 +7,11 @@ import app.beachist.iot.iotModule
 import app.beachist.iot_client.iotClientModule
 import app.beachist.auth.authModule
 import app.beachist.crew.crewModule
-import de.tjarksaul.wachmanager.modules.events.eventsKoinModule
+import app.beachist.event.eventsModule
 import de.tjarksaul.wachmanager.modules.main.mainKoinModule
 import app.beachist.provision.provisionModule
 import de.tjarksaul.wachmanager.modules.specialEvents.specialEventsModule
 import de.tjarksaul.wachmanager.modules.stationCheck.stationCheckModule
-import de.tjarksaul.wachmanager.repositories.repositoryKoinModule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
@@ -26,8 +25,7 @@ class WachmanagerApplication : Application() {
         startKoin {
             androidContext(this@WachmanagerApplication.applicationContext)
             modules(
-                repositoryKoinModule,
-                eventsKoinModule,
+                eventsModule,
                 mainKoinModule,
                 stationCheckModule,
                 iotClientModule,

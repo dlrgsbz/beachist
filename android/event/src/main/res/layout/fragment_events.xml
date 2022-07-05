@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".modules.events.EventsFragment">
+    tools:context="app.beachist.event.ui.EventsFragment">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/eventList"
@@ -21,8 +21,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
         android:src="@drawable/ic_baseline_add_24"
-        app:backgroundTint="@color/colorPrimary"
-        android:contentDescription="EH-Leistung eintragen"
+        app:backgroundTint="?attr/colorPrimary"
+        android:contentDescription="@string/event_add_first_aid"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_margin="30dp" />
@@ -33,10 +33,10 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
         android:src="@drawable/ic_baseline_undo_24"
-        app:backgroundTint="@color/colorAccent"
-        android:contentDescription="Rückgängig"
+        app:backgroundTint="?attr/colorAccent"
+        android:contentDescription="@string/event_undo"
         app:layout_constraintBottom_toTopOf="@id/firstAidButton"
         app:layout_constraintLeft_toLeftOf="@id/firstAidButton"
         app:layout_constraintRight_toRightOf="@id/firstAidButton"
-        android:layout_margin="30dp" />
+        android:layout_marginBottom="30dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>

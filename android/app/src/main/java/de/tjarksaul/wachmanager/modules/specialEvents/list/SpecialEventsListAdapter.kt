@@ -9,7 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import de.tjarksaul.wachmanager.R
 import app.beachist.shared.recyclerview.diffableList
-import de.tjarksaul.wachmanager.dtos.NetworkState
+import app.beachist.shared.NetworkState
 import de.tjarksaul.wachmanager.dtos.SpecialEvent
 import de.tjarksaul.wachmanager.dtos.SpecialEventKind
 import app.beachist.shared.date.DateFormatProvider

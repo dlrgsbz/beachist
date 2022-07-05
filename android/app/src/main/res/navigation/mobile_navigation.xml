@@ -13,7 +13,7 @@
 
     <fragment
         android:id="@+id/navigation_dashboard"
-        android:name="de.tjarksaul.wachmanager.modules.events.EventsFragment"
+        android:name="app.beachist.event.ui.EventsFragment"
         android:label="@string/title_events"
         tools:layout="@layout/fragment_events" />
 

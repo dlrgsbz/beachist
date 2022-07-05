@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import de.tjarksaul.wachmanager.dtos.NetworkState
+import app.beachist.shared.NetworkState
 import kotlinx.coroutines.flow.Flow
 
 @Dao

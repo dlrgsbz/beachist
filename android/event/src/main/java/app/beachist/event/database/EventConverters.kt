@@ -1,11 +1,11 @@
-package de.tjarksaul.wachmanager.repositories.converters
+package app.beachist.event.database
 
 import androidx.room.TypeConverter
-import de.tjarksaul.wachmanager.dtos.EventType
-import de.tjarksaul.wachmanager.dtos.NetworkState
+import app.beachist.event.EventType
+import app.beachist.shared.NetworkState
 import java.util.*
 
-class Converters {
+internal class EventConverters {
     @TypeConverter
     fun toDate(dateLong: Long) = Date(dateLong)
 

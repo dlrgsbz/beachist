@@ -1,4 +1,4 @@
-package de.tjarksaul.wachmanager.dtos
+package app.beachist.event
 
 enum class EventType {
     firstAid, search

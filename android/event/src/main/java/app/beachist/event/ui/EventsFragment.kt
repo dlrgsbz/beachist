@@ -1,6 +1,5 @@
-package de.tjarksaul.wachmanager.modules.events
+package app.beachist.event.ui
 
-import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,11 +7,10 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import de.tjarksaul.wachmanager.R
+import app.beachist.event.databinding.FragmentEventsBinding
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.subjects.PublishSubject
-import kotlinx.android.synthetic.main.fragment_events.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -24,12 +22,18 @@ class EventsFragment : Fragment() {
     private val actions: PublishSubject<EventListAction> = PublishSubject.create()
     private val adapter: EventsListAdapter by lazy { EventsListAdapter(actions) }
 
+    private var _binding: FragmentEventsBinding? = null
+
+    // This property is only valid between onCreateView and
+    // onDestroyView.
+    private val binding get() = _binding!!
+
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_events, container, false)
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View {
+        _binding = FragmentEventsBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -43,35 +47,31 @@ class EventsFragment : Fragment() {
 
     private fun setupView() {
         val layoutManager = LinearLayoutManager(activity)
-        eventList.layoutManager = layoutManager
-        eventList.adapter = adapter
+        binding.eventList.layoutManager = layoutManager
+        binding.eventList.adapter = adapter
 
         val dividerItemDecoration = DividerItemDecoration(
-            eventList.context,
+            binding.eventList.context,
             layoutManager.orientation
         )
-        eventList.addItemDecoration(dividerItemDecoration)
+        binding.eventList.addItemDecoration(dividerItemDecoration)
     }
 
     private fun setupBindings() {
         viewModel.attach(actions)
 
-        firstAidButton.setOnClickListener {
+        binding.firstAidButton.setOnClickListener {
             actions.onNext(EventListAction.AddEventClicked)
         }
 
-        undoButton.setOnClickListener {
+        binding.undoButton.setOnClickListener {
             actions.onNext(EventListAction.CancelClicked)
         }
 
         disposable += viewModel.stateOf { canAdd }
             .subscribe { canAdd ->
-                if (undoButton !== null) {
-                    undoButton.visibility = if (canAdd) View.INVISIBLE else View.VISIBLE
-                }
-                if (firstAidButton !== null) {
-                    firstAidButton.isEnabled = canAdd
-                }
+                binding.undoButton.visibility = if (canAdd) View.INVISIBLE else View.VISIBLE
+                binding.firstAidButton.isEnabled = canAdd
             }
 
         disposable += viewModel.stateOf { eventItems }

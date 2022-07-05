@@ -1,9 +1,9 @@
-package de.tjarksaul.wachmanager.repositories.entities
+package app.beachist.event.database
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import de.tjarksaul.wachmanager.dtos.EventType
-import de.tjarksaul.wachmanager.dtos.NetworkState
+import app.beachist.event.EventType
+import app.beachist.shared.NetworkState
 import java.util.*
 
 @Entity

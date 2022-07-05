@@ -13,7 +13,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import de.tjarksaul.wachmanager.R
-import de.tjarksaul.wachmanager.modules.events.EventService
+import app.beachist.event.EventService
 import app.beachist.crew.ui.CrewNameFragment
 import app.beachist.provision.ui.ProvisionFragment
 import de.tjarksaul.wachmanager.service.BeachistService
@@ -36,7 +36,7 @@ class MainActivity: AppCompatActivity(), ServiceConnection {
         super.onCreate(savedInstanceState)
 
         bindService(Intent(this, BeachistService::class.java), this, Service.BIND_AUTO_CREATE)
-        bindService(Intent(this, EventService::class.java), this, Service.BIND_AUTO_CREATE)
+        bindService(Intent(this, app.beachist.event.EventService::class.java), this, Service.BIND_AUTO_CREATE)
 
         setupView()
     }

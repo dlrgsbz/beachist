@@ -1,10 +1,9 @@
-package de.tjarksaul.wachmanager.repositories.dao
+package app.beachist.event.database
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import de.tjarksaul.wachmanager.repositories.entities.EventEntity
 import java.util.*
 
 @Dao

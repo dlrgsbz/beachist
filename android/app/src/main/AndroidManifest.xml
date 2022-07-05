@@ -42,7 +42,7 @@
         </service>
 
         <service
-                android:name=".modules.events.EventService"
+                android:name="app.beachist.event.EventService"
                 android:enabled="true"
                 android:exported="false">
         </service>

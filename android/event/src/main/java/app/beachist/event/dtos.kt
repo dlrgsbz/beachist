@@ -1,8 +1,7 @@
-package de.tjarksaul.wachmanager.modules.events
+package app.beachist.event
 
 
-import de.tjarksaul.wachmanager.dtos.EventType
-import de.tjarksaul.wachmanager.dtos.NetworkState
+import app.beachist.shared.NetworkState
 import kotlinx.serialization.Serializable
 import java.text.SimpleDateFormat
 import java.util.*

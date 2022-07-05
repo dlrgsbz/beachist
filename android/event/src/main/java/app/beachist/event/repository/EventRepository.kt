@@ -1,12 +1,13 @@
-package de.tjarksaul.wachmanager.repositories
+package app.beachist.event.repository
 
-import de.tjarksaul.wachmanager.repositories.entities.EventEntity
-import de.tjarksaul.wachmanager.modules.events.Event
+import app.beachist.event.Event
+import app.beachist.event.database.EventDatabase
+import app.beachist.event.database.EventEntity
 import io.reactivex.Observable
 import java.util.*
 
 class EventRepository(
-    private val database: Database
+    private val database: EventDatabase
 ) {
     private fun getEventsForToday(): List<EventEntity> {
         val start: Calendar = GregorianCalendar()

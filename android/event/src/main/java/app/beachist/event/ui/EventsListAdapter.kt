@@ -1,4 +1,4 @@
-package de.tjarksaul.wachmanager.modules.events
+package app.beachist.event.ui
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
@@ -7,12 +7,13 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.ProgressBar
 import androidx.recyclerview.widget.RecyclerView
-import de.tjarksaul.wachmanager.R
+import app.beachist.event.Event
+import app.beachist.event.R
+import app.beachist.event.databinding.ItemEventBinding
+import app.beachist.shared.NetworkState
 import app.beachist.shared.recyclerview.diffableList
-import de.tjarksaul.wachmanager.dtos.NetworkState
 import app.beachist.shared.date.formatDateTime
 import io.reactivex.Observer
-import kotlinx.android.synthetic.main.item_event.view.*
 
 internal class EventsListAdapter(
     private val actions: Observer<EventListAction>
@@ -23,11 +24,15 @@ internal class EventsListAdapter(
         compareId = { a, b -> a.id == b.id }
     )
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_event, parent, false)
+    private var _binding: ItemEventBinding? = null
 
-        return EventHolder(view)
+    // This property is only valid between onCreateView and
+    // onDestroyView.
+    private val binding get() = _binding!!
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        _binding = ItemEventBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return EventHolder(binding)
     }
 
     override fun getItemCount(): Int = items.size
@@ -40,16 +45,14 @@ internal class EventsListAdapter(
             )
         }
     }
-
-
 }
 
-internal class EventHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+internal class EventHolder(private val binding: ItemEventBinding) : RecyclerView.ViewHolder(binding.root) {
     @SuppressLint("SetTextI18n")
     fun bind(event: Event, actions: Observer<EventListAction>) {
         with(event) {
-            itemView.event_item_name.text = "Erste Hilfe"
-            itemView.event_item_date.text = formatDateTime(this.date)
+            binding.eventItemName.text = "Erste Hilfe"
+            binding.eventItemDate.text = formatDateTime(this.date)
 
             setIndicatorView(this.state)
         }
@@ -76,8 +79,8 @@ internal class EventHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             }
         }
 
-        itemView.loading_indicator_container.removeAllViews()
+        binding.loadingIndicatorContainer.removeAllViews()
         indicatorView.visibility = View.VISIBLE
-        itemView.loading_indicator_container.addView(indicatorView, 100, 100)
+        binding.loadingIndicatorContainer.addView(indicatorView, 100, 100)
     }
 }

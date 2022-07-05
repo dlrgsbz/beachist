@@ -1,12 +1,14 @@
-package de.tjarksaul.wachmanager.modules.events
+package app.beachist.event.ui
 
-import de.tjarksaul.wachmanager.dtos.EventType
-import de.tjarksaul.wachmanager.dtos.NetworkState
+import app.beachist.event.Event
+import app.beachist.event.EventType
+import app.beachist.event.repository.EventBackendRepository
+import app.beachist.event.repository.EventRepository
+import app.beachist.shared.NetworkState
 import app.beachist.shared.base.BaseViewModel
 import app.beachist.shared.base.ViewModelAction
 import app.beachist.shared.base.ViewModelEffect
 import app.beachist.shared.base.ViewModelState
-import de.tjarksaul.wachmanager.repositories.EventRepository
 import io.reactivex.rxkotlin.ofType
 import io.reactivex.rxkotlin.plusAssign
 import java.util.*

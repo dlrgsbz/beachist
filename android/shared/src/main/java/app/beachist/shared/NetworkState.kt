@@ -1,4 +1,4 @@
-package de.tjarksaul.wachmanager.dtos
+package app.beachist.shared
 
 enum class NetworkState {
     pending, successful, failed

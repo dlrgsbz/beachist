@@ -1,7 +1,7 @@
 package de.tjarksaul.wachmanager.modules.specialEvents.database
 
 import androidx.room.Entity
-import de.tjarksaul.wachmanager.dtos.NetworkState
+import app.beachist.shared.NetworkState
 import de.tjarksaul.wachmanager.dtos.SpecialEvent
 import de.tjarksaul.wachmanager.dtos.SpecialEventKind
 import java.util.*

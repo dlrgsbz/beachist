@@ -11,6 +11,7 @@ import de.tjarksaul.wachmanager.modules.specialEvents.service.SpecialEventServic
 import de.tjarksaul.wachmanager.modules.specialEvents.sync.SyncSpecialEvents
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 @ExperimentalCoroutinesApi
@@ -30,8 +31,8 @@ val specialEventsModule = module {
     }
 
     factory {
-        SpecialEventRepositoryImpl(get(), get()) as SpecialEventRepository
-    }
+        SpecialEventRepositoryImpl(get(), get())
+    } bind SpecialEventRepository::class
 
     viewModel { SpecialEventsViewModel(get()) }
 

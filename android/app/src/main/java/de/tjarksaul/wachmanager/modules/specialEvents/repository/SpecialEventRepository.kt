@@ -1,6 +1,6 @@
 package de.tjarksaul.wachmanager.modules.specialEvents.repository
 
-import de.tjarksaul.wachmanager.dtos.NetworkState
+import app.beachist.shared.NetworkState
 import de.tjarksaul.wachmanager.dtos.SpecialEvent
 import de.tjarksaul.wachmanager.modules.specialEvents.database.DbSpecialEvent
 import de.tjarksaul.wachmanager.modules.specialEvents.database.SpecialEventDao

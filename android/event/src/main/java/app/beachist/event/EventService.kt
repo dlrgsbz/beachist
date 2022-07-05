@@ -1,17 +1,19 @@
-package de.tjarksaul.wachmanager.modules.events
+package app.beachist.event
 
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import androidx.lifecycle.LifecycleService
+import app.beachist.event.ui.EventViewModel
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import org.koin.android.ext.android.inject
 import org.koin.core.component.KoinComponent
 import timber.log.Timber
 
+// todo: replace this by sync service
 class EventService: LifecycleService(), KoinComponent {
-    protected val disposables = CompositeDisposable()
+    private val disposables = CompositeDisposable()
 
     private val eventViewModel: EventViewModel by inject()
 

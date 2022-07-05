@@ -1,0 +1,4 @@
+<resources>
+    <string name="event_add_first_aid">EH-Leistung eintragen</string>
+    <string name="event_undo">Rückgängig</string>
+</resources>

@@ -1,5 +1,6 @@
 package de.tjarksaul.wachmanager.dtos
 
+import app.beachist.shared.NetworkState
 import java.util.*
 
 data class SpecialEvent(
