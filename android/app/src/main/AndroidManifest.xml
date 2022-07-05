@@ -18,12 +18,10 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="false"
         android:theme="@style/AppTheme">
         <activity
             android:name=".modules.main.MainActivity"
-            android:label="@string/app_name"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -36,9 +34,6 @@
                 android:name=".service.BeachistService"
                 android:enabled="true"
                 android:exported="false">
-<!--            <intent-filter>-->
-<!--                <action android:name="de.tjarksaul.wachmanager.START_SERVICE" />-->
-<!--            </intent-filter>-->
         </service>
 
         <service
