@@ -7,5 +7,7 @@ include ':provision'
 include ':crew'
 include ':iot'
 include ':event'
+include ':station-check'
 include ':app'
+
 rootProject.name = "Beachist"

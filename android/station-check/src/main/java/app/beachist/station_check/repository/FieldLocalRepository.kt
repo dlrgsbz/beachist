@@ -1,9 +1,9 @@
-package de.tjarksaul.wachmanager.modules.stationCheck
+package app.beachist.station_check.repository
 
 import android.content.Context
+import app.beachist.station_check.dtos.Field
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import de.tjarksaul.wachmanager.dtos.Field
 import timber.log.Timber
 import java.io.IOException
 

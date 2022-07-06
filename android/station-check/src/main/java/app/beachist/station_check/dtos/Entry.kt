@@ -1,4 +1,4 @@
-package de.tjarksaul.wachmanager.dtos
+package app.beachist.station_check.dtos
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize

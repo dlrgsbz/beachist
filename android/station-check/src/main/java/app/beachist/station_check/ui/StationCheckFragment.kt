@@ -1,4 +1,4 @@
-package de.tjarksaul.wachmanager.modules.stationCheck
+package app.beachist.station_check.ui
 
 import android.app.AlertDialog
 import android.os.Bundle
@@ -8,14 +8,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import androidx.fragment.app.Fragment
-import de.tjarksaul.wachmanager.R
+import app.beachist.station_check.R
+import app.beachist.station_check.databinding.FragmentStationCheckBinding
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.ofType
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.subjects.PublishSubject
-import kotlinx.android.synthetic.main.fragment_station_check.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.core.component.KoinComponent
 import timber.log.Timber
 
 
@@ -31,6 +30,12 @@ class StationCheckFragment : Fragment() {
         )
     }
 
+    private var _binding: FragmentStationCheckBinding? = null
+
+    // This property is only valid between onCreateView and
+    // onDestroyView.
+    private val binding get() = _binding!!
+
     override fun onSaveInstanceState(outState: Bundle) {
         viewModel.saveState()
 
@@ -41,9 +46,9 @@ class StationCheckFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_station_check, container, false)
-
+    ): View {
+        _binding = FragmentStationCheckBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -56,7 +61,7 @@ class StationCheckFragment : Fragment() {
     }
 
     private fun setupView() {
-        stationCheckList.adapter = adapter
+        binding.stationCheckList.adapter = adapter
     }
 
     private fun setupBindings() {
@@ -66,7 +71,6 @@ class StationCheckFragment : Fragment() {
             .doOnNext { Timber.tag("StationCheckFragment").d("%s", it) }
             .subscribe {
                 adapter.items = it
-                adapter.notifyDataSetChanged()
             }
 
         disposable += viewModel.effects()
@@ -81,21 +85,21 @@ class StationCheckFragment : Fragment() {
     private fun showNoteInput(itemId: String) {
         val activity = requireActivity()
         val builder: AlertDialog.Builder = AlertDialog.Builder(activity)
-        builder.setTitle("Bitte das Problem genauer beschreiben")
+        builder.setTitle(getString(R.string.station_check_note_description))
 
         val input = EditText(activity)
         input.inputType = InputType.TYPE_CLASS_TEXT
         builder.setView(input)
 
         builder.setPositiveButton(
-            "OK"
+            getString(R.string.station_check_note_button_okay)
         ) { _, _ ->
             val note = input.text.toString()
             actions.onNext(StationCheckAction.AddItemNote(itemId, note))
         }
 
         builder.setNegativeButton(
-            "Cancel"
+            getString(R.string.station_check_note_button_cancel)
         ) { dialog, _ -> dialog.cancel() }
 
         builder.show()
@@ -104,7 +108,7 @@ class StationCheckFragment : Fragment() {
     private fun showAmountInput(itemId: String) {
         val activity = requireActivity()
         val builder: AlertDialog.Builder = AlertDialog.Builder(activity)
-        builder.setTitle("Wie viel ist noch vorhanden?")
+        builder.setTitle(getText(R.string.station_check_amount_description))
 
         val input = EditText(activity)
         input.inputType = InputType.TYPE_CLASS_NUMBER
@@ -112,7 +116,7 @@ class StationCheckFragment : Fragment() {
         builder.setView(input)
 
         builder.setPositiveButton(
-            "OK"
+            getString(R.string.station_check_note_button_okay)
         ) { _, _ ->
             val amount = try {
                 input.text.toString().toInt()
@@ -123,7 +127,7 @@ class StationCheckFragment : Fragment() {
             actions.onNext(StationCheckAction.AddItemAmount(itemId, amount))
         }
         builder.setNegativeButton(
-            "Cancel"
+            getString(R.string.station_check_note_button_cancel)
         ) { dialog, _ -> dialog.cancel() }
 
         builder.show()

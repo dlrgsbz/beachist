@@ -1,11 +1,11 @@
-package de.tjarksaul.wachmanager.modules.stationCheck
+package app.beachist.station_check.service
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import de.tjarksaul.wachmanager.dtos.Field
 import app.beachist.iot_client.client.IotClient
 import app.beachist.iot_client.client.IotConnectionState
 import app.beachist.auth.station.StationNameProvider
+import app.beachist.station_check.dtos.Field
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign

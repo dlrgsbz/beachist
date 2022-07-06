@@ -1,15 +1,18 @@
-package de.tjarksaul.wachmanager.modules.stationCheck
+package app.beachist.station_check.ui
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
-import de.tjarksaul.wachmanager.dtos.Entry
-import de.tjarksaul.wachmanager.dtos.Field
-import de.tjarksaul.wachmanager.dtos.StateKind
 import app.beachist.shared.base.BaseViewModel
 import app.beachist.shared.base.RxViewState
 import app.beachist.shared.base.ViewModelAction
 import app.beachist.shared.base.ViewModelEffect
 import app.beachist.shared.base.ViewModelState
+import app.beachist.station_check.dtos.Entry
+import app.beachist.station_check.dtos.Field
+import app.beachist.station_check.dtos.StateKind
+import app.beachist.station_check.repository.FieldLocalRepository
+import app.beachist.station_check.service.EntryService
+import app.beachist.station_check.service.FieldService
 import io.reactivex.rxkotlin.ofType
 import io.reactivex.rxkotlin.plusAssign
 import kotlinx.android.parcel.Parcelize
@@ -82,7 +85,7 @@ internal class StationCheckViewModel(
     private fun onMarkItemTooLittle(id: String) {
         state.withFieldId(id) { field ->
             // if there's only 1 required we go straight to sending 0
-            val showAmountBox = field.required ?: 0 > 1
+            val showAmountBox = (field.required ?: 0) > 1
             val event = if (!showAmountBox)
                 StationCheckAction.UpdateValue(id, false, StateKind.tooLittle, 0, null)
             else

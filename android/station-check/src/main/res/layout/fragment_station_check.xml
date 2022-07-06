@@ -9,5 +9,5 @@
     android:footerDividersEnabled="false"
     android:headerDividersEnabled="false"
     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-    tools:context=".modules.stationCheck.StationCheckFragment"
-    tools:listitem="@layout/item_station_check_item" />
+    tools:context="app.beachist.station_check.ui.StationCheckFragment"
+    tools:listitem="@layout/item_station_check" />

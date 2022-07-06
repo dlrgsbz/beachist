@@ -1,14 +1,14 @@
-package de.tjarksaul.wachmanager.modules.stationCheck
+package app.beachist.station_check.service
 
 import com.google.gson.Gson
-import de.tjarksaul.wachmanager.dtos.PostEntry
-import de.tjarksaul.wachmanager.dtos.StateKind
 import app.beachist.iot_client.client.IotClient
 import app.beachist.auth.station.StationNameProvider
+import app.beachist.station_check.dtos.PostEntry
+import app.beachist.station_check.dtos.StateKind
 
 class EntryService(
     private val iotClient: IotClient,
-    private val stationNameProvider: app.beachist.auth.station.StationNameProvider,
+    private val stationNameProvider: StationNameProvider,
     private val gson: Gson
 ) {
     fun updateEntry(

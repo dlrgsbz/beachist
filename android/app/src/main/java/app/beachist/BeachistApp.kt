@@ -11,7 +11,7 @@ import app.beachist.event.eventsModule
 import de.tjarksaul.wachmanager.modules.main.mainKoinModule
 import app.beachist.provision.provisionModule
 import de.tjarksaul.wachmanager.modules.specialEvents.specialEventsModule
-import de.tjarksaul.wachmanager.modules.stationCheck.stationCheckModule
+import app.beachist.station_check.stationCheckModule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin

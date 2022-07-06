@@ -1,18 +1,18 @@
-package de.tjarksaul.wachmanager.modules.stationCheck
+package app.beachist.station_check.ui
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.recyclerview.widget.RecyclerView
-import de.tjarksaul.wachmanager.R
 import app.beachist.shared.recyclerview.diffableList
-import de.tjarksaul.wachmanager.dtos.Field
-import de.tjarksaul.wachmanager.dtos.StateKind
+import app.beachist.station_check.R
+import app.beachist.station_check.databinding.ItemStationCheckBinding
+import app.beachist.station_check.dtos.Field
+import app.beachist.station_check.dtos.StateKind
 import io.reactivex.Observer
 
 
@@ -23,11 +23,16 @@ internal class StationCheckListAdapter(private val actions: Observer<StationChec
         compareId = { a, b -> a.id == b.id }
     )
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_station_check_item, parent, false)
+    private var _binding: ItemStationCheckBinding? = null
 
-        return StationCheckItemHolder(view)
+    // This property is only valid between onCreateView and
+    // onDestroyView.
+    private val binding get() = _binding!!
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        _binding = ItemStationCheckBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+
+        return StationCheckItemHolder(binding)
     }
 
     override fun getItemCount(): Int = items.size
@@ -42,96 +47,85 @@ internal class StationCheckListAdapter(private val actions: Observer<StationChec
 const val CHECKED_PREFIX = "✓ "
 const val UNCHECKED_PREFIX = ""
 
-internal class StationCheckItemHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+internal class StationCheckItemHolder(private val binding: ItemStationCheckBinding) :
+    RecyclerView.ViewHolder(binding.root) {
     fun bind(field: Field, actions: Observer<StationCheckAction>) {
         with(field) {
-            val nameView: TextView = itemView.findViewById(R.id.station_check_item_name)
-            val requiredView: TextView = itemView.findViewById(R.id.station_check_item_required)
-            val noteView: TextView = itemView.findViewById(R.id.station_check_item_note)
+            binding.innerContainer.setPadding(if (parent !== null) 25 else 0, 0, 0, 0)
 
-            val outerConstraintLayout: ConstraintLayout =
-                itemView.findViewById(R.id.inner_container)
+            binding.stationCheckItemName.text = this.name
+            binding.stationCheckItemRequired.text = this.required?.toString() ?: ""
 
-            outerConstraintLayout.setPadding(if (parent !== null) 25 else 0, 0, 0, 0)
+            constraintSet(
+                binding.innerContainer,
+                binding,
+                binding.stationCheckItemNote,
+                binding.stationCheckItemName
+            ).applyTo(binding.innerContainer)
 
-            nameView.text = this.name
-            requiredView.text = this.required?.toString() ?: ""
-
-            constraintSet(outerConstraintLayout, itemView, noteView, nameView)
-                .applyTo(outerConstraintLayout)
-
-            setButtonState(itemView, this, actions)
+            setButtonState(this, actions)
         }
     }
 
-    private fun setButtonState(view: View, item: Field, actions: Observer<StationCheckAction>) {
-        setProblemTypeButtonState(view, item, actions)
+    private fun setButtonState(item: Field, actions: Observer<StationCheckAction>) {
+        setProblemTypeButtonState(item, actions)
 
-        val okayButton: Button = view.findViewById(R.id.button_okay)
-        val problemButton: Button = view.findViewById(R.id.button_problem)
-
-        okayButton.setOnClickListener { actions.onNext(StationCheckAction.MarkItemOkay(item.id)) }
-        problemButton.setOnClickListener { actions.onNext(StationCheckAction.MarkItemNotOkay(item.id)) }
+        binding.buttonOkay.setOnClickListener { actions.onNext(StationCheckAction.MarkItemOkay(item.id)) }
+        binding.buttonProblem.setOnClickListener { actions.onNext(StationCheckAction.MarkItemNotOkay(item.id)) }
 
         with(item.entry?.state) {
-            markButtons(this, okayButton, problemButton)
+            markButtons(this)
         }
     }
 
     private fun setProblemTypeButtonState(
-        view: View,
         item: Field,
-        actions: Observer<StationCheckAction>
+        actions: Observer<StationCheckAction>,
     ) {
-        val problemGroup: LinearLayout = view.findViewById(R.id.problem_type_container)
         if (!item.hasProblem()) {
-            problemGroup.visibility = View.INVISIBLE
+            binding.problemTypeContainer.visibility = View.INVISIBLE
             return
         } else {
-            problemGroup.visibility = View.VISIBLE
+            binding.problemTypeContainer.visibility = View.VISIBLE
         }
 
-        val tooLittleButton: Button = view.findViewById(R.id.button_tooLittle)
-        val brokenButton: Button = view.findViewById(R.id.button_broken)
-        val otherButton: Button = view.findViewById(R.id.button_other)
-
-        tooLittleButton.setOnClickListener {
+        binding.buttonTooLittle.setOnClickListener {
             actions.onNext(StationCheckAction.MarkItemTooLittle(item.id))
         }
 
-        brokenButton.setOnClickListener {
+        binding.buttonBroken.setOnClickListener {
             actions.onNext(StationCheckAction.MarkItemBroken(item.id))
         }
 
-        otherButton.setOnClickListener {
+        binding.buttonOther.setOnClickListener {
             actions.onNext(StationCheckAction.MarkItemOther(item.id))
         }
 
         with(item.entry?.stateKind) {
-            markStateKindButtons(this, tooLittleButton, otherButton, brokenButton)
+            markStateKindButtons(this)
         }
     }
 
-    private fun markButtons(state: Boolean?, okayButton: Button, problemButton: Button) {
+    private fun markButtons(state: Boolean?) {
+        val okayText = binding.root.context.getString(R.string.station_check_button_okay)
+        val notOkayText = binding.root.context.getString(R.string.station_check_button_not_okay)
         val okayPrefix = if (state == true) CHECKED_PREFIX else UNCHECKED_PREFIX
         val notOkayPrefix = if (state == false) CHECKED_PREFIX else UNCHECKED_PREFIX
-        okayButton.updateText("${okayPrefix}In Ordnung")
-        problemButton.updateText("${notOkayPrefix}Problem")
+        binding.buttonOkay.updateText(okayPrefix + okayText)
+        binding.buttonProblem.updateText(notOkayPrefix + notOkayText)
     }
 
-    private fun markStateKindButtons(
-        stateKind: StateKind?,
-        tooLittleButton: Button,
-        otherButton: Button,
-        brokenButton: Button
-    ) {
+    private fun markStateKindButtons(stateKind: StateKind?) {
+        val tooLittleText = binding.root.context.getString(R.string.station_check_button_too_little)
+        val brokenText = binding.root.context.getString(R.string.station_check_button_broken)
+        val otherText = binding.root.context.getString(R.string.station_check_button_other)
         val tooLittlePrefix =
             if (stateKind == StateKind.tooLittle) CHECKED_PREFIX else UNCHECKED_PREFIX
         val otherPrefix = if (stateKind == StateKind.other) CHECKED_PREFIX else UNCHECKED_PREFIX
         val brokenPrefix = if (stateKind == StateKind.broken) CHECKED_PREFIX else UNCHECKED_PREFIX
-        tooLittleButton.updateText("${tooLittlePrefix}zu wenig")
-        otherButton.updateText("${otherPrefix}anderes")
-        brokenButton.updateText("${brokenPrefix}defekt")
+        binding.buttonTooLittle.updateText(tooLittlePrefix + tooLittleText)
+        binding.buttonOther.updateText(otherPrefix + otherText)
+        binding.buttonBroken.updateText(brokenPrefix + brokenText)
     }
 }
 
@@ -152,11 +146,11 @@ private fun Field.hasProblem(): Boolean {
 
 private fun Field.constraintSet(
     outerConstraintLayout: ConstraintLayout,
-    itemView: View,
+    binding: ItemStationCheckBinding,
     noteView: TextView,
-    nameView: TextView
+    nameView: TextView,
 ): ConstraintSet {
-    val innerConstraintLayout: ConstraintLayout = itemView.findViewById(R.id.button_container)
+    val innerConstraintLayout: ConstraintLayout = binding.buttonContainer
 
     val constraintSet = ConstraintSet()
     constraintSet.clone(outerConstraintLayout)
