@@ -11,12 +11,12 @@ import app.beachist.event.Event
 import app.beachist.event.R
 import app.beachist.event.databinding.ItemEventBinding
 import app.beachist.shared.NetworkState
-import app.beachist.shared.recyclerview.diffableList
 import app.beachist.shared.date.formatDateTime
+import app.beachist.shared.recyclerview.diffableList
 import io.reactivex.Observer
 
 internal class EventsListAdapter(
-    private val actions: Observer<EventListAction>
+    private val actions: Observer<EventListAction>,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var items: List<Event> by diffableList(
@@ -39,17 +39,14 @@ internal class EventsListAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is EventHolder -> holder.bind(
-                items[position],
-                actions
-            )
+            is EventHolder -> holder.bind(items[position])
         }
     }
 }
 
 internal class EventHolder(private val binding: ItemEventBinding) : RecyclerView.ViewHolder(binding.root) {
     @SuppressLint("SetTextI18n")
-    fun bind(event: Event, actions: Observer<EventListAction>) {
+    fun bind(event: Event) {
         with(event) {
             binding.eventItemName.text = "Erste Hilfe"
             binding.eventItemDate.text = formatDateTime(this.date)

@@ -5,6 +5,14 @@ apply plugin: 'kotlinx-serialization'
 android {
     namespace 'app.beachist.special_event'
 
+    defaultConfig {
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
+            }
+        }
+    }
+
     buildFeatures {
         viewBinding true
     }

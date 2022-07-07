@@ -1,0 +1,70 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 2,
+    "identityHash": "a073cfeddab12bc9c341222169ae07d4",
+    "entities": [
+      {
+        "tableName": "certificate",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`thingName` TEXT NOT NULL, `certificateId` TEXT NOT NULL, `certificatePem` TEXT NOT NULL, `publicKey` TEXT NOT NULL, `privateKey` TEXT NOT NULL, `dataEndpoint` TEXT NOT NULL, `credentialsEndpoint` TEXT NOT NULL, PRIMARY KEY(`thingName`))",
+        "fields": [
+          {
+            "fieldPath": "thingName",
+            "columnName": "thingName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "certificateId",
+            "columnName": "certificateId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "certificatePem",
+            "columnName": "certificatePem",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "publicKey",
+            "columnName": "publicKey",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "privateKey",
+            "columnName": "privateKey",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dataEndpoint",
+            "columnName": "dataEndpoint",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "credentialsEndpoint",
+            "columnName": "credentialsEndpoint",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "thingName"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a073cfeddab12bc9c341222169ae07d4')"
+    ]
+  }
+}

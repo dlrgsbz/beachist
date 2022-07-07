@@ -3,6 +3,14 @@ apply from: "$rootDir/library.gradle"
 android {
     namespace 'app.beachist.crew'
 
+    defaultConfig {
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
+            }
+        }
+    }
+
     buildFeatures {
         viewBinding true
     }

@@ -15,7 +15,7 @@ import app.beachist.station_check.service.EntryService
 import app.beachist.station_check.service.FieldService
 import io.reactivex.rxkotlin.ofType
 import io.reactivex.rxkotlin.plusAssign
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 import timber.log.Timber
 import java.util.*
 import kotlin.concurrent.schedule
