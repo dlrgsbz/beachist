@@ -65,6 +65,7 @@ dependencies {
     implementation project(':crew')
     implementation project(':provision')
     implementation project(':event')
+    implementation project(':special-event')
     implementation project(':station-check')
 
     implementation fileTree(dir: "libs", include: ["*.jar"])

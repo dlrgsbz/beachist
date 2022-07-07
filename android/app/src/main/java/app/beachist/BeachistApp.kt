@@ -10,7 +10,7 @@ import app.beachist.crew.crewModule
 import app.beachist.event.eventsModule
 import de.tjarksaul.wachmanager.modules.main.mainKoinModule
 import app.beachist.provision.provisionModule
-import de.tjarksaul.wachmanager.modules.specialEvents.specialEventsModule
+import app.beachist.special_event.specialEventsModule
 import app.beachist.station_check.stationCheckModule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.android.ext.koin.androidContext

@@ -4,12 +4,4 @@
     <string name="title_events">Ereignisse</string>
     <string name="title_special_events">Besondere Vorkommnisse</string>
     <string name="title_settings">Einstellungen</string>
-    <!-- Strings related to special events -->
-    <string name="special_event_title_hint">Kurze Beschreibung</string>
-    <string name="special_event_title_error_length">Bitte mindestens 8 Zeichen eingeben</string>
-    <string name="special_event_notifier_hint">Meldende*r</string>
-    <string name="special_event_notifier_error_length">Bitte mindestens 2 Zeichen eingeben</string>
-    <string name="special_event_notes_error_length">Bitte mindestens 8 Zeichen eingeben</string>
-    <string name="special_event_kind_error_none_selected">Bitte Typ der Meldung auswählen</string>
-    <string name="special_event_error_incomplete">Bitte alle Felder ausfüllen</string>
 </resources>

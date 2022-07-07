@@ -19,7 +19,7 @@
 
     <fragment
         android:id="@+id/navigation_special_events"
-        android:name="de.tjarksaul.wachmanager.modules.specialEvents.list.SpecialEventsFragment"
+        android:name="app.beachist.special_event.list.SpecialEventsFragment"
         android:label="@string/title_special_events"
         tools:layout="@layout/fragment_special_events" />
 </navigation>
