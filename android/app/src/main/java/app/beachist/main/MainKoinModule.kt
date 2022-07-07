@@ -1,4 +1,4 @@
-package de.tjarksaul.wachmanager.modules.main
+package app.beachist.main
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.androidx.viewmodel.dsl.viewModel

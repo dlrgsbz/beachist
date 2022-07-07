@@ -1,4 +1,4 @@
-package de.tjarksaul.wachmanager.service
+package app.beachist.service
 
 import android.content.Intent
 import android.os.Binder

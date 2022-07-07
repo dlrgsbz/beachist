@@ -1,6 +1,6 @@
-package de.tjarksaul.wachmanager
+package app.beachist
 
-import de.tjarksaul.wachmanager.service.ServiceViewModel
+import app.beachist.service.ServiceViewModel
 import org.koin.dsl.module
 
 val appModule = module {

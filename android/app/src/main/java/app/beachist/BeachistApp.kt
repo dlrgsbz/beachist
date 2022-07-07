@@ -2,13 +2,12 @@ package app.beachist
 
 import android.app.Application
 import app.beachist.shared.sharedModule
-import de.tjarksaul.wachmanager.appModule
 import app.beachist.iot.iotModule
 import app.beachist.iot_client.iotClientModule
 import app.beachist.auth.authModule
 import app.beachist.crew.crewModule
 import app.beachist.event.eventsModule
-import de.tjarksaul.wachmanager.modules.main.mainKoinModule
+import app.beachist.main.mainKoinModule
 import app.beachist.provision.provisionModule
 import app.beachist.special_event.specialEventsModule
 import app.beachist.station_check.stationCheckModule

@@ -1,4 +1,4 @@
-package de.tjarksaul.wachmanager.modules.main
+package app.beachist.main
 
 import app.beachist.auth.repository.AuthRepository
 import app.beachist.auth.repository.State
