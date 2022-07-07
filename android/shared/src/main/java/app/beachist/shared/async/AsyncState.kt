@@ -55,6 +55,7 @@ fun <T> Observable<Async<T>>.doOnData(data: (T) -> Unit): Observable<Async<T>> {
     return doOnNext { result ->
         when (result) {
             is Async.Success -> data(result.data)
+            else -> {} // ignoring others on purpose
         }
     }
 }
@@ -63,6 +64,7 @@ fun <T> Observable<Async<T>>.doOnFailure(handler: (Throwable) -> Unit): Observab
     return doOnNext { result ->
         when (result) {
             is Async.Failure -> handler(result.error)
+            else -> {} // ignoring others on purpose
         }
     }
 }
