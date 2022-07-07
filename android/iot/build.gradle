@@ -1,6 +1,4 @@
 apply from: "$rootDir/library.gradle"
-// This allows importing XML views
-apply plugin: 'kotlin-android-extensions'
 
 android {
     namespace 'app.beachist.iot'

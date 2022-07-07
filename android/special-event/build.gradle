@@ -1,6 +1,4 @@
 apply from: "$rootDir/library.gradle"
-// This allows importing XML views
-apply plugin: 'kotlin-android-extensions'
 // This allows serialization
 apply plugin: 'kotlinx-serialization'
 
