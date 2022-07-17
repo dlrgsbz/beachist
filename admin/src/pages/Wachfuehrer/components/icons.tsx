@@ -6,11 +6,11 @@ import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox
 import React from 'react'
 import { SvgIconProps } from '@mui/material'
 
-export const SquareX = () => <DisabledByDefaultIcon />
+export const SquareX = () => <DisabledByDefaultIcon sx={{ color: 'red' }} />
 
 export const SquareEmpty = () => <IndeterminateCheckBoxIcon />
 
-export const SquareCheck = () => <CheckBoxIcon />
+export const SquareCheck = () => <CheckBoxIcon sx={{ color: 'green' }} />
 
 export const ConnectedIcon = (props: SvgIconProps) => <CloudOutlinedIcon {...props} />
 
