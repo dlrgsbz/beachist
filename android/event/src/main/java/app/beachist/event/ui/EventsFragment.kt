@@ -5,22 +5,26 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.beachist.event.databinding.FragmentEventsBinding
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.plusAssign
-import io.reactivex.subjects.PublishSubject
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
+@ExperimentalCoroutinesApi
 class EventsFragment : Fragment() {
-    private val disposable = CompositeDisposable()
-
     private val viewModel: EventViewModel by viewModel()
 
-    private val actions: PublishSubject<EventListAction> = PublishSubject.create()
-    private val adapter: EventsListAdapter by lazy { EventsListAdapter(actions) }
+    private val actions: MutableStateFlow<EventListAction?> = MutableStateFlow(null)
+    private val adapter: EventsListAdapter by lazy { EventsListAdapter() }
 
     private var _binding: FragmentEventsBinding? = null
 
@@ -42,7 +46,9 @@ class EventsFragment : Fragment() {
         setupView()
         setupBindings()
 
-        actions.onNext(EventListAction.Refetch)
+        viewLifecycleOwner.lifecycleScope.launch {
+            actions.emit(EventListAction.Refetch)
+        }
     }
 
     private fun setupView() {
@@ -61,20 +67,26 @@ class EventsFragment : Fragment() {
         viewModel.attach(actions)
 
         binding.firstAidButton.setOnClickListener {
-            actions.onNext(EventListAction.AddEventClicked)
+            actions.tryEmit(EventListAction.AddEventClicked)
         }
 
         binding.undoButton.setOnClickListener {
-            actions.onNext(EventListAction.CancelClicked)
+            actions.tryEmit(EventListAction.CancelClicked)
         }
 
-        disposable += viewModel.stateOf { canAdd }
-            .subscribe { canAdd ->
-                binding.undoButton.visibility = if (canAdd) View.INVISIBLE else View.VISIBLE
-                binding.firstAidButton.isEnabled = canAdd
-            }
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.stateOf { canAdd }
+                    .onEach { canAdd ->
+                        binding.undoButton.visibility = if (canAdd) View.INVISIBLE else View.VISIBLE
+                        binding.firstAidButton.isEnabled = canAdd
+                    }
+                    .launchIn(this)
 
-        disposable += viewModel.stateOf { eventItems }
-            .subscribe { adapter.items = it }
+                viewModel.stateOf { eventItems }
+                    .onEach { adapter.items = it }
+                    .launchIn(this)
+            }
+        }
     }
 }

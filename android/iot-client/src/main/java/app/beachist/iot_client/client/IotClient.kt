@@ -8,6 +8,8 @@ import io.reactivex.subjects.BehaviorSubject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.nio.charset.Charset
@@ -28,6 +30,7 @@ class IotClient(private val gson: Gson, private val tempDirectory: String) : Cor
 
     private var connection: AWSIotMqttManager? = null
     private val connectionState: BehaviorSubject<IotConnectionState> = BehaviorSubject.createDefault(IotConnectionState.Initial)
+    private val flowConnectionState: MutableStateFlow<IotConnectionState?> = MutableStateFlow(connectionState.value)
     private var activeConfig: IotConfig? = null
 
     override val coroutineContext = Dispatchers.IO + SupervisorJob()
@@ -36,12 +39,17 @@ class IotClient(private val gson: Gson, private val tempDirectory: String) : Cor
         AWSIotMqttClientStatusCallback { status, throwable ->
             if (status == AWSIotMqttClientStatusCallback.AWSIotMqttClientStatus.ConnectionLost) {
                 Timber.tag(LOG_TAG).i(throwable, "connection interrupted")
-                connectionState.onNext(IotConnectionState.ConnectionLost())
+                setConnectionState(IotConnectionState.ConnectionLost())
             } else if (status == AWSIotMqttClientStatusCallback.AWSIotMqttClientStatus.Connected) {
                 Timber.tag(LOG_TAG).i("Connection restored/established")
-                connectionState.onNext(IotConnectionState.Connected)
+                setConnectionState(IotConnectionState.Connected)
             }
         }
+
+    private fun setConnectionState(state: IotConnectionState) {
+        connectionState.onNext(state)
+        flowConnectionState.tryEmit(state)
+    }
 
     @SuppressLint("BinaryOperationInTimber")
     @Synchronized
@@ -144,6 +152,7 @@ class IotClient(private val gson: Gson, private val tempDirectory: String) : Cor
 
     fun getConnectionState(): Observable<IotConnectionState> = connectionState
     fun peekConnectionState(): IotConnectionState? = connectionState.value
+    fun observeConnectionState(): StateFlow<IotConnectionState?> = flowConnectionState
 
     @Synchronized
     fun subscribe(

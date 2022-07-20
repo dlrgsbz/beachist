@@ -35,12 +35,6 @@
                 android:enabled="true"
                 android:exported="false">
         </service>
-
-        <service
-                android:name="app.beachist.event.EventService"
-                android:enabled="true"
-                android:exported="false">
-        </service>
     </application>
 
 </manifest>

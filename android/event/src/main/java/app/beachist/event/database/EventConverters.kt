@@ -1,7 +1,7 @@
 package app.beachist.event.database
 
 import androidx.room.TypeConverter
-import app.beachist.event.EventType
+import app.beachist.event.dto.EventType
 import app.beachist.shared.NetworkState
 import java.util.*
 

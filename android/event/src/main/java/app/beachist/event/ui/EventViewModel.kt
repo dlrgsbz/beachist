@@ -1,132 +1,88 @@
 package app.beachist.event.ui
 
-import app.beachist.event.Event
-import app.beachist.event.EventType
-import app.beachist.event.repository.EventBackendRepository
+import androidx.lifecycle.viewModelScope
+import app.beachist.event.dto.Event
+import app.beachist.event.dto.EventType
 import app.beachist.event.repository.EventRepository
 import app.beachist.shared.NetworkState
-import app.beachist.shared.base.BaseViewModel
+import app.beachist.shared.base.FlowBaseViewModel
 import app.beachist.shared.base.ViewModelAction
 import app.beachist.shared.base.ViewModelEffect
 import app.beachist.shared.base.ViewModelState
-import io.reactivex.rxkotlin.ofType
-import io.reactivex.rxkotlin.plusAssign
+import app.beachist.shared.base.delay
+import app.beachist.shared.base.set
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import java.util.*
-import java.util.concurrent.TimeUnit
 
+@ExperimentalCoroutinesApi
 internal class EventViewModel(
     private val eventRepository: EventRepository,
-    private val eventBackendRepository: EventBackendRepository,
-) : BaseViewModel<EventListAction, EventListState, EventListEffect>(emptyState) {
+) : FlowBaseViewModel<EventListAction, EventListState, EventListEffect>(emptyState) {
     override fun handleActions() {
-        disposables += actions.ofType<EventListAction.AddEventClicked>()
-            .subscribe { onAddEvent() }
+        actions.filterIsInstance<EventListAction.AddEventClicked>()
+            .onEach { onAddEvent() }
+            .launchIn(viewModelScope)
 
-        disposables += actions.ofType<EventListAction.SaveEvent>()
-            .delay(5, TimeUnit.SECONDS)
-            .subscribe { addEvent(it.event) }
+        actions.filterIsInstance<EventListAction.SaveEvent>()
+            .delay(5000)
+            .onEach { addEvent() }
+            .launchIn(viewModelScope)
 
-        disposables += actions.ofType<EventListAction.CancelClicked>()
-            .subscribe { onCancel() }
+        actions.filterIsInstance<EventListAction.CancelClicked>()
+            .onEach { onCancel() }
+            .launchIn(viewModelScope)
 
-        disposables += actions.ofType<EventListAction.Refetch>()
-            .subscribe { onRefetch() }
-
-        disposables += eventBackendRepository.observeEventUpdates()
-            .subscribe { onEventSuccessResponse(it) }
+        actions.filterIsInstance<EventListAction.Refetch>()
+            .onEach { onRefetch() }
+            .launchIn(viewModelScope)
     }
+
+    private var currentEvent: MutableStateFlow<Event?> = MutableStateFlow(null)
 
     companion object {
         private val emptyState = EventListState()
     }
 
-    private fun onAddEvent() {
+    private suspend fun onAddEvent() {
         val event =
             Event(
                 EventType.firstAid,
                 UUID.randomUUID().toString(),
                 Date(),
-                NetworkState.pending
+                NetworkState.pending,
             )
-        state.set {
-            val events: MutableList<Event> = this.eventItems.toMutableList()
-            events.add(event)
-            return@set copy(eventItems = events, currentEvent = event, canAdd = false)
-        }
+        _state.set { copy(canAdd = false) }
+        currentEvent.value = event
 
-        actions.onNext(EventListAction.SaveEvent(event))
-    }
-
-    private fun reset(event: Event) {
-        state.get { current ->
-            val events = current.eventItems.toMutableList()
-            val index = events.indexOfFirst { it.id == event.id }
-            if (index != -1) {
-                events.removeAt(index)
-            }
-            state.set {
-                copy(
-                    canAdd = true,
-                    cancelled = false,
-                    currentEvent = null,
-                    eventItems = events
-                )
-            }
-        }
+        actions.emit(EventListAction.SaveEvent(event))
     }
 
     private fun onCancel() {
-        state.get { current ->
-            if (current.currentEvent == null) {
-                return@get
-            }
-
-            reset(current.currentEvent)
-            state.set { copy(cancelled = true) }
+        _state.set {
+            copy(canAdd = true)
         }
+        currentEvent.value = null
     }
 
-    private fun addEvent(event: Event) {
-        state.get { current ->
-            if (current.cancelled) {
-                reset(event)
-                return@get
-            }
+    private suspend fun addEvent() {
+        val event = this.currentEvent.value ?: return
 
-            state.set { copy(canAdd = true, cancelled = false) }
+        _state.set { copy(canAdd = true) }
 
-            eventRepository.saveEvent(event)
-            saveEvent(event)
-        }
+        eventRepository.saveEvent(event)
+        currentEvent.value = null
     }
 
     private fun onRefetch() {
-        disposables += eventRepository.getEvents()
-            .subscribe { result ->
-                state.set { copy(eventItems = result) }
-                result.map {
-                    if (it.state == NetworkState.pending) {
-                        saveEvent(it)
-                    }
-                }
-            }
-    }
-
-    private fun saveEvent(event: Event) {
-        eventBackendRepository.createEvent(event.type, event.id, event.dateString)
-    }
-
-    private fun onEventSuccessResponse(id: String) {
-        state.set {
-            val events = this.eventItems.toMutableList()
-            val index = events.indexOfFirst { it.id == id }
-            if (index >= 0) {
-                val newEvent = events[index].copy(state = NetworkState.successful)
-                events[index] = newEvent
-                eventRepository.updateEvent(newEvent)
-            }
-            return@set copy(eventItems = events)
-        }
+        eventRepository.observeEvents().combine(currentEvent) { list, currentEvent ->
+            val items = if (currentEvent != null) list.plus(currentEvent) else list
+            _state.set { copy(eventItems = items) }
+        }.launchIn(viewModelScope)
     }
 }
 
@@ -142,7 +98,5 @@ internal sealed class EventListEffect : ViewModelEffect
 
 internal data class EventListState(
     val eventItems: List<Event> = listOf(),
-    val currentEvent: Event? = null,
     val canAdd: Boolean = true,
-    val cancelled: Boolean = false,
 ) : ViewModelState

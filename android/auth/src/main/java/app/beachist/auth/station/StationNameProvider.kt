@@ -22,17 +22,14 @@ class StationNameProvider(
     private val mutableStationNameFlow: MutableStateFlow<String?> = MutableStateFlow(null)
     val stationNameFlow: Flow<String?> = mutableStationNameFlow
 
-    private var stationName: String? = null
-
     init {
         disposable += authRepository.getState()
             .subscribe {
-                stationName = it?.certificate?.thingName
                 launch {
-                    mutableStationNameFlow.emit(stationName)
+                    mutableStationNameFlow.emit(it?.certificate?.thingName)
                 }
             }
     }
 
-    fun currentStationName(): String? = stationName
+    fun currentStationName(): String? = mutableStationNameFlow.value
 }

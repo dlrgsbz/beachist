@@ -1,23 +1,20 @@
 package app.beachist.event.ui
 
-import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.ProgressBar
 import androidx.recyclerview.widget.RecyclerView
-import app.beachist.event.Event
 import app.beachist.event.R
 import app.beachist.event.databinding.ItemEventBinding
+import app.beachist.event.dto.Event
+import app.beachist.event.dto.EventType
 import app.beachist.shared.NetworkState
 import app.beachist.shared.date.formatDateTime
 import app.beachist.shared.recyclerview.diffableList
-import io.reactivex.Observer
 
-internal class EventsListAdapter(
-    private val actions: Observer<EventListAction>,
-) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+internal class EventsListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var items: List<Event> by diffableList(
         compareContent = { a, b -> a == b },
@@ -45,10 +42,10 @@ internal class EventsListAdapter(
 }
 
 internal class EventHolder(private val binding: ItemEventBinding) : RecyclerView.ViewHolder(binding.root) {
-    @SuppressLint("SetTextI18n")
     fun bind(event: Event) {
         with(event) {
-            binding.eventItemName.text = "Erste Hilfe"
+            binding.eventItemName.text =
+                itemView.context.getText(if (event.type == EventType.firstAid) R.string.event_list_first_aid else R.string.event_list_search)
             binding.eventItemDate.text = formatDateTime(this.date)
 
             setIndicatorView(this.state)
