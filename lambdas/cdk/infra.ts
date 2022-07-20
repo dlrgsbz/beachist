@@ -200,7 +200,8 @@ export class InfraStack extends Stack {
         `SELECT current.state.reported.appVersionCode AS appVersionCode,
                 current.state.reported.appVersion     AS appVersion,
                 current.state.desired.stationId       AS stationId,
-                current.state.reported.connected      AS connected
+                current.state.reported.connected      AS connected,
+                topic(3) AS iotThingName,
          FROM '$aws/things/+/shadow/update/documents'
          WHERE (isUndefined(previous.state.reported.appVersionCode) AND NOT isUndefined(current.state.reported.appVersionCode)) 
          OR previous.state.reported.appVersionCode <> current.state.reported.appVersionCode

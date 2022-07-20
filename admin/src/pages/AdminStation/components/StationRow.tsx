@@ -19,7 +19,7 @@ export const StationRow: React.VFC<StationRowProps> = ({
   createProvisioning,
   setModal,
 }) => {
-  const { name, online, onlineStateSince, appVersion, appVersionCode, id } = station
+  const { name, online, onlineStateSince, appVersion, id } = station
   const onlineString = online ? 'online' : 'offline'
   const onlineStateSinceString = onlineStateSince ? `seit ${onlineStateSince.format('L LTS')}` : 'noch nie'
 
@@ -39,7 +39,7 @@ export const StationRow: React.VFC<StationRowProps> = ({
       <td>
         {onlineString} ({onlineStateSinceString})
       </td>
-      <td>{appVersion ? `${appVersion} (${appVersionCode})` : 'unbekannt'}</td>
+      <td>{appVersion ?? 'unbekannt'}</td>
       <td>
         <ProvisioningInfo
           loading={provisionLoading}
