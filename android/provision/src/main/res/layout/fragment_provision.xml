@@ -6,7 +6,7 @@
         android:background="#FFFFFF"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingBottom="@dimen/fragment_vertical_margin"
+        android:paddingBottom="@dimen/fragment_horizontal_margin"
         android:paddingLeft="@dimen/fragment_horizontal_margin"
         android:paddingRight="@dimen/fragment_horizontal_margin"
         android:paddingTop="@dimen/fragment_vertical_margin"
