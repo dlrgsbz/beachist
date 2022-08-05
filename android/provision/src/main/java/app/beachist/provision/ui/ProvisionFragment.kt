@@ -9,13 +9,14 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.annotation.StringRes
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import app.beachist.provision.R
 import app.beachist.provision.databinding.FragmentProvisionBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class ProvisionFragment : Fragment() {
+class ProvisionFragment : DialogFragment() {
 
     private val viewModel: ProvisionViewModel by viewModel()
     private var _binding: FragmentProvisionBinding? = null
@@ -107,6 +108,13 @@ class ProvisionFragment : Fragment() {
                 passwordEditText.text.toString()
             )
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        val width = ViewGroup.LayoutParams.MATCH_PARENT
+        val height = ViewGroup.LayoutParams.MATCH_PARENT
+        dialog?.window?.setLayout(width, height)
     }
 
     private fun updateUiWithUser(model: ProvisionDataView) {

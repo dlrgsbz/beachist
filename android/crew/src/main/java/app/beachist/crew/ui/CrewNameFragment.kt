@@ -1,29 +1,30 @@
 package app.beachist.crew.ui
 
 import android.app.Activity
+import android.app.Dialog
 import android.os.Bundle
 import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import androidx.fragment.app.Fragment
+import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import app.beachist.crew.R
 import app.beachist.crew.databinding.FragmentCrewNameBinding
-import io.reactivex.Observable
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.plusAssign
-import io.reactivex.subjects.PublishSubject
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import timber.log.Timber
 
-
-class CrewNameFragment : Fragment() {
-    private val disposable = CompositeDisposable()
-
-    private val actions: PublishSubject<CrewNameViewAction> = PublishSubject.create()
-
-    private val _dismissPublisher: PublishSubject<DismissAction> = PublishSubject.create()
-    val dismissPublisher: Observable<DismissAction> = _dismissPublisher
+@ExperimentalCoroutinesApi
+class CrewNameFragment : DialogFragment() {
+    private val actions: MutableStateFlow<CrewNameViewAction?> = MutableStateFlow(null)
 
     private val viewModel: CrewNameViewModel by viewModel()
 
@@ -44,19 +45,22 @@ class CrewNameFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupView()
+        binding.editCrewName.requestFocus()
 
         setupBindings()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        val width = ViewGroup.LayoutParams.MATCH_PARENT
+        val height = ViewGroup.LayoutParams.MATCH_PARENT
+        dialog?.window?.setLayout(width, height)
     }
 
     override fun onResume() {
         super.onResume()
 
-        actions.onNext(CrewNameViewAction.UpdateDate)
-    }
-
-    private fun setupView() {
-        binding.editCrewName.requestFocus()
+        actions.tryEmit(CrewNameViewAction.UpdateDate)
     }
 
     private fun hideKeyboard() {
@@ -74,36 +78,43 @@ class CrewNameFragment : Fragment() {
     private fun setupBindings() {
         viewModel.attach(actions)
 
-        disposable += viewModel.stateOf { stationName }
-            .subscribe {
-                val stationString = resources.getString(R.string.station_name, it)
-                binding.textStationName.text = stationString
-            }
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.stateOf { stationName }
+                    .onEach {
+                        val stationString = resources.getString(R.string.station_name, it)
+                        binding.textStationName.text = stationString
+                    }
+                    .launchIn(this)
 
-        disposable += viewModel.stateOf { currentDate }
-            .subscribe {
-                binding.dateTextView.text = it
-            }
+                viewModel.stateOf { currentDate }
+                    .onEach {
+                        binding.dateTextView.text = it
+                    }
+                    .launchIn(this)
 
-        binding.editCrewName.addTextChangedListener(object : TextChangeListener() {
-            override fun onTextChanged(s: Editable?) {
-                s?.toString()?.let {
-                    actions.onNext(CrewNameViewAction.UpdateCrewName(it))
+                binding.editCrewName.addTextChangedListener(object : TextChangeListener() {
+                    override fun onTextChanged(s: Editable?) {
+                        s?.toString()?.let {
+                            actions.tryEmit(CrewNameViewAction.UpdateCrewName(it))
+                        }
+                    }
+                })
+
+                binding.startButton.setOnClickListener {
+                    actions.tryEmit(CrewNameViewAction.Submit)
                 }
+
+                viewModel.effect<CrewNameViewEffect.Dismiss>()
+                    .onEach { dismiss() }
+                    .launchIn(this)
             }
-        })
-
-        binding.startButton.setOnClickListener {
-            actions.onNext(CrewNameViewAction.Submit)
         }
-
-        disposable += viewModel.effect<CrewNameViewEffect.Dismiss>()
-            .subscribe { dismiss() }
     }
 
-    private fun dismiss() {
+    override fun dismiss() {
+        Timber.tag("CrewNameFragment").d("dismiss")
         hideKeyboard()
-
-        _dismissPublisher.onNext(DismissAction.Dismiss)
+        super.dismiss()
     }
 }
