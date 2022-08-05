@@ -41,7 +41,7 @@ ext {
     target_sdk_version = 30
     min_sdk_version = 24  // 24, weil das Tablet nicht mehr kann. 🙄
     koin_version = "3.1.5"
-    room_version = "2.4.2"
+    room_version = "2.4.3"
     lifecycle_version = "2.5.0"
     timber_version = "5.0.1"
     rxjava_version = "2.2.10"
