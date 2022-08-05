@@ -1,0 +1,14 @@
+<resources>
+    <string name="special_event_title_hint">Kurze Beschreibung</string>
+    <string name="special_event_notifier_hint">Meldende*r</string>
+    <string name="special_event_damage_title">Schadenmeldung</string>
+    <string name="special_event_special_title">Besonderes Vorkommnis</string>
+    <string name="special_event_detail_hint">Details. Im Falle einer Schadenmeldung bitte Schadenhergang und -Beschreibung eintragen.</string>
+    <string name="special_event_title_error_length">Bitte mindestens 8 Zeichen eingeben</string>
+    <string name="special_event_notifier_error_length">Bitte mindestens 2 Zeichen eingeben</string>
+    <string name="special_event_notes_error_length">Bitte mindestens 8 Zeichen eingeben</string>
+    <string name="special_event_kind_error_none_selected">Bitte Typ der Meldung auswählen</string>
+    <string name="special_event_error_incomplete">Bitte alle Felder ausfüllen</string>
+    <string name="add_special_event_fab_description">Absenden</string>
+    <string name="special_event_fab_add_description">Vorkommnis eintragen</string>
+</resources>

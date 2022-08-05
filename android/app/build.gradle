@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlinx-serialization'
+apply plugin: 'kotlin-kapt'
 apply plugin: "org.jetbrains.kotlin.plugin.serialization"
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
@@ -10,13 +10,13 @@ apply from: "../gradle/readProps.gradle"
 apply from: "../gradle/buildVersion.gradle"
 
 android {
-    compileSdkVersion 31
-    buildToolsVersion "29.0.3"
+    compileSdkVersion compile_sdk_version
+    buildToolsVersion "30.0.3"
 
     defaultConfig {
         applicationId "app.beachist.dev"
-        minSdkVersion 24 // 24, weil das Tablet nicht mehr kann. 🙄
-        targetSdkVersion 30
+        minSdkVersion min_sdk_version
+        targetSdkVersion target_sdk_version
         versionCode buildVersion
         def realVersionCode = buildVersion - 300000000
         versionName "1.5.0 ($realVersionCode)"
@@ -43,18 +43,6 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
-
-            // todo: maybe default to ngrok here
-            buildConfigField("String", "BACKEND_URL", props.getProperty("backendUrl"))
-            buildConfigField("String", "PROVISIONING_URL", props.getProperty("provisioningUrl"))
-            buildConfigField("String", "DATABASE_NAME", props.getProperty("databaseName"))
-            buildConfigField("String", "SHARED_PREFS_NAME", '"WachmanagerSettings"')
-        }
-        debug {
-            buildConfigField("String", "BACKEND_URL", props.getProperty("backendUrl"))
-            buildConfigField("String", "PROVISIONING_URL", props.getProperty("provisioningUrl"))
-            buildConfigField("String", "DATABASE_NAME", props.getProperty("databaseName"))
-            buildConfigField("String", "SHARED_PREFS_NAME", '"WachmanagerSettings"')
         }
     }
     compileOptions {
@@ -70,47 +58,33 @@ android {
 }
 
 dependencies {
+    implementation project(':shared')
+    implementation project(':iot-client')
+    implementation project(':iot')
+    implementation project(':auth')
+    implementation project(':crew')
+    implementation project(':provision')
+    implementation project(':event')
+    implementation project(':special-event')
+    implementation project(':station-check')
+
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation 'androidx.core:core-ktx:1.3.0'
-    implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'com.google.android.material:material:1.1.0'
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    implementation 'androidx.navigation:navigation-fragment:2.3.0'
-    implementation 'androidx.navigation:navigation-ui:2.3.0'
+    implementation 'androidx.core:core-ktx:1.8.0'
+    implementation 'androidx.appcompat:appcompat:1.4.2'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.5.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-savedstate:2.2.0'
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.3.0'
-    implementation "androidx.fragment:fragment-ktx:1.2.5"
-    implementation 'androidx.navigation:navigation-ui-ktx:2.3.0'
-    implementation "org.jetbrains.anko:anko-common:0.10.8"
-    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
-    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.6.0'
-    implementation "com.squareup.okhttp3:logging-interceptor:4.8.1"
+    implementation 'androidx.navigation:navigation-ui-ktx:2.5.0'
 
-    implementation 'com.amazonaws:aws-android-sdk-core:2.43.0'
-    implementation 'com.amazonaws:aws-android-sdk-iot:2.43.0'
-
-    implementation "io.reactivex.rxjava2:rxjava:2.2.10"
-    implementation "io.reactivex.rxjava2:rxkotlin:2.3.0"
-    implementation "io.reactivex.rxjava2:rxandroid:2.1.1"
+    implementation "io.reactivex.rxjava2:rxjava:$rxjava_version"
+    implementation "io.reactivex.rxjava2:rxkotlin:$rxkotlin_version"
+    implementation "io.reactivex.rxjava2:rxandroid:$rxandroid_version"
 
     implementation "io.insert-koin:koin-core:$koin_version"
     implementation "io.insert-koin:koin-android:$koin_version"
 
-    implementation "com.jakewharton.timber:timber:4.7.1"
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.annotation:annotation:1.3.0'
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.4.1'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1'
+    implementation "com.jakewharton.timber:timber:$timber_version"
 
-    apply plugin: 'kotlin-kapt'
-
-//    kapt "android.arch.persistence.room:compiler:1.0.0"
-
-    implementation "androidx.room:room-ktx:$room_version"
-    implementation "androidx.room:room-rxjava2:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
 
     implementation platform('com.google.firebase:firebase-bom:28.0.0')
@@ -118,10 +92,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-crashlytics'
     implementation 'com.google.firebase:firebase-analytics'
 
-    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.1'
+    testImplementation 'junit:junit:4.13.2'
 
-    testImplementation 'junit:junit:4.12'
-
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 }

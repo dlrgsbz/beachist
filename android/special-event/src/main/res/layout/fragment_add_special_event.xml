@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#FFFFFF"
+        tools:context="app.beachist.special_event.add.AddSpecialEventFragment">
+    <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayoutSpecialTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+        <EditText
+                android:id="@+id/editTextTextSpecialTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="24dp"
+                android:layout_marginTop="24dp"
+                android:ems="10"
+                android:hint="@string/special_event_title_hint"
+                android:inputType="textAutoCorrect"
+                android:padding="16dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                android:importantForAutofill="no" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayoutSpecialNotifier"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textInputLayoutSpecialTitle">
+        <EditText
+                android:id="@+id/editTextSpecialNotifier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="24dp"
+                android:layout_marginTop="24dp"
+                android:ems="10"
+                android:hint="@string/special_event_notifier_hint"
+                android:autofillHints="name"
+                android:inputType="textAutoCorrect"
+                android:padding="16dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <RadioGroup
+            android:id="@+id/specialRadioGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:layout_marginRight="24dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+        <RadioButton
+                android:id="@+id/button_damage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/special_event_damage_title" />
+        <RadioButton
+                android:id="@+id/button_special"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/special_event_special_title" />
+    </RadioGroup>
+
+    <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayoutSpecialNote"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textInputLayoutSpecialNotifier"
+            app:layout_constraintBottom_toBottomOf="parent">
+        <EditText
+                android:id="@+id/editTextSpecialDetails"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="24dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginRight="24dp"
+                android:ems="10"
+                android:hint="@string/special_event_detail_hint"
+                android:inputType="textMultiLine"
+                android:minLines="5"
+                android:maxLines="13"
+                android:gravity="top|start"
+                android:scrollbars="vertical"
+                android:padding="16dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:importantForAutofill="no" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/saveSpecialEventButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:src="@drawable/ic_baseline_cloud_upload_24"
+            app:backgroundTint="?attr/colorPrimary"
+            android:contentDescription="@string/add_special_event_fab_description"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_margin="30dp" />
+</androidx.constraintlayout.widget.ConstraintLayout>

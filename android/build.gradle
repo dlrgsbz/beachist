@@ -1,25 +1,21 @@
 buildscript {
-    ext.kotlin_version = "1.5.32"
-    ext.koin_version = "3.1.5"
-    ext.room_version = "2.4.2"
+    ext.kotlin_version = "1.6.21"
 
     repositories {
         google()
-        jcenter()
         mavenCentral()
         maven {
             url "https://plugins.gradle.org/m2/"
         }
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:7.2.0"
+        classpath "com.android.tools.build:gradle:7.2.1"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
 
         // Firebase
-        classpath 'com.google.gms:google-services:4.3.10'  // Google Services plugin
-        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.8.1'
+        classpath 'com.google.gms:google-services:4.3.13'  // Google Services plugin
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.1'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -36,9 +32,22 @@ apply plugin: "org.jetbrains.kotlin.plugin.serialization"
 allprojects {
     repositories {
         google()
-        jcenter()
         mavenCentral()
     }
+}
+
+ext {
+    compile_sdk_version = 31
+    target_sdk_version = 30
+    min_sdk_version = 24  // 24, weil das Tablet nicht mehr kann. 🙄
+    koin_version = "3.1.5"
+    room_version = "2.4.2"
+    lifecycle_version = "2.5.0"
+    timber_version = "5.0.1"
+    rxjava_version = "2.2.10"
+    rxkotlin_version = "2.3.0"
+    rxandroid_version = "2.1.1"
+    gson_version = "2.9.0"
 }
 
 task clean(type: Delete) {

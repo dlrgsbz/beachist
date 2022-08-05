@@ -28,7 +28,7 @@
                 android:id="@+id/iot_connection_state_fragment"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:name="de.tjarksaul.wachmanager.iot.IotConnectionStateFragment"
+                android:name="app.beachist.iot.ui.IotConnectionStateFragment"
                 app:layout_constraintRight_toRightOf="parent"
                 android:layout_marginRight="10dp"
                 app:layout_constraintBottom_toBottomOf="parent"

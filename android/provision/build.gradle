@@ -1,0 +1,49 @@
+apply from: "$rootDir/library.gradle"
+apply from: "$rootDir/gradle/readProps.gradle"
+// This allows serialization
+apply plugin: 'kotlinx-serialization'
+
+android {
+    namespace 'app.beachist.provision'
+
+    buildFeatures {
+        viewBinding true
+    }
+
+    buildTypes {
+        release {
+            buildConfigField("String", "PROVISIONING_URL", props.getProperty("provisioningUrl"))
+        }
+        debug {
+            buildConfigField("String", "PROVISIONING_URL", props.getProperty("provisioningUrl"))
+        }
+    }
+}
+
+dependencies {
+    implementation project(":shared")
+    implementation project(":auth")
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+
+    // deprecated, use kotlin coroutines
+    implementation "io.reactivex.rxjava2:rxjava:$rxjava_version"
+    implementation "io.reactivex.rxjava2:rxkotlin:$rxkotlin_version"
+    implementation "io.reactivex.rxjava2:rxandroid:$rxandroid_version"
+
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.1"
+
+    implementation "com.jakewharton.timber:timber:$timber_version"
+
+    implementation "io.insert-koin:koin-core:$koin_version"
+    implementation "io.insert-koin:koin-android:$koin_version"
+
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.9.0'
+    implementation "com.squareup.okhttp3:logging-interceptor:4.10.0"
+
+    implementation "com.google.code.gson:gson:$gson_version"
+    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+}

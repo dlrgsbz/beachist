@@ -1,2 +1,14 @@
+include ':shared'
+
+include ':iot-client'
+include ':auth'
+
+include ':provision'
+include ':crew'
+include ':iot'
+include ':event'
+include ':special-event'
+include ':station-check'
 include ':app'
+
 rootProject.name = "Beachist"

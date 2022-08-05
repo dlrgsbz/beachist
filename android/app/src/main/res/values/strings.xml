@@ -4,29 +4,4 @@
     <string name="title_events">Ereignisse</string>
     <string name="title_special_events">Besondere Vorkommnisse</string>
     <string name="title_settings">Einstellungen</string>
-    <!-- Strings related to special events -->
-    <string name="special_event_title_hint">Kurze Beschreibung</string>
-    <string name="special_event_title_error_length">Bitte mindestens 8 Zeichen eingeben</string>
-    <string name="special_event_notifier_hint">Meldende*r</string>
-    <string name="special_event_notifier_error_length">Bitte mindestens 2 Zeichen eingeben</string>
-    <string name="special_event_notes_error_length">Bitte mindestens 8 Zeichen eingeben</string>
-    <string name="special_event_kind_error_none_selected">Bitte Typ der Meldung auswählen</string>
-    <string name="special_event_error_incomplete">Bitte alle Felder ausfüllen</string>
-    <!-- Strings related to provisioning -->
-    <string name="provision_info">
-        Dieses Tablet ist derzeit keiner Station zugewiesen und kann daher nicht verwendet werden.
-        Bitte die Zuweisungsdaten eintragen.
-        Sollte diese Meldung unerwartet erscheinen, wende dich bitte an deine Wachführung.
-    </string>
-    <string name="prompt_station_no">Stationsnummer</string>
-    <string name="prompt_password">Zuweisungspasswort</string>
-    <string name="action_provision">Tablet zuweisen</string>
-    <string name="action_provision_short">Zuweisen</string>
-    <string name="invalid_station_no">Stationsnummer muss eine positive Zahl sein</string>
-    <string name="invalid_password">Passwort darf nicht leer sein</string>
-    <string name="provision_failed">"Zuweisung fehlgeschlagen"</string>
-    <string name="provision_enter_station">"Bitte Station auswählen"</string>
-    <string name="station_name">Station %1$s</string>
-    <!-- Strings related to Iot connection -->
-    <string name="disconnected">Verbindung getrennt</string>
 </resources>

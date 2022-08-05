@@ -1,0 +1,31 @@
+apply from: "$rootDir/library.gradle"
+
+android {
+    namespace 'app.beachist.iot'
+
+    buildFeatures {
+        viewBinding true
+    }
+}
+
+dependencies {
+    implementation project(":shared")
+    implementation project(":iot-client")
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+
+    // deprecated, use kotlin coroutines
+    implementation "io.reactivex.rxjava2:rxjava:$rxjava_version"
+    implementation "io.reactivex.rxjava2:rxkotlin:$rxkotlin_version"
+    implementation "io.reactivex.rxjava2:rxandroid:$rxandroid_version"
+
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.1"
+
+    implementation "com.jakewharton.timber:timber:$timber_version"
+
+    implementation "io.insert-koin:koin-core:$koin_version"
+    implementation "io.insert-koin:koin-android:$koin_version"
+
+    implementation "com.google.code.gson:gson:$gson_version"
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+}

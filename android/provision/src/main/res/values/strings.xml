@@ -1,0 +1,16 @@
+<resources>
+    <string name="provision_info">
+        Dieses Tablet ist derzeit keiner Station zugewiesen und kann daher nicht verwendet werden.
+        Bitte die Zuweisungsdaten eintragen.
+        Sollte diese Meldung unerwartet erscheinen, wende dich bitte an deine Wachführung.
+    </string>
+    <string name="prompt_station_no">Stationsnummer</string>
+    <string name="prompt_password">Zuweisungspasswort</string>
+    <string name="action_provision">Tablet zuweisen</string>
+    <string name="action_provision_short">Zuweisen</string>
+    <string name="invalid_station_no">Stationsnummer muss eine positive Zahl sein</string>
+    <string name="invalid_password">Passwort darf nicht leer sein</string>
+    <string name="provision_failed">"Zuweisung fehlgeschlagen"</string>
+    <string name="provision_enter_station">"Bitte Station auswählen"</string>
+    <string name="provision_successful_provision">Erfolgreich Station %s zugeordnet</string>
+</resources>

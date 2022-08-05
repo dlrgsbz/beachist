@@ -1,0 +1,11 @@
+<resources>
+    <string name="station_check_button_okay">In Ordnung</string>
+    <string name="station_check_button_not_okay">Problem</string>
+    <string name="station_check_button_too_little">zu wenig</string>
+    <string name="station_check_button_broken">defekt</string>
+    <string name="station_check_button_other">anderes</string>
+    <string name="station_check_note_description">Bitte das Problem genauer beschreiben</string>
+    <string name="station_check_note_button_okay">OK</string>
+    <string name="station_check_note_button_cancel">Abbrechen</string>
+    <string name="station_check_amount_description">Wie viel ist noch vorhanden?</string>
+</resources>
