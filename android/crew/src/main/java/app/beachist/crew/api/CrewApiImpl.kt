@@ -1,12 +1,10 @@
 package app.beachist.crew.api
 
 import app.beachist.auth.station.StationNameProvider
-import com.google.gson.Gson
+import app.beachist.crew.repository.CrewRepository
 import app.beachist.iot_client.client.IotClient
 import app.beachist.iot_client.client.IotConnectionState
-import app.beachist.crew.repository.CrewRepository
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.plusAssign
+import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -14,6 +12,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
 import kotlin.coroutines.CoroutineContext
 
@@ -23,18 +22,18 @@ class CrewApiImpl(
     private val crewRepository: CrewRepository,
     private val stationNameProvider: StationNameProvider,
     private val gson: Gson,
-): CoroutineScope {
+) : CoroutineScope {
     private val parentJob = SupervisorJob()
     override val coroutineContext: CoroutineContext = Dispatchers.Main + parentJob
 
-    private val disposables = CompositeDisposable()
-
     init {
-        disposables += iotClient.getConnectionState().subscribe {
-            if (it == IotConnectionState.Connected) {
-                syncCrewInfo()
+        iotClient.observeConnectionState()
+            .onEach {
+                if (it == IotConnectionState.Connected) {
+                    syncCrewInfo()
+                }
             }
-        }
+            .launchIn(this)
     }
 
     private fun syncCrewInfo() {

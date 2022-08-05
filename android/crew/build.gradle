@@ -23,12 +23,9 @@ dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
-    // deprecated, use kotlin coroutines
-    implementation "io.reactivex.rxjava2:rxjava:$rxjava_version"
-    implementation "io.reactivex.rxjava2:rxkotlin:$rxkotlin_version"
-    implementation "io.reactivex.rxjava2:rxandroid:$rxandroid_version"
-
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.1"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
 
     implementation "com.jakewharton.timber:timber:$timber_version"
 

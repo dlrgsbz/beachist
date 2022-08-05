@@ -6,36 +6,39 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.DialogFragment
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import app.beachist.R
 import app.beachist.crew.ui.CrewNameFragment
+import app.beachist.databinding.ActivityMainBinding
 import app.beachist.provision.ui.ProvisionFragment
 import app.beachist.service.BeachistService
-import app.beachist.R
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.subjects.PublishSubject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import timber.log.Timber
 
 @ExperimentalCoroutinesApi
-class MainActivity: AppCompatActivity(), ServiceConnection {
+class MainActivity : AppCompatActivity(), ServiceConnection {
 
     private val viewModel: MainViewModel by viewModel()
-    private var crewNameFragment: CrewNameFragment? = null
-    private var provisionFragment: ProvisionFragment? = null
     private val disposable = CompositeDisposable()
     private val actions: PublishSubject<MainViewAction> = PublishSubject.create()
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         bindService(Intent(this, BeachistService::class.java), this, Service.BIND_AUTO_CREATE)
 
+        binding = ActivityMainBinding.inflate(layoutInflater, null, false)
         setupView()
     }
 
@@ -46,8 +49,7 @@ class MainActivity: AppCompatActivity(), ServiceConnection {
     }
 
     private fun setupView() {
-        setContentView(R.layout.activity_main)
-        val navView: BottomNavigationView = findViewById(R.id.nav_view)
+        setContentView(binding.root)
 
         val navController = findNavController(R.id.nav_host_fragment)
 
@@ -59,17 +61,30 @@ class MainActivity: AppCompatActivity(), ServiceConnection {
             )
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)
+        binding.navView.setupWithNavController(navController)
+
+        binding.navView.visibility = View.VISIBLE
     }
 
     private fun setupBindings() {
         viewModel.attach(actions)
 
         disposable += viewModel.stateOf { currentView }
+            .doOnNext { Timber.tag("MainActivity").d("currentView: $it") }
             .subscribe { onViewChange(it) }
     }
 
     private fun onViewChange(view: MainViewCurrentView) {
+        binding.navView.visibility = View.VISIBLE
+        val fragment = (supportFragmentManager.findFragmentByTag(FragmentTag.crewInfo) as? DialogFragment)
+
+        if (fragment == null ) {
+            Timber.tag("MainActivity").w("No crew info dialog fragment found ð")
+        }
+        fragment?.dismiss()
+        (supportFragmentManager.findFragmentByTag(FragmentTag.crewInfo) as? DialogFragment)?.dismiss()
+        (supportFragmentManager.findFragmentByTag(FragmentTag.provision) as? DialogFragment)?.dismiss()
+
         when (view) {
             MainViewCurrentView.CrewInput -> setupCrewView()
             MainViewCurrentView.Provision -> setupProvisioningView()
@@ -78,50 +93,20 @@ class MainActivity: AppCompatActivity(), ServiceConnection {
     }
 
     private fun setupCrewView() {
-        val fragment = CrewNameFragment()
-
-        disposable += fragment.dismissPublisher.subscribe {
-            goToStationView()
-        }
-
-        supportFragmentManager.beginTransaction()
-            .add(android.R.id.content, fragment)
-            .commit()
-
-        crewNameFragment = fragment
+        Timber.tag("MainActivity").d("setupCrewView")
+        binding.navView.visibility = View.GONE
+        CrewNameFragment().show(supportFragmentManager, FragmentTag.crewInfo)
     }
 
     private fun setupProvisioningView() {
-        val fragment = ProvisionFragment()
-
-        supportFragmentManager.beginTransaction()
-            .add(android.R.id.content, fragment)
-            .commit()
-
-        provisionFragment = fragment
+        Timber.tag("MainActivity").d("setupProvisioningView")
+        binding.navView.visibility = View.GONE
+        ProvisionFragment().show(supportFragmentManager, FragmentTag.provision)
     }
 
     private fun goToStationView() {
-        val fragment = when {
-            provisionFragment != null -> provisionFragment
-            crewNameFragment != null -> crewNameFragment
-            else -> null
-        } ?: return
-
-        supportFragmentManager.beginTransaction()
-            .remove(fragment)
-            .commit()
-
-        crewNameFragment = null
-        provisionFragment = null
-    }
-
-    override fun onBackPressed() {
-        if (supportFragmentManager.backStackEntryCount > 0) {
-            supportFragmentManager.popBackStackImmediate()
-        } else {
-            finish()
-        }
+        Timber.tag("MainActivity").d("goToStationView")
+        binding.navView.visibility = View.VISIBLE
     }
 
     override fun onServiceConnected(p0: ComponentName?, p1: IBinder?) {
@@ -130,5 +115,12 @@ class MainActivity: AppCompatActivity(), ServiceConnection {
 
     override fun onServiceDisconnected(p0: ComponentName?) {
         // ignoring this on purpose
+    }
+}
+
+sealed class FragmentTag {
+    companion object {
+        const val provision = "provision"
+        const val crewInfo = "crewInfo"
     }
 }

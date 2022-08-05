@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface CrewInfoDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun upsert(crewInfo: CrewInfo): Long
+    suspend fun upsert(crewInfo: CrewInfo): Long
 
     @Query("DELETE FROM crew_info")
     suspend fun removeAll()
