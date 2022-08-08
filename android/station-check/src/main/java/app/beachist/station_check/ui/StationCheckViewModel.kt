@@ -245,7 +245,7 @@ internal class StationCheckViewModel(
     }
 }
 
-internal sealed class StationCheckAction : ViewModelAction {
+internal sealed class StationCheckAction : ViewModelAction() {
     object Refresh : StationCheckAction()
     data class MarkItemOkay(val id: String) : StationCheckAction()
     data class MarkItemNotOkay(val id: String) : StationCheckAction()
@@ -263,7 +263,7 @@ internal sealed class StationCheckAction : ViewModelAction {
     ) : StationCheckAction()
 }
 
-internal sealed class StationCheckEffect : ViewModelEffect {
+internal sealed class StationCheckEffect : ViewModelEffect() {
     data class ShowAmountBox(val id: String) : StationCheckEffect()
     data class ShowNoteBox(val id: String) : StationCheckEffect()
 }

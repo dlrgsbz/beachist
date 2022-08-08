@@ -80,11 +80,11 @@ internal class MainViewModel(
     }
 }
 
-internal sealed class MainViewAction : ViewModelAction {
+internal sealed class MainViewAction : ViewModelAction() {
     object CheckStationSelection : MainViewAction()
 }
 
-internal sealed class MainViewEffect : ViewModelEffect
+internal sealed class MainViewEffect : ViewModelEffect()
 
 internal data class MainViewState(
     val currentView: MainViewCurrentView = MainViewCurrentView.TabbedView,

@@ -78,14 +78,14 @@ internal class CrewNameViewModel(
 
 }
 
-internal sealed class CrewNameViewAction : ViewModelAction {
+internal sealed class CrewNameViewAction : ViewModelAction() {
     object UpdateDate : CrewNameViewAction()
     object Submit : CrewNameViewAction()
 
     data class UpdateCrewName(val name: String) : CrewNameViewAction()
 }
 
-internal sealed class CrewNameViewEffect : ViewModelEffect {
+internal sealed class CrewNameViewEffect : ViewModelEffect() {
     object Dismiss : CrewNameViewEffect()
 }
 

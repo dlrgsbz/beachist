@@ -90,7 +90,7 @@ internal class AddSpecialEventViewModel(
     }
 }
 
-internal sealed class AddSpecialEventAction : ViewModelAction {
+internal sealed class AddSpecialEventAction : ViewModelAction() {
     object SaveSpecialEvent : AddSpecialEventAction()
     object CheckCompleted : AddSpecialEventAction()
 
@@ -100,7 +100,7 @@ internal sealed class AddSpecialEventAction : ViewModelAction {
     data class KindUpdated(val kind: SpecialEventKind?) : AddSpecialEventAction()
 }
 
-internal sealed class AddSpecialEventEffect : ViewModelEffect {
+internal sealed class AddSpecialEventEffect : ViewModelEffect() {
     object PopView : AddSpecialEventEffect()
     object HideKeyboard : AddSpecialEventEffect()
     object IncompleteError : AddSpecialEventEffect()
