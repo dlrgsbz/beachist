@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import timber.log.Timber
 import java.util.*
 
 @ExperimentalCoroutinesApi
@@ -49,6 +50,7 @@ internal class EventViewModel(
     }
 
     private suspend fun onAddEvent() {
+        Timber.tag("EventViewModel").i("onAddEvent")
         val event =
             Event(
                 EventType.firstAid,
@@ -86,7 +88,7 @@ internal class EventViewModel(
     }
 }
 
-internal sealed class EventListAction : ViewModelAction {
+internal sealed class EventListAction : ViewModelAction() {
     object AddEventClicked : EventListAction()
     object Refetch : EventListAction()
     object CancelClicked : EventListAction()
@@ -94,7 +96,7 @@ internal sealed class EventListAction : ViewModelAction {
     data class SaveEvent(val event: Event) : EventListAction()
 }
 
-internal sealed class EventListEffect : ViewModelEffect
+internal sealed class EventListEffect : ViewModelEffect()
 
 internal data class EventListState(
     val eventItems: List<Event> = listOf(),

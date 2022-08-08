@@ -40,11 +40,11 @@ internal class SpecialEventsViewModel(private val repository: SpecialEventReposi
     }
 }
 
-internal sealed class SpecialEventListAction : ViewModelAction {
+internal sealed class SpecialEventListAction : ViewModelAction() {
     object CreateEvent : SpecialEventListAction()
 }
 
-internal sealed class SpecialEventListEffect : ViewModelEffect {
+internal sealed class SpecialEventListEffect : ViewModelEffect() {
     object ShowCreateEventView : SpecialEventListEffect()
 }
 

@@ -20,11 +20,7 @@ class EventRepository(
     }
 
     suspend fun saveEvent(event: Event) {
-        val dbEvent = EventEntity()
-        dbEvent.id = event.id
-        dbEvent.date = event.date
-        dbEvent.type = event.type
-        dbEvent.state = event.state
+        val dbEvent = event.toDbEvent()
         dao.insert(dbEvent)
     }
 
@@ -46,4 +42,13 @@ private fun getTimes(): Pair<Date, Date> {
     end.set(Calendar.MILLISECOND, 99)
 
     return Pair(start.time, end.time)
+}
+
+private fun Event.toDbEvent(): EventEntity {
+    val dbEvent = EventEntity()
+    dbEvent.id = this.id
+    dbEvent.date = this.date
+    dbEvent.type = this.type
+    dbEvent.state = this.state
+    return dbEvent
 }

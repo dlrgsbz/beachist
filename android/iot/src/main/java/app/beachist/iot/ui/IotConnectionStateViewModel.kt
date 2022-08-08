@@ -27,8 +27,8 @@ internal class IotConnectionStateViewModel(private val iotRepository: IotReposit
     }
 }
 
-internal sealed class IotConnectionStateAction : ViewModelAction
+internal sealed class IotConnectionStateAction : ViewModelAction()
 
-internal sealed class IotConnectionStateEffect : ViewModelEffect
+internal sealed class IotConnectionStateEffect : ViewModelEffect()
 
 internal data class IotConnectionStateState(val connected: Boolean = false) : ViewModelState

@@ -2,6 +2,7 @@ package app.beachist.event.database
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import app.beachist.shared.NetworkState
@@ -16,7 +17,7 @@ interface EventDao {
     @Query("SELECT * FROM evententity WHERE date BETWEEN :startDate AND :endDate")
     fun observeAllBetween(startDate: Date, endDate: Date): Flow<List<EventEntity>>
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(event: EventEntity)
 
     @Update
