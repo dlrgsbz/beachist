@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react'
+import { TextField, TextFieldProps } from '@mui/material'
 
 import { AdminView } from 'interfaces'
 import { ReactComponent as CheckedBox } from './img/done.svg'
@@ -8,7 +9,6 @@ import Loading from 'components/Loading'
 import { SpecialEventType } from 'dtos'
 import SpecialEvents from './views/specialEvents'
 import StationInfo from './views/stationInfo'
-import { TextField } from '@mui/material'
 import classNames from 'classnames'
 import moment from 'moment'
 import { useDashboardStore } from 'store'
@@ -34,7 +34,7 @@ const Wachfuehrer: React.FC = () => {
           onChange={onDateChange}
           maxDate={moment().endOf('day')}
           value={date}
-          renderInput={params => <TextField {...params} />}
+          renderInput={(params: TextFieldProps) => <TextField {...params} />}
         />
         <div className="btn-group-toggle float-sm-right" data-toggle="buttons">
           {
