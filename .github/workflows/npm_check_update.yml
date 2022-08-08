@@ -41,5 +41,5 @@ jobs:
         body: 'See diff'
         author: GitHub Actions <actions@github.com>
         branch: dependency-update
-        branch-suffix: timestamp
+        delete-branch: true
       uses: peter-evans/create-pull-request@v4
