@@ -2,10 +2,10 @@ import 'moment/locale/de'
 
 import { AuthProvider, useAuth } from './context'
 
+import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import { AuthServiceProvider } from './context/AuthServiceContext'
 import { AuthenticatedApp } from './AuthenticatedApp'
-import DateAdapter from '@mui/lab/AdapterMoment'
-import { LocalizationProvider } from '@mui/lab'
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import React from 'react'
 import { SnackbarProvider } from 'notistack'
 import StoreProvider from 'store'
@@ -18,7 +18,7 @@ const AppRender = () => {
 }
 
 const App = () => (
-  <LocalizationProvider dateAdapter={DateAdapter}>
+  <LocalizationProvider dateAdapter={AdapterMoment}>
     <SnackbarProvider>
       <AuthServiceProvider>
         <AuthProvider>
