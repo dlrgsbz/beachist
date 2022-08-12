@@ -3,7 +3,7 @@ import { TextField, TextFieldProps } from '@mui/material'
 
 import { AdminView } from 'interfaces'
 import { ReactComponent as CheckedBox } from './img/done.svg'
-import DatePicker from '@mui/lab/DatePicker'
+import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { ReactComponent as EmptyCheckbox } from './img/checkbox.svg'
 import Loading from 'components/Loading'
 import { SpecialEventType } from 'dtos'
