@@ -2,6 +2,7 @@ name: web_deploy
 
 concurrency: 
   group: ${{ github.workflow }}
+  cancel-in-progress: true
 
 on:
   push:
