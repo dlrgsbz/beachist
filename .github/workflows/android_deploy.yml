@@ -1,5 +1,9 @@
 name: android_deploy
 
+concurrency: 
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
 on:
   workflow_dispatch:
   push:
@@ -35,6 +39,15 @@ jobs:
     steps:
       - name: Checkout the code
         uses: actions/checkout@v3
+
+      - name: Tag release
+        if: ${{ matrix.env }} == 'STAGING'
+        uses: mathieudutour/github-tag-action@v6.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          custom_tag: ${{ github.run_number }}
+          tag_prefix: ''
+
       - uses: actions/setup-java@v3
         with:
           distribution: 'zulu' # See 'Supported distributions' for available options
@@ -43,13 +56,11 @@ jobs:
       - name: Setup configs
         working-directory: android
         env:
-          backendUrl: ${{ secrets.APP_BACKEND_URL }}
           provisioningUrl: ${{ secrets.APP_PROVISIONING_URL }}
-          databaseName: ${{ secrets.APP_DATABASE_NAME }}
           CLIENT_KEYSTORE_BASE_64: ${{ secrets.CLIENT_KEYSTORE_BASE_64 }}
           GITHUB_RUN_NUMBER: ${{ github.run_number }}
         run: |
-          echo -e "backendUrl=\"$backendUrl\"\ndatabaseName=\"$databaseName\"\nprovisioningUrl=\"$provisioningUrl\"" > ./project_resources/config.properties \
+          echo -e "provisioningUrl=\"$provisioningUrl\"" > ./project_resources/config.properties \
             && echo $CLIENT_KEYSTORE_BASE_64 | base64 -d > project_resources/release.keystore \
             && cat <<< $(jq '.client[0].client_info.android_client_info.package_name="${{ secrets.APP_APPLICATION_ID }}"' app/google-services.json) > app/google-services.json \
             && sed -i 's/applicationId.*/applicationId "${{ secrets.APP_APPLICATION_ID }}"/' app/build.gradle \
