@@ -23,6 +23,14 @@ jobs:
       with:
         fetch-depth: 2
 
+    - name: Tag release
+      if: ${{ matrix.env }} == 'STAGING'
+      uses: mathieudutour/github-tag-action@v6.0
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        custom_tag: ${{ format('web/{0}', github.run_number) }}
+        tag_prefix: ''
+
     - name: install node
       uses: actions/setup-node@v3
       with:
