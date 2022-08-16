@@ -16,14 +16,17 @@ import androidx.navigation.ui.setupWithNavController
 import app.beachist.R
 import app.beachist.crew.ui.CrewNameFragment
 import app.beachist.databinding.ActivityMainBinding
+import app.beachist.debug.CrashRecorder
 import app.beachist.provision.ui.ProvisionFragment
 import app.beachist.service.BeachistService
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.subjects.PublishSubject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
+import kotlin.system.exitProcess
 
 @ExperimentalCoroutinesApi
 class MainActivity : AppCompatActivity(), ServiceConnection {
@@ -32,6 +35,8 @@ class MainActivity : AppCompatActivity(), ServiceConnection {
     private val disposable = CompositeDisposable()
     private val actions: PublishSubject<MainViewAction> = PublishSubject.create()
     private lateinit var binding: ActivityMainBinding
+
+    private val crashRecorder: CrashRecorder by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -94,14 +99,25 @@ class MainActivity : AppCompatActivity(), ServiceConnection {
 
     private fun setupCrewView() {
         Timber.tag("MainActivity").d("setupCrewView")
+        ensureTransition()
         binding.navView.visibility = View.GONE
         CrewNameFragment().show(supportFragmentManager, FragmentTag.crewInfo)
     }
 
     private fun setupProvisioningView() {
         Timber.tag("MainActivity").d("setupProvisioningView")
+        ensureTransition()
         binding.navView.visibility = View.GONE
         ProvisionFragment().show(supportFragmentManager, FragmentTag.provision)
+    }
+
+    private fun ensureTransition() {
+        if (supportFragmentManager.isDestroyed || supportFragmentManager.isStateSaved || isFinishing) {
+            crashRecorder.log("Can't transition to other view because transition is impossible")
+            crashRecorder.recordException(CantTransitionException())
+            Timber.tag("MainActivity").i("Can't transition to other view because transition is impossible")
+            exitProcess(0)
+        }
     }
 
     private fun goToStationView() {
@@ -124,3 +140,5 @@ sealed class FragmentTag {
         const val crewInfo = "crewInfo"
     }
 }
+
+class CantTransitionException(): Exception()
