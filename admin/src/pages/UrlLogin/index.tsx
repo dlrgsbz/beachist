@@ -1,10 +1,11 @@
 import React, { useCallback, useEffect } from 'react'
-import { useHistory, useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
+
 import { useAuth } from 'context'
 import { useSnackbar } from 'lib'
 
 const useUrlLogin = () => {
-  const history = useHistory()
+  const navigate = useNavigate()
   const { tokenLogin } = useAuth()
   const { errorSnackbar, successSnackbar } = useSnackbar()
   const map = useParseLocationHash()
@@ -15,13 +16,13 @@ const useUrlLogin = () => {
     tokenLogin(token)
       .then(() => {
         successSnackbar('Erfolgreich angemeldet.')
-        history.replace('/wachfuehrer')
+        navigate('/wachfuehrer', { replace: true })
       })
       .catch(() => {
-        history.replace('/')
+        navigate('/', { replace: true })
         errorSnackbar('Ungültiger Login-Link.', { autoHideDuration: 30000 })
       })
-  }, [errorSnackbar, history, map, successSnackbar, tokenLogin])
+  }, [errorSnackbar, navigate, map, successSnackbar, tokenLogin])
 }
 
 const useParseLocationHash = () => {

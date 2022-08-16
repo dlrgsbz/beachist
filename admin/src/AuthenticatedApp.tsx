@@ -1,4 +1,4 @@
-import { Redirect, Route, BrowserRouter as Router } from 'react-router-dom'
+import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom'
 
 import { AdminStation } from './pages/AdminStation'
 import { Footer } from './components/Footer'
@@ -6,13 +6,7 @@ import Navigation from './components/Navigation'
 import React from 'react'
 import Wachfuehrer from './pages/Wachfuehrer'
 
-const RedirectComponent = () => (
-  <Redirect
-    to={{
-      pathname: '/wachfuehrer',
-    }}
-  />
-)
+const RedirectComponent = () => <Navigate to="/wachfuehrer" replace />
 
 export const AuthenticatedApp: React.VFC = () => {
   return (
@@ -25,9 +19,11 @@ export const AuthenticatedApp: React.VFC = () => {
           <div className="row">
             <main role="main" className="col-md-12">
               <div id="content">
-                <Route path="/" exact component={RedirectComponent} />
-                <Route path="/wachfuehrer/" component={Wachfuehrer} />
-                <Route path="/admin/station" component={AdminStation} />
+                <Routes>
+                  <Route path="/wachfuehrer/" element={<Wachfuehrer />} />
+                  <Route path="/admin/station" element={<AdminStation />} />
+                  <Route path="/" element={<RedirectComponent />} />
+                </Routes>
               </div>
               <Footer />
             </main>
