@@ -22,7 +22,7 @@ val eventsModule = module {
     single {
         Room.databaseBuilder(get(), EventDatabase::class.java, "events")
             .allowMainThreadQueries()
-            .fallbackToDestructiveMigration()
+            .fallbackToDestructiveMigrationFrom(VERSION_1)
             .build()
     }
 
@@ -36,3 +36,5 @@ val eventsModule = module {
         EventRepository(get())
     }
 }
+
+private const val VERSION_1 = 1

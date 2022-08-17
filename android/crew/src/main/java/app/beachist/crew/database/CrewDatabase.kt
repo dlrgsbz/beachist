@@ -5,7 +5,7 @@ import androidx.room.RoomDatabase
 
 @Database(
     entities = [CrewInfo::class],
-    version = 1,
+    version = 2,
 )
 internal abstract class CrewDatabase : RoomDatabase() {
     abstract fun crewInfoDao(): CrewInfoDao

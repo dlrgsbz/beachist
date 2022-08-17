@@ -19,6 +19,7 @@ val crewModule = module {
 
     single {
         Room.databaseBuilder(get(), CrewDatabase::class.java, "crew")
+            .fallbackToDestructiveMigrationFrom(VERSION_1)
             .build()
     }
 
@@ -33,3 +34,5 @@ val crewModule = module {
 
     viewModel { CrewNameViewModel(get(), get(), get()) }
 }
+
+private const val VERSION_1 = 1

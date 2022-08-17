@@ -9,7 +9,7 @@ import java.util.*
 
 @Database(
     entities = [DbSpecialEvent::class],
-    version = 1,
+    version = 2,
 )
 @TypeConverters(SpecialEventConverters::class)
 internal abstract class SpecialEventDatabase: RoomDatabase() {

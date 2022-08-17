@@ -26,7 +26,7 @@ internal class StationCheckViewModel(
     private val fieldRepo: FieldLocalRepository,
     private val handle: SavedStateHandle
 ) : BaseViewModel<StationCheckAction, StationCheckState, StationCheckEffect>(
-    handle.get("StationCheckState") ?: emptyState
+    handle["StationCheckState"] ?: emptyState
 ) {
     companion object {
         private val emptyState = StationCheckState()

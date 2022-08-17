@@ -21,6 +21,7 @@ val specialEventsModule = module {
 
     single {
         Room.databaseBuilder(get(), SpecialEventDatabase::class.java, "special_events")
+            .fallbackToDestructiveMigrationFrom(VERSION_1)
             .build()
     }
 
@@ -39,3 +40,5 @@ val specialEventsModule = module {
 
     factory { SpecialEventService(get()) }
 }
+
+private const val VERSION_1 = 1
