@@ -102,7 +102,7 @@ jobs:
       run: cp -r backend/vendor dist
 
     - name: deployment to server
-      uses: tjarksaul/SFTP-Deploy-Action@d1c7a725df9093b6c6700d2505b0b2df21c6f666
+      uses: tjarksaul/SFTP-Deploy-Action@027b02d4066225bc49f273ecdaae5dadcc9ea309
       with:
         server: '${{ secrets.FTP_SERVER }}'
         username: ${{ secrets.FTP_USERNAME }}

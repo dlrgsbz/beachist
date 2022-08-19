@@ -77,7 +77,7 @@ jobs:
           ./gradlew app:bundleRelease
 
       - name: deployment to server
-        uses: tjarksaul/SFTP-Deploy-Action@1f9d3f7e125f06dc57760d081a04bca1d49a6dc1
+        uses: tjarksaul/SFTP-Deploy-Action@027b02d4066225bc49f273ecdaae5dadcc9ea309
         with:
           server: '${{ secrets.FTP_SERVER }}'
           username: ${{ secrets.FTP_USERNAME }}
