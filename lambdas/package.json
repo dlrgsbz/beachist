@@ -20,8 +20,8 @@
     "@typescript-eslint/parser": "~5.19.0",
     "aws-cdk": "~2.20.0",
     "aws-cdk-lib": "~2.20.0",
-    "constructs": "^10.1.74",
-    "eslint": "^8.21.0",
+    "constructs": "^10.1.81",
+    "eslint": "^8.22.0",
     "import-sort-cli": "~6.0.0",
     "import-sort-parser-babylon": "~6.0.0",
     "import-sort-parser-typescript": "~6.0.0",
@@ -30,10 +30,10 @@
     "typescript": "^4.7.4"
   },
   "dependencies": {
-    "@aws-sdk/client-iot": "^3.145.0",
-    "@aws-sdk/client-iot-data-plane": "^3.145.0",
+    "@aws-sdk/client-iot": "^3.154.0",
+    "@aws-sdk/client-iot-data-plane": "^3.154.0",
     "axios": "^0.25.0",
-    "date-fns": "^2.29.1",
+    "date-fns": "^2.29.2",
     "winston": "^3.8.1",
     "zod": "^3.18.0"
   },
