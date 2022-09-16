@@ -78,6 +78,6 @@ class SpecialEventsFragment : Fragment() {
 
         transaction.addToBackStack(StackName.ShowAddSpecialEventsView.name)
 
-        transaction.commit()
+        transaction.commitAllowingStateLoss()
     }
 }
