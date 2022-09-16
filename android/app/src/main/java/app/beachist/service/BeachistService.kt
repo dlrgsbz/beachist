@@ -22,7 +22,7 @@ class BeachistService: LifecycleService(), KoinComponent {
         Timber.tag("BeachistService").d("Init")
     }
 
-    override fun onBind(intent: Intent): IBinder? {
+    override fun onBind(intent: Intent): IBinder {
         super.onBind(intent)
         Timber.tag("BeachistService").d("Bind")
         stopForeground(true)
@@ -46,7 +46,7 @@ class BeachistService: LifecycleService(), KoinComponent {
         super.onCreate()
         Timber.tag("BeachistService").d("Create")
 
-        serviceViewModel.updates.observe(this, Observer {})
+        serviceViewModel.updates.observe(this, {})
     }
 
     override fun onUnbind(intent: Intent): Boolean {
