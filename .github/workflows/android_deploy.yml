@@ -42,7 +42,7 @@ jobs:
 
       - name: Tag release
         if: matrix.env == 'STAGING'
-        uses: mathieudutour/github-tag-action@v6.0
+        uses: mathieudutour/github-tag-action@v6.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           custom_tag: ${{ format('android/{0}', github.run_number) }}
