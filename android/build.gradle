@@ -38,8 +38,8 @@ allprojects {
 
 ext {
     compile_sdk_version = 31
-    target_sdk_version = 30
-    min_sdk_version = 24  // 24, weil das Tablet nicht mehr kann. 🙄
+    target_sdk_version = 31
+    min_sdk_version = 30
     koin_version = "3.1.5"
     room_version = "2.4.2"
     lifecycle_version = "2.5.0"
