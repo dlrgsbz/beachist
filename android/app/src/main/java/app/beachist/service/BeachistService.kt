@@ -2,7 +2,6 @@ package app.beachist.service
 
 import android.content.Intent
 import android.os.Binder
-import android.os.Build
 import android.os.IBinder
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.Observer
@@ -27,11 +26,7 @@ class BeachistService: LifecycleService(), KoinComponent {
         super.onBind(intent)
         Timber.tag("BeachistService").d("Bind")
         stopForeground(true)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(intent)
-        } else {
-            startService(intent)
-        }
+        startService(intent)
 
         return binder
     }
