@@ -25,7 +25,7 @@ jobs:
 
     - name: Tag release
       if: ${{ matrix.env }} == 'STAGING'
-      uses: mathieudutour/github-tag-action@v6.0
+      uses: mathieudutour/github-tag-action@v6.1
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         custom_tag: ${{ format('web/{0}', github.run_number) }}
@@ -44,23 +44,10 @@ jobs:
       run: npm run build
       working-directory: admin
 
-    - name: Extract branch name
-      shell: bash
-      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-      id: extract_branch
-
-    - uses: nrwl/last-successful-commit-action@v1
-      id: last_successful_commit
-      name: check last successful run
-      with:
-        branch: ${{ steps.extract_branch.outputs.branch }}
-        workflow_id: 'main.yml'
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-
     - name: Cache Composer dependencies
       uses: actions/cache@v3
       with:
-        path: /tmp/composer-cache
+        path: backend/vendor
         key: ${{ runner.os }}-${{ hashFiles('**/composer.lock') }}
     
     - name: composer install
@@ -89,16 +76,31 @@ jobs:
         cp -r backend/.env dist
         sed -i 's/dirname(__DIR__)/__DIR__/' dist/index.php
 
-    - name: check if composer neeeds to run
-      id: check_composer
-      run: |
-        git fetch --all
-        git diff-tree --no-commit-id --name-only -r ${{ steps.last_successful_commit.outputs.commit_hash }}..${{ github.sha }} | grep composer > /dev/null \
-          && echo ::set-output name=exit_code::0 \
-          || echo ::set-output name=exit_code::1
+    # This did not work for quite some while, so disabling it for time being
+    # - name: Extract branch name
+    #   shell: bash
+    #   run: echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >>$GITHUB_OUTPUT
+    #   id: extract_branch
+
+    # # todo: replace this action bc it uses node 12 and set-output commands
+    # - uses: nrwl/last-successful-commit-action@v1
+    #   id: last_successful_commit
+    #   name: check last successful run
+    #   with:
+    #     branch: ${{ steps.extract_branch.outputs.branch }}
+    #     workflow_id: 'main.yml'
+    #     github_token: ${{ secrets.GITHUB_TOKEN }}
+
+    # - name: check if composer neeeds to run
+    #   id: check_composer
+    #   run: |
+    #     git fetch --all
+    #     git diff-tree --no-commit-id --name-only -r ${{ steps.last_successful_commit.outputs.commit_hash }}..${{ github.sha }} | grep composer > /dev/null \
+    #       && echo "exit_code=0" >> $GITHUB_OUTPUT \
+    #       || echo "exit_code=1" >> $GITHUB_OUTPUT
 
     - name: move composer dependencies
-      if: steps.check_composer.outputs.exit_code == 0
+      # if: steps.check_composer.outputs.exit_code == 0
       run: cp -r backend/vendor dist
 
     - name: deployment to server

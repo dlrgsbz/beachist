@@ -42,7 +42,7 @@ jobs:
 
       - name: Tag release
         if: matrix.env == 'STAGING'
-        uses: mathieudutour/github-tag-action@v6.0
+        uses: mathieudutour/github-tag-action@v6.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           custom_tag: ${{ format('android/{0}', github.run_number) }}
@@ -87,7 +87,7 @@ jobs:
 
       - name: Teams Notification
         if: matrix.env == 'STAGING'
-        uses: jdcargile/ms-teams-notification@v1.3
+        uses: dragos-cojocari/ms-teams-notification@v1.0.2
         with:
           github-token: ${{ github.token }} # this will use the runner's token.
           ms-teams-webhook-uri: ${{ secrets.MS_TEAMS_WEBHOOK_URI }}
