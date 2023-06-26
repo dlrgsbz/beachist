@@ -70,7 +70,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="44dp"
                 android:ems="10"
-                android:hint="Namen eingeben"
+                android:hint="Vor- und Nachnamen der gesamtem Besatzung eingeben"
                 android:inputType="textPersonName"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
