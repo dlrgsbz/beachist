@@ -53,6 +53,7 @@ export class InfraStack extends Stack {
     this.createInfoHandler()
     this.createUpdateCrewHandler()
     this.createLastWillTopic()
+    this.createGetUviHandler()
   }
 
   private createLastWillTopic() {
@@ -182,6 +183,18 @@ export class InfraStack extends Stack {
       ),
       actions: [new LambdaFunctionAction(createEntryHandler)],
     })
+  }
+
+  private createGetUviHandler() {
+    const uviHandler = this.lambdaFunction(
+        `${this.props.prefix}-uvi`,
+        path.join('cron', 'get-uvi'),
+        `getUviHandler`,
+        this.lambdaEnvs,
+    )
+
+    addIotPublishToTopicRole(uviHandler)
+    addSsmReadRole(uviHandler)
   }
 
   private createInfoHandler() {
@@ -329,5 +342,15 @@ const addIotPublishToTopicRole = (f: LambdaFunction) => {
       resources: ['*'],
       effect: Effect.ALLOW,
     }),
+  )
+}
+
+const addSsmReadRole = (f: LambdaFunction) => {
+  f.addToRolePolicy(
+      new PolicyStatement({
+        actions: ['ssm:GetParameter', 'ssm:GetParameters'],
+        resources: ['*'],
+        effect: Effect.ALLOW,
+      }),
   )
 }
