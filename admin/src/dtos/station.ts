@@ -1,6 +1,12 @@
 import { Moment } from 'moment'
 
-export interface StationInfo {
+export interface BaseStationInfo {
+  id: string
+  name: string
+  hasSearch: boolean
+}
+
+export interface StationInfo extends BaseStationInfo {
   id: string
   name: string
   online?: boolean

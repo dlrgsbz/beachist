@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 import { App } from 'aws-cdk-lib';
-import { CodebuildStack } from './pipeline';
 import { InfraStack } from './infra';
+import { PermanentResourcesStack } from './permanentResources'
 import { Stage } from './config';
 
 const app = new App();
@@ -27,8 +27,8 @@ const setup = async () => {
         stage,
     };
 
-    new CodebuildStack(app, `${stackProps.prefix}-pipeline`, stackProps);
-    new InfraStack(app, stackProps.prefix, stackProps);
+    const permanentResources = new PermanentResourcesStack(app, `${stackProps.prefix}-permanent`, stackProps)
+    new InfraStack(app, stackProps.prefix, stackProps, permanentResources);
 };
 
 setup().catch((err) => {

@@ -1,5 +1,6 @@
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom'
 
+import { AdminField } from './pages/AdminField'
 import { AdminStation } from './pages/AdminStation'
 import { Footer } from './components/Footer'
 import Navigation from './components/Navigation'
@@ -22,6 +23,7 @@ export const AuthenticatedApp: React.VFC = () => {
                 <Routes>
                   <Route path="/wachfuehrer/" element={<Wachfuehrer />} />
                   <Route path="/admin/station" element={<AdminStation />} />
+                  <Route path="/admin/material" element={<AdminField />} />
                   <Route path="/" element={<RedirectComponent />} />
                 </Routes>
               </div>

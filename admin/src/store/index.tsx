@@ -1,7 +1,8 @@
 import React, { ReactNode } from 'react'
 
+import { AdminFieldStore } from './stores/adminFieldStore'
 import AdminStore from './stores/admin.store'
-import { ApiClient } from '../modules/data'
+import { ApiClientImpl } from '../modules/data'
 import { AuthStore } from './stores/auth.store'
 import DashboardStore from 'store/stores/dashboard.store'
 import RootStore from './stores/root.store'
@@ -15,7 +16,7 @@ type StoreProviderProps = {
 
 const StoreProvider = ({ children }: StoreProviderProps): JSX.Element => {
   const authService = useAuthService()
-  const apiClient = new ApiClient(authService)
+  const apiClient = new ApiClientImpl(authService)
   const rootStore = new RootStore(apiClient)
 
   return <StoreContext.Provider value={rootStore}>{children}</StoreContext.Provider>
@@ -31,6 +32,10 @@ function useStore(): RootStore {
 
 export function useAdminStore(): AdminStore {
   return useStore().adminStore
+}
+
+export function useAdminFieldStore(): AdminFieldStore {
+  return useStore().adminFieldStore
 }
 
 export function useDashboardStore(): DashboardStore {

@@ -1,14 +1,24 @@
 import * as path from 'path'
 
 import { Effect, PolicyDocument, PolicyStatement } from 'aws-cdk-lib/aws-iam'
+import {
+  EndpointType,
+  LambdaIntegration,
+  MethodLoggingLevel,
+  RestApi,
+  SecurityPolicy,
+} from 'aws-cdk-lib/aws-apigateway'
+import { FunctionUrlAuthType, Function as LambdaFunction, Runtime } from 'aws-cdk-lib/aws-lambda'
 import { IotRepublishMqttAction, LambdaFunctionAction, MqttQualityOfService } from '@aws-cdk/aws-iot-actions-alpha'
 import { IotSql, TopicRule } from '@aws-cdk/aws-iot-alpha'
-import { Function as LambdaFunction, Runtime } from 'aws-cdk-lib/aws-lambda'
 import { Stage, Timeouts, environmentProps } from './config'
 
+import { ApiGateway } from 'aws-cdk-lib/aws-events-targets'
+import { Certificate } from 'aws-cdk-lib/aws-certificatemanager'
 import { CfnPolicy } from 'aws-cdk-lib/aws-iot'
 import { Construct } from 'constructs'
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs'
+import { PermanentResourcesStack } from './permanentResources'
 import { Stack } from 'aws-cdk-lib'
 import { StackProps } from './cdk'
 
@@ -19,18 +29,20 @@ interface LambdaEnvs {
   LOG_LEVEL: 'debug' | 'info' | 'warn' | 'error'
   AWS_ACCOUNT_ID: string
   IOT_POLICY_NAME: string
+  DB_TABLE_NAME: string
+  DB_GSI_STATION_DATE: string
+  TENANT: string
 }
 
 export class InfraStack extends Stack {
-  private readonly props: StackProps
-
   private readonly lambdaEnvs: LambdaEnvs
 
   private readonly getThingShadowRoleArn: string
 
-  constructor(scope: Construct, id: string, props: StackProps) {
+  private readonly restApi: RestApi
+
+  constructor(scope: Construct, id: string, private readonly props: StackProps, private readonly permanentResources: PermanentResourcesStack) {
     super(scope, id)
-    this.props = props
 
     this.getThingShadowRoleArn = `'arn:aws:iam::${this.account}:role/get-thing-shadow'`
 
@@ -43,7 +55,12 @@ export class InfraStack extends Stack {
       LOG_LEVEL: environmentProps.logLevel,
       AWS_ACCOUNT_ID: Stack.of(this).account,
       IOT_POLICY_NAME: iotPolicy.policyName!,
+      DB_TABLE_NAME: permanentResources.beachistTable.tableName,
+      DB_GSI_STATION_DATE: 'station-id-index',
+      TENANT: environmentProps.tenant,
     }
+
+    this.restApi = this.buildApi()
 
     this.createGetFieldsHandler()
     this.createCreateEntryHandler()
@@ -53,6 +70,30 @@ export class InfraStack extends Stack {
     this.createInfoHandler()
     this.createUpdateCrewHandler()
     this.createLastWillTopic()
+  }
+
+  private buildApi(): RestApi {
+    const certificate = Certificate.fromCertificateArn(this, `${this.props.prefix}-certificate`, environmentProps.awsConfig.certificateArn)
+
+    const api = new RestApi(this, `${this.props.prefix}-api`, {
+      restApiName: this.props.prefix,
+      deployOptions: {
+        stageName: this.props.stage,
+        metricsEnabled: false,
+        loggingLevel: MethodLoggingLevel.ERROR,
+      },
+      domainName: {
+        certificate,
+        domainName: environmentProps.domainName,
+        endpointType: EndpointType.REGIONAL,
+        securityPolicy: SecurityPolicy.TLS_1_2,
+      },
+      endpointTypes: [EndpointType.REGIONAL],
+    })
+
+    new ApiGateway(api)
+
+    return api
   }
 
   private createLastWillTopic() {
@@ -77,6 +118,8 @@ export class InfraStack extends Stack {
     )
 
     addIotPublishToTopicRole(getFieldsHandler)
+
+    this.permanentResources.beachistTable.grantReadData(getFieldsHandler)
 
     new TopicRule(this, 'get-fields-rule', {
       topicRuleName: `beachist${this.props.stage}GetFieldsRule`,
@@ -165,6 +208,7 @@ export class InfraStack extends Stack {
     )
 
     addIotPublishToTopicRole(createEntryHandler)
+    this.permanentResources.beachistTable.grantWriteData(createEntryHandler)
 
     new TopicRule(this, 'create-entry-rule', {
       topicRuleName: `beachist${this.props.stage}CreateEntryRule`,
@@ -250,7 +294,10 @@ export class InfraStack extends Stack {
       resources: ['*'],
     }))
 
-    // todo: add function URL
+    f.addFunctionUrl({
+      authType: FunctionUrlAuthType.NONE,
+    })
+    this.restApi.root.addResource('provision').addMethod('POST', new LambdaIntegration(f))
   }
 
   private createIotPolicy(): CfnPolicy {
@@ -299,7 +346,7 @@ export class InfraStack extends Stack {
     return new NodejsFunction(this, name, {
       functionName: name,
       entry: path.join(__dirname, '../src/', dir, 'index.ts'),
-      runtime: Runtime.NODEJS_14_X,
+      runtime: Runtime.NODEJS_18_X,
       handler,
       memorySize: 1024,
       timeout: Timeouts.lambdaTimeout,

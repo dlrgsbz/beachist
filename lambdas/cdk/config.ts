@@ -20,7 +20,10 @@ export interface EnvironmentProps {
     awsConfig: {
         region: string
         iotDataEndpoint: string
+        certificateArn: string
     }
+    tenant: string
+    domainName: string
 }
 
 export const Timeouts = {
@@ -36,7 +39,10 @@ const PROD: EnvironmentProps = {
     awsConfig: {
         region: 'eu-central-1',
         iotDataEndpoint: requireEnv('IOT_DATA_ENDPOINT'),
-    }
+        certificateArn: 'todo',
+    },
+    tenant: 'dlrgsbz',
+    domainName: requireEnv('DOMAIN_NAME'),
 }
 
 const STAGING: EnvironmentProps = {
@@ -46,7 +52,10 @@ const STAGING: EnvironmentProps = {
     awsConfig: {
         region: 'eu-central-1',
         iotDataEndpoint: requireEnv('IOT_DATA_ENDPOINT'),
-    }
+        certificateArn: 'todo',
+    },
+    tenant: 'beachist',
+    domainName: requireEnv('DOMAIN_NAME'),
 }
 
 const DEV: EnvironmentProps = {
@@ -56,7 +65,10 @@ const DEV: EnvironmentProps = {
     awsConfig: {
         region: 'eu-central-1',
         iotDataEndpoint: requireEnv('IOT_DATA_ENDPOINT'),
-    }
+        certificateArn: 'arn:aws:acm:eu-central-1:431471835287:certificate/897a2a23-8e09-42aa-a480-779e3418ae9a',
+    },
+    tenant: 'beachist',
+    domainName: requireEnv('DOMAIN_NAME'),
 }
 
 export const environmentProps: EnvironmentProps = ((stage?: string): EnvironmentProps => {
@@ -69,4 +81,3 @@ export const environmentProps: EnvironmentProps = ((stage?: string): Environment
         return DEV
     }
   })(process.env.STAGE)
-  

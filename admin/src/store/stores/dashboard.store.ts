@@ -1,6 +1,15 @@
 import { AdminView, StationState } from 'interfaces'
 import { ApiClient, sendEventToWukos } from 'modules/data'
-import { Entry, Field, NetworkEntry, NetworkSpecialEvent, SpecialEvent, SpecialEventType, StationInfo } from 'dtos'
+import {
+  BaseStationInfo,
+  Entry,
+  Field,
+  NetworkEntry,
+  NetworkSpecialEvent,
+  SpecialEvent,
+  SpecialEventType,
+  StationInfo,
+} from 'dtos'
 import { action, observable, runInAction } from 'mobx'
 import moment, { Moment } from 'moment'
 
@@ -133,7 +142,7 @@ class DashboardStore {
 
 function createEntryMap(
   entries: NetworkEntry[],
-  stationMap: Map<string, StationInfo>,
+  stationMap: Map<string, BaseStationInfo>,
   fieldMap: Map<string, Field>,
 ): Map<string, Entry[]> {
   const theEntries: Entry[] = entries.flatMap(entry => {
@@ -166,7 +175,7 @@ interface SpecialEventMap {
 
 function createSpecialEventMap(
   specialEvents: NetworkSpecialEvent[],
-  stationMap: Map<string, StationInfo>,
+  stationMap: Map<string, BaseStationInfo>,
 ): SpecialEventMap {
   const map: SpecialEventMap = { special: [], damage: [] }
 

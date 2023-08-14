@@ -1,4 +1,4 @@
-import { ProvisioningRequest, ProvisioningRequestMap, StationInfo } from 'dtos'
+import { BaseStationInfo, ProvisioningRequest, ProvisioningRequestMap, StationInfo } from 'dtos'
 import { enrichStations, mapStationInfo } from './utils'
 
 import { ApiClient } from 'modules/data'
@@ -7,6 +7,10 @@ import moment from 'moment'
 
 export class AdminService {
   constructor(private apiClient: ApiClient) {}
+
+  public async getStations(): Promise<BaseStationInfo[]> {
+    return this.apiClient.fetchStations()
+  }
 
   public async getStationsWithInfo(): Promise<StationInfo[]> {
     const [stations, stationsInfo] = await Promise.all([

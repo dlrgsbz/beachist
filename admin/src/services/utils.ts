@@ -1,4 +1,4 @@
-import { CrewInfo, StationInfo, StationInfoMap } from 'dtos'
+import { BaseStationInfo, CrewInfo, StationInfo, StationInfoMap } from 'dtos'
 
 import { ApiStationInfo } from 'modules/data/dtos'
 import moment from 'moment'
@@ -18,16 +18,16 @@ export const mapStationInfo = (data: Record<string, ApiStationInfo | null>): Sta
 
 export interface EnrichedStationsOutput {
   stations: StationInfo[]
-  stationMap: Map<string, StationInfo>
+  stationMap: Map<string, BaseStationInfo>
   crews: Map<string, string>
 }
 
 export const enrichStations = (
-  input: StationInfo[],
+  input: BaseStationInfo[],
   stationsInfoMap: StationInfoMap,
   crewInfo: CrewInfo[],
 ): EnrichedStationsOutput => {
-  const stationMap = new Map<string, StationInfo>()
+  const stationMap = new Map<string, BaseStationInfo>()
   const crews = new Map<string, string>()
   const stations = input.map(station => {
     stationMap.set(station.id, station)
@@ -35,7 +35,7 @@ export const enrichStations = (
     if (crew) {
       crews.set(station.id, crew.crew)
     }
-    return { ...station, ...stationsInfoMap[station.id] }
+    return { ...station, ...stationsInfoMap[station.id], appVersion: stationsInfoMap[station.id]?.appVersion ?? '0.0' }
   })
 
   return { stations, stationMap, crews }

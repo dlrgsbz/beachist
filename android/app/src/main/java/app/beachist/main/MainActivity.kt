@@ -41,7 +41,9 @@ class MainActivity : AppCompatActivity(), ServiceConnection {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        bindService(Intent(this, BeachistService::class.java), this, Service.BIND_AUTO_CREATE)
+        val intent = Intent(this, BeachistService::class.java)
+        startService(intent)
+        bindService(intent, this, Service.BIND_AUTO_CREATE)
 
         binding = ActivityMainBinding.inflate(layoutInflater, null, false)
         setupView()

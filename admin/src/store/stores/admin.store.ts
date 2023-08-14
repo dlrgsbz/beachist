@@ -1,10 +1,11 @@
 import { AsyncState, Result, createAsyncState, runWithAsyncState } from 'lib'
-import { ProvisioningRequest, ProvisioningRequestMap, StationInfo } from 'dtos'
+import { BaseStationInfo, ProvisioningRequest, ProvisioningRequestMap, StationInfo } from 'dtos'
 import { action, observable } from 'mobx'
 
 import { AdminService } from 'services'
 
 class AdminStore {
+  @observable baseStationInfoState: AsyncState<BaseStationInfo[]> = createAsyncState([])
   @observable stationsState: AsyncState<StationInfo[]> = createAsyncState([])
   @observable provisionMapState: AsyncState<ProvisioningRequestMap> = createAsyncState({})
   @observable creatProvisioningState: AsyncState<ProvisioningRequest | undefined> = createAsyncState(undefined)
@@ -14,6 +15,11 @@ class AdminStore {
   @action.bound
   async fetchData(): Promise<void> {
     await Promise.all([this.fetchStations(), this.fetchProvisioningRequests()])
+  }
+
+  @action.bound
+  async fetchBaseStationInfos(): Promise<Result<Error, BaseStationInfo[]>> {
+    return runWithAsyncState(this.baseStationInfoState, () => this.adminService.getStations())
   }
 
   @action.bound

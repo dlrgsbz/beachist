@@ -1,22 +1,33 @@
+import { BrnType, publishStationCheck, validateBrn } from '../../lib'
+import { EntryRepository, entryRepository } from '../../repository/entryRepository'
+import { FieldRepository, fieldRepository } from '../../repository/fieldRepository'
 import { IotClient, iotClient } from '../../aws/iot'
+import { StationRepository, stationRepository } from '../../repository/stationRepository'
 
 import { ensureEnv } from '../../util'
-import { getFields } from '../../lib'
-import { logger } from "../../logger"
-import { z } from "zod"
+import { logger } from '../../logger'
+import { z } from 'zod'
+
+const refineStationBrn = (string: string) => validateBrn(string, BrnType.Station)
 
 const schema = z.object({
   iotThingName: z.string(),
-  stationId: z.string().uuid(),
+  stationId: z.string().refine(refineStationBrn),
 })
 
 type GetFieldsInput = z.infer<typeof schema>
 
 export const getFieldsHandler = async (event: Partial<GetFieldsInput>): Promise<void> => {
-  await handler(event, iotClient)
+  await handler(event, iotClient, stationRepository, fieldRepository, entryRepository)
 }
 
-export const handler = async (event: Partial<GetFieldsInput>, iotClient: IotClient): Promise<void> => {
+export const handler = async (
+  event: Partial<GetFieldsInput>,
+  iotClient: IotClient,
+  stationRepository: StationRepository,
+  fieldRepository: FieldRepository,
+  entryRepository: EntryRepository,
+): Promise<void> => {
   try {
     logger.debug(event)
 
@@ -30,13 +41,7 @@ export const handler = async (event: Partial<GetFieldsInput>, iotClient: IotClie
 
     logger.debug(`Field request from ${iotThingName}`)
 
-    const fields = await getFields(stationId)
-
-    const topic = `fields/${iotThingName}`
-
-    logger.debug(`Got ${fields.length} results, publishing to ${topic}`)
-
-    await iotClient.publish(topic, JSON.stringify(fields), true)
+    await publishStationCheck(stationId, iotThingName, stationRepository, fieldRepository, entryRepository, iotClient)
   } catch (err) {
     if (err instanceof Error) {
       logger.error(JSON.stringify(err))

@@ -1,6 +1,7 @@
 import { AccessTokenNotFound, AuthService } from 'context/AuthServiceContext'
 import { ApiProvisioningRequest, ApiStationInfo } from './dtos'
 import {
+  BaseStationInfo,
   CrewInfo,
   EventEntry,
   Field,
@@ -31,7 +32,29 @@ export interface HttpResponse<T> {
   status: number
 }
 
-export class ApiClient {
+export interface ApiClient {
+  fetchStations(): Promise<BaseStationInfo[]>
+
+  fetchStationInfo(): Promise<Record<string, ApiStationInfo | null>>
+
+  fetchProvisioningRequests(): Promise<Record<string, ApiProvisioningRequest>>
+
+  createProvisioningRequest(stationId: string): Promise<ApiProvisioningRequest>
+
+  fetchFields(): Promise<Field[]>
+
+  fetchEntries(date: moment.Moment): Promise<NetworkEntry[]>
+
+  fetchEvents(date: moment.Moment): Promise<EventEntry>
+
+  fetchSpecialEvents(date: moment.Moment): Promise<NetworkSpecialEvent[]>
+
+  fetchCrews(date: moment.Moment): Promise<CrewInfo[]>
+
+  fetchLoginToken(): Promise<string>
+}
+
+export class ApiClientImpl implements ApiClient {
   constructor(private authService: AuthService) {}
 
   private async request<T>(url: string, method: 'POST' | 'GET', options?: HttpOptions): Promise<HttpResponse<T>> {
@@ -77,59 +100,59 @@ export class ApiClient {
     return this.request(url, 'POST', requestOptions)
   }
 
-  public async fetchStations(): Promise<StationInfo[]> {
+  async fetchStations(): Promise<StationInfo[]> {
     const data = await this.get<StationInfo[]>('/api/station')
     return data.data
   }
 
-  public async fetchStationInfo(): Promise<Record<string, ApiStationInfo | null>> {
+  async fetchStationInfo(): Promise<Record<string, ApiStationInfo | null>> {
     const data = await this.get<Record<string, ApiStationInfo | null>>('/api/station/info')
     return data.data
   }
 
-  public async fetchProvisioningRequests(): Promise<Record<string, ApiProvisioningRequest>> {
+  async fetchProvisioningRequests(): Promise<Record<string, ApiProvisioningRequest>> {
     const data = await this.get<Record<string, ApiProvisioningRequest>>('/api/provision')
     return data.data
   }
 
-  public async createProvisioningRequest(stationId: string): Promise<ApiProvisioningRequest> {
+  async createProvisioningRequest(stationId: string): Promise<ApiProvisioningRequest> {
     const data = await this.post<ApiProvisioningRequest>(`/api/provision/${stationId}`)
     return data.data
   }
 
-  public async fetchFields(): Promise<Field[]> {
+  async fetchFields(): Promise<Field[]> {
     const data = await this.get<Field[]>('/api/field')
     return data.data
   }
 
-  public async fetchEntries(date: moment.Moment): Promise<NetworkEntry[]> {
+  async fetchEntries(date: moment.Moment): Promise<NetworkEntry[]> {
     const dateString = date.format('Y-MM-DD')
     const data = await this.get<NetworkEntry[]>(`/api/entry/${dateString}`)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return data.data.map((dt: any) => ({ ...dt, date: moment(dt.date) }))
   }
 
-  public async fetchEvents(date: moment.Moment): Promise<EventEntry> {
+  async fetchEvents(date: moment.Moment): Promise<EventEntry> {
     const dateString = date.format('Y-MM-DD')
     const data = await this.get<EventEntry>(`/api/event/${dateString}`)
     return { ...data.data, date: moment(data.data.date) }
   }
 
-  public async fetchSpecialEvents(date: moment.Moment): Promise<NetworkSpecialEvent[]> {
+  async fetchSpecialEvents(date: moment.Moment): Promise<NetworkSpecialEvent[]> {
     const dateString = date.format('Y-MM-DD')
     const data = await this.get<NetworkSpecialEvent[]>(`/api/special/${dateString}`)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return data.data.map((dt: any) => ({ ...dt, date: moment(dt.date) }))
   }
 
-  public async fetchCrews(date: moment.Moment): Promise<CrewInfo[]> {
+  async fetchCrews(date: moment.Moment): Promise<CrewInfo[]> {
     const dateString = date.format('Y-MM-DD')
     const data = await this.get<CrewInfo[]>(`/api/crew/${dateString}`)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return data.data.map((dt: any) => ({ ...dt, date: moment(dt.date) }))
   }
 
-  public async fetchLoginToken() {
+  async fetchLoginToken() {
     const data = await this.get<{ token: string }>('/auth/link')
     return data.data.token
   }

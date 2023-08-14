@@ -53,6 +53,9 @@ const Navigation = () => {
           <Restricted permission={Permission.admin}>
             <Navlink target="/admin/station">Stationsverwaltung</Navlink>
           </Restricted>
+          <Restricted permission={Permission.admin}>
+            <Navlink target="/admin/material">Materialverwaltung</Navlink>
+          </Restricted>
         </ul>
         <ul className="nav navbar-nav flex-row justify-content-between ml-auto">
           <QrButton />
