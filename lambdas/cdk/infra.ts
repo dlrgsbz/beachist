@@ -55,6 +55,7 @@ export class InfraStack extends Stack {
     this.createLastWillTopic()
     this.createGetUviHandler()
     this.createGetWeatherHandler()
+    this.createGetWaterTempHandler()
   }
 
   private createLastWillTopic() {
@@ -208,6 +209,18 @@ export class InfraStack extends Stack {
 
     addIotPublishToTopicRole(weatherHandler)
     addSsmReadRole(weatherHandler)
+  }
+
+  private createGetWaterTempHandler() {
+    const waterTempHandler = this.lambdaFunction(
+        `${this.props.prefix}-water-temp`,
+        path.join('cron', 'get-water-temp'),
+        `getWaterTempHandler`,
+        this.lambdaEnvs,
+    )
+
+    addIotPublishToTopicRole(waterTempHandler)
+    addSsmReadRole(waterTempHandler)
   }
 
   private createInfoHandler() {
