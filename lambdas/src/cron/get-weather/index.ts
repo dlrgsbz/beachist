@@ -16,10 +16,13 @@ export const getWeather = async (iotClient: IotClient, ssmClient: SSMClient): Pr
 
   const { data } = response
 
+  const timestamp = new Date(data.time).toISOString()
+
   const weatherInfo = {
     temperature: Math.round(data.temperature / 10),
     windBft: windTenthKmhToBft(data.meanwind),
     windDirection: windDirectionFromDegree(data.winddirection),
+    timestamp,
   }
 
   const topic = 'shared/weather/air'

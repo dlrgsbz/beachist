@@ -21,15 +21,21 @@ export const getWaterTemp = async (iotClient: IotClient, ssmClient: SSMClient): 
   const stationId= await ssmClient.getParameter('/beachist/bsh/station-id')
   const stationInfo = response.data[stationId]
 
-  const waterTempData = stationInfo.sstdata[1]
+  const sstdata = stationInfo.sstdata
+  const timestamp = new Date(sstdata[0][0]).toISOString()
+  const waterTempData = sstdata[1]
 
   const waterTemp = waterTempData[waterTempData.length - 1]
+  const data = {
+    waterTemp,
+    timestamp,
+  }
 
   const topic = 'shared/weather/water'
 
   logger.debug(`got water temp: ${waterTemp}ºC, publishing to ${topic}`)
 
-  await iotClient.publish(topic, JSON.stringify({ waterTemp }), true)
+  await iotClient.publish(topic, JSON.stringify(data), true)
 }
 
 interface BshResponse {
