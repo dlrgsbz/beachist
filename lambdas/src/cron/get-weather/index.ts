@@ -2,6 +2,7 @@ import { type IotClient, iotClient } from "../../aws/iot";
 import { type SSMClient, ssmClient } from "../../aws/ssm";
 
 import axios from "axios";
+import { formatIso8601DateTime } from "../../util";
 import { logger } from "../../logger";
 
 export const getWeatherHandler = (): Promise<void> => {
@@ -16,7 +17,7 @@ export const getWeather = async (iotClient: IotClient, ssmClient: SSMClient): Pr
 
   const { data } = response
 
-  const timestamp = new Date(data.time).toISOString()
+  const timestamp = formatIso8601DateTime(new Date(data.time))
 
   const weatherInfo = {
     temperature: Math.round(data.temperature / 10),

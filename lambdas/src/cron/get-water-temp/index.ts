@@ -2,6 +2,7 @@ import { type IotClient, iotClient } from "../../aws/iot";
 import { type SSMClient, ssmClient } from "../../aws/ssm";
 
 import axios from "axios";
+import { formatIso8601DateTime } from "../../util";
 import { logger } from "../../logger";
 
 export const getWaterTempHandler = (): Promise<void> => {
@@ -22,7 +23,7 @@ export const getWaterTemp = async (iotClient: IotClient, ssmClient: SSMClient): 
   const stationInfo = response.data[stationId]
 
   const sstdata = stationInfo.sstdata
-  const timestamp = new Date(sstdata[0][0]).toISOString()
+  const timestamp = formatIso8601DateTime(new Date(sstdata[0][0]))
   const waterTempData = sstdata[1]
 
   const waterTemp = waterTempData[waterTempData.length - 1]

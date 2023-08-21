@@ -1,5 +1,6 @@
 import { IotClient, iotClient } from "../../aws/iot";
 import { SSMClient, ssmClient } from "../../aws/ssm";
+import { formatIso8601Date, formatIso8601DateTime } from "../../util";
 
 import axios from "axios";
 import { logger } from "../../logger";
@@ -23,7 +24,7 @@ export const handler = async (ssmClient: SSMClient, iotClient: IotClient): Promi
     const uvInfo = {
         uv: data.result.uv,
         maxUv: data.result.uv_max,
-        timestamp: data.result.uv_time,
+        timestamp: formatIso8601DateTime(new Date(data.result.uv_time)),
     }
 
     const topic = 'shared/weather/uvi'
