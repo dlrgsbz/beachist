@@ -1,8 +1,8 @@
 import { IotClient, iotClient } from "../../aws/iot";
 import { SSMClient, ssmClient } from "../../aws/ssm";
-import { formatIso8601Date, formatIso8601DateTime } from "../../util";
 
 import axios from "axios";
+import { formatIso8601DateTime } from "../../util";
 import { logger } from "../../logger";
 
 export const getUviHandler = async (): Promise<void> => {
