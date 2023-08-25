@@ -10,8 +10,9 @@ apply from: "../gradle/readProps.gradle"
 apply from: "../gradle/buildVersion.gradle"
 
 android {
-    compileSdkVersion compile_sdk_version
-    buildToolsVersion "30.0.3"
+    defaultConfig {
+        compileSdk compile_sdk_version
+    }
 
     defaultConfig {
         applicationId "app.beachist.dev"
