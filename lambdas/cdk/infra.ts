@@ -345,10 +345,18 @@ export class InfraStack extends Stack {
           }),
           new PolicyStatement({
             effect: Effect.ALLOW,
+            actions: ['iot:Receive'],
+            resources: [
+              `arn:aws:iot:${Stack.of(this).region}:${Stack.of(this).account}:topicfilter/shared/*`,
+            ],
+          }),
+          new PolicyStatement({
+            effect: Effect.ALLOW,
             actions: ['iot:Subscribe'],
             resources: [
               `arn:aws:iot:${Stack.of(this).region}:${Stack.of(this).account}:topicfilter/$aws/things/\${iot:ClientId}/*`,
               `arn:aws:iot:${Stack.of(this).region}:${Stack.of(this).account}:topicfilter/\${iot:ClientId}/*`,
+              `arn:aws:iot:${Stack.of(this).region}:${Stack.of(this).account}:topicfilter/shared/*`,
             ],
           }),
         ],
