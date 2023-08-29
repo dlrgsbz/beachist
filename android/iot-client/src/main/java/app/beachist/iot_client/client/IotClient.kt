@@ -164,7 +164,6 @@ class IotClient(private val gson: Gson, private val tempDirectory: String) : Cor
         launch {
             runCatching {
                 connection?.subscribeToTopic(topic, AWSIotMqttQos.QOS1) { topic, data ->
-                    // todo: parse directly to data from type
                     val string = String(data, Charset.forName("UTF-8"))
                     Timber.tag(LOG_TAG).d("message on topic $topic, message: $string")
                     action(string)
