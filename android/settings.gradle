@@ -9,6 +9,7 @@ include ':iot'
 include ':event'
 include ':special-event'
 include ':station-check'
+include ':weather'
 include ':app'
 
 rootProject.name = "Beachist"

@@ -22,4 +22,10 @@
         android:name="app.beachist.special_event.list.SpecialEventsFragment"
         android:label="@string/title_special_events"
         tools:layout="@layout/fragment_special_events" />
+
+    <fragment
+        android:id="@+id/navigation_weather"
+        android:name="app.beachist.weather.view.WeatherFragment"
+        android:label="@string/title_weather"
+        tools:layout="@layout/fragment_weather" />
 </navigation>

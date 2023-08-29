@@ -41,7 +41,7 @@ android {
         // todo: https://github.com/jlleitschuh/ktlint-gradle#how-to-use
         // todo: https://github.com/detekt/detekt
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
         }
@@ -68,6 +68,7 @@ dependencies {
     implementation project(':event')
     implementation project(':special-event')
     implementation project(':station-check')
+    implementation project(':weather')
 
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
