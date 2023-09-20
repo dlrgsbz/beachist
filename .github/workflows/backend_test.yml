@@ -9,7 +9,7 @@ jobs:
 
     services:
       mariadb:
-        image: mariadb
+        image: mariadb:lts
         env:
           MARIADB_USER: user
           MARIADB_PASSWORD: verysecret
