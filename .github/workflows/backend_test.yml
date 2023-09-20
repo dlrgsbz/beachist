@@ -21,7 +21,7 @@ jobs:
         - 3306:3306
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       
     - name: composer install
       uses: php-actions/composer@v6

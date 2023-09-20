@@ -65,7 +65,7 @@ jobs:
         run: npm ci
         working-directory: lambdas
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v3
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           audience: sts.amazonaws.com
           role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_ARN }}
