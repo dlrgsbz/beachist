@@ -9,6 +9,7 @@ on:
     - 'lambdas/.nvmrc'
     - 'lambdas/cdk.json'
     - 'lambdas/package-lock.json'
+    - '.github/workflows/lambda_test.yml'
 
 jobs:
   build:
