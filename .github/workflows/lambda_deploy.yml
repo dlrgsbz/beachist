@@ -1,0 +1,72 @@
+name: deploy lambdas
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency: 
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ deploy_workflow, main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: 'lambdas/.nvmrc'
+          cache: 'npm'
+      - name: install dependencies
+        run: npm ci
+        working-directory: lambdas
+      - name: build
+        run: npm run build
+        working-directory: lambdas
+      - name: upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: beachist-artifact
+          path: lambdas/build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        stage: ['STAGING', 'PROD']
+      fail-fast: true
+      max-parallel: 1
+    environment:
+      name: ${{ matrix.stage }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: beachist-artifact
+          path: lambdas/build
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: 'lambdas/.nvmrc'
+          cache: 'npm'
+      - name: install dependencies
+        run: npm ci
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          audience: sts.amazonaws.com
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_ARN }}
+          aws-region: eu-central-1
+      - name: get_lowercase_env
+        run: |
+          echo "lowercase_env=$(echo "${{ matrix.stage }}" | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+      - name: cdk deploy
+        run: npm run deploy-only
+        env:
+          STAGE: ${{ steps.get_lowercase_env.outputs.lowercase_env }}
