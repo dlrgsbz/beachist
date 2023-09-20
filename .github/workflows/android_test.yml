@@ -58,8 +58,11 @@ jobs:
       - name: run tests on emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
+          arch: x86_64
+          force-avd-creation: false
+          avd-name: macOS-avd-x86_64-31
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
           api-level: 30
-          arch: arm64-v8a
           script: ./gradlew connectedDebugAndroidTest --stacktrace
           working-directory: android
-          avd-name: macOS-avd-arm64-v8a-30
