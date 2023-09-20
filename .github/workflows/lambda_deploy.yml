@@ -72,3 +72,5 @@ jobs:
         working-directory: lambdas
         env:
           STAGE: ${{ steps.get_lowercase_env.outputs.lowercase_env }}
+          BACKEND_URL: ${{ secrets.APP_BACKEND_URL }}
+          IOT_DATA_ENDPOINT: ${{ secrets.IOT_DATA_ENDPOINT }}
