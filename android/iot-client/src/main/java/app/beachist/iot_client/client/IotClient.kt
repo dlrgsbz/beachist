@@ -3,6 +3,7 @@ package app.beachist.iot_client.client
 import android.annotation.SuppressLint
 import com.amazonaws.mobileconnectors.iot.*
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
 import kotlinx.coroutines.CoroutineScope
@@ -163,9 +164,33 @@ class IotClient(private val gson: Gson, private val tempDirectory: String) : Cor
         launch {
             runCatching {
                 connection?.subscribeToTopic(topic, AWSIotMqttQos.QOS1) { topic, data ->
-                    Timber.tag(LOG_TAG).d("message on topic $topic")
-                    // todo: parse directly to data from type
-                    action(String(data, Charset.forName("UTF-8")))
+                    val string = String(data, Charset.forName("UTF-8"))
+                    Timber.tag(LOG_TAG).d("message on topic $topic, message: $string")
+                    action(string)
+                }
+            }.onSuccess {
+                statusCallback(MqttSubscriptionStatus.Success)
+            }.onFailure {
+                Timber.tag(LOG_TAG).e(it, "Failed to subscribe to $topic")
+                statusCallback(MqttSubscriptionStatus.Error(it))
+            }
+        }
+    }
+
+    @Synchronized
+    fun <T>subscribeDecoding(
+        topic: String,
+        clazz: Class<T>,
+        statusCallback: IotClientAction<MqttSubscriptionStatus>,
+        action: IotClientAction<T>,
+    ) {
+        launch {
+            runCatching {
+                connection?.subscribeToTopic(topic, AWSIotMqttQos.QOS1) { topic, data ->
+                    val string = String(data, Charset.forName("UTF-8"))
+                    Timber.tag(LOG_TAG).d("message on topic $topic, message: $string")
+
+                    action(gson.fromJson(string, clazz))
                 }
             }.onSuccess {
                 statusCallback(MqttSubscriptionStatus.Success)

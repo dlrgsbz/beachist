@@ -11,6 +11,7 @@ import app.beachist.provision.provisionModule
 import app.beachist.shared.sharedModule
 import app.beachist.special_event.specialEventsModule
 import app.beachist.station_check.stationCheckModule
+import app.beachist.weather.weatherModule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
@@ -34,6 +35,7 @@ class BeachistApp : Application() {
                 authModule,
                 crewModule,
                 specialEventsModule,
+                weatherModule,
                 appModule,
             )
         }

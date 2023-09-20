@@ -1,0 +1,10 @@
+<resources>
+    <string name="weather_air_temperature_title">Lufttemperatur</string>
+    <string name="weather_water_temperature_title">Wassertemperatur</string>
+    <string name="weather_wind_speed_title">Windstärke</string>
+    <string name="weather_wind_direction_title">Windrichtung</string>
+    <string name="weather_uv_title">UV-Index</string>
+    <string name="weather_max_uv_title">maximaler UV-Index am Mittag</string>
+    <string name="weather_no_data">keine Daten</string>
+    <string name="weather_date_caption">Daten vom %s</string>
+</resources>

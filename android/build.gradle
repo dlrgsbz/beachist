@@ -1,5 +1,7 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 buildscript {
-    ext.kotlin_version = "1.6.21"
+    ext.kotlin_version = "1.8.22"
 
     repositories {
         google()
@@ -9,7 +11,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:7.2.1"
+        classpath 'com.android.tools.build:gradle:7.4.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
 
@@ -37,17 +39,19 @@ allprojects {
 }
 
 ext {
-    compile_sdk_version = 31
-    target_sdk_version = 31
+    compile_sdk_version = 34
+    target_sdk_version = 33
     min_sdk_version = 30
     koin_version = "3.1.5"
-    room_version = "2.4.2"
+    room_version = "2.5.2"
     lifecycle_version = "2.5.0"
     timber_version = "5.0.1"
     rxjava_version = "2.2.10"
     rxkotlin_version = "2.3.0"
     rxandroid_version = "2.1.1"
     gson_version = "2.9.0"
+    compose_version = "1.5.0"
+    compose_ext_version = "1.4.8"
 }
 
 task clean(type: Delete) {

@@ -1,6 +1,7 @@
 import * as path from 'path'
 
 import { Effect, PolicyDocument, PolicyStatement } from 'aws-cdk-lib/aws-iam'
+import { Rule as EventRule, Schedule } from 'aws-cdk-lib/aws-events'
 import { IotRepublishMqttAction, LambdaFunctionAction, MqttQualityOfService } from '@aws-cdk/aws-iot-actions-alpha'
 import { IotSql, TopicRule } from '@aws-cdk/aws-iot-alpha'
 import { Function as LambdaFunction, Runtime } from 'aws-cdk-lib/aws-lambda'
@@ -8,6 +9,7 @@ import { Stage, Timeouts, environmentProps } from './config'
 
 import { CfnPolicy } from 'aws-cdk-lib/aws-iot'
 import { Construct } from 'constructs'
+import { LambdaFunction as LambdaFunctionTarget } from 'aws-cdk-lib/aws-events-targets'
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs'
 import { Stack } from 'aws-cdk-lib'
 import { StackProps } from './cdk'
@@ -53,6 +55,9 @@ export class InfraStack extends Stack {
     this.createInfoHandler()
     this.createUpdateCrewHandler()
     this.createLastWillTopic()
+    this.createGetUviHandler()
+    this.createGetWeatherHandler()
+    this.createGetWaterTempHandler()
   }
 
   private createLastWillTopic() {
@@ -184,6 +189,62 @@ export class InfraStack extends Stack {
     })
   }
 
+  private createGetUviHandler() {
+    const uviHandler = this.lambdaFunction(
+        `${this.props.prefix}-uvi`,
+        path.join('cron', 'get-uvi'),
+        `getUviHandler`,
+        this.lambdaEnvs,
+    )
+
+    addIotPublishToTopicRole(uviHandler)
+    addSsmReadRole(uviHandler)
+
+    if (this.props.stage === Stage.PROD) {
+      const rulePrefix = `${this.props.prefix}-uvi`;
+      const hour = '7-15' // UTC
+      this.addSeasonCronRule(rulePrefix, uviHandler, hour);
+    }
+  }
+
+  private createGetWeatherHandler() {
+    const weatherHandler = this.lambdaFunction(
+        `${this.props.prefix}-weather`,
+        path.join('cron', 'get-weather'),
+        `getWeatherHandler`,
+        this.lambdaEnvs,
+    )
+
+    addIotPublishToTopicRole(weatherHandler)
+    addSsmReadRole(weatherHandler)
+
+    if (this.props.stage === Stage.PROD) {
+      const rulePrefix = `${this.props.prefix}-weather`;
+      const hour = '7-15' // UTC
+      const minute = '55'
+      this.addSeasonCronRule(rulePrefix, weatherHandler, hour, minute);
+    }
+  }
+
+  private createGetWaterTempHandler() {
+    const waterTempHandler = this.lambdaFunction(
+        `${this.props.prefix}-water-temp`,
+        path.join('cron', 'get-water-temp'),
+        `getWaterTempHandler`,
+        this.lambdaEnvs,
+    )
+
+    addIotPublishToTopicRole(waterTempHandler)
+    addSsmReadRole(waterTempHandler)
+
+    if (this.props.stage === Stage.PROD) {
+      const rulePrefix = `${this.props.prefix}-water`;
+      const hour = '7' // UTC
+      const minute = '15'
+      this.addSeasonCronRule(rulePrefix, waterTempHandler, hour, minute);
+    }
+  }
+
   private createInfoHandler() {
     const appInfoUpdatedHandler = this.lambdaFunction(
       `${this.props.prefix}-app-info-updated`,
@@ -284,15 +345,52 @@ export class InfraStack extends Stack {
           }),
           new PolicyStatement({
             effect: Effect.ALLOW,
+            actions: ['iot:Receive'],
+            resources: [
+              `arn:aws:iot:${Stack.of(this).region}:${Stack.of(this).account}:topicfilter/shared/*`,
+            ],
+          }),
+          new PolicyStatement({
+            effect: Effect.ALLOW,
             actions: ['iot:Subscribe'],
             resources: [
               `arn:aws:iot:${Stack.of(this).region}:${Stack.of(this).account}:topicfilter/$aws/things/\${iot:ClientId}/*`,
               `arn:aws:iot:${Stack.of(this).region}:${Stack.of(this).account}:topicfilter/\${iot:ClientId}/*`,
+              `arn:aws:iot:${Stack.of(this).region}:${Stack.of(this).account}:topicfilter/shared/*`,
             ],
           }),
         ],
       }),
     })
+  }
+
+  private addSeasonCronRule(rulePrefix: string, f: LambdaFunction, hour: string, minute = '30') {
+    const mainRule = new EventRule(this, `${rulePrefix}-main-rule`, {
+      schedule: Schedule.cron({
+        month: '6,7,8',
+        hour,
+        minute,
+      }),
+    });
+    mainRule.addTarget(new LambdaFunctionTarget(f))
+    const preRule = new EventRule(this, `${rulePrefix}-pre-rule`, {
+      schedule: Schedule.cron({
+        day: '15-31',
+        month: '5',
+        hour,
+        minute,
+      }),
+    });
+    preRule.addTarget(new LambdaFunctionTarget(f))
+    const postRule = new EventRule(this, `${rulePrefix}-post-rule`, {
+      schedule: Schedule.cron({
+        day: '1-15',
+        month: '9',
+        hour,
+        minute,
+      }),
+    });
+    postRule.addTarget(new LambdaFunctionTarget(f))
   }
 
   private lambdaFunction(name: string, dir: string, handler: string, environment: LambdaEnvs): LambdaFunction {
@@ -329,5 +427,15 @@ const addIotPublishToTopicRole = (f: LambdaFunction) => {
       resources: ['*'],
       effect: Effect.ALLOW,
     }),
+  )
+}
+
+const addSsmReadRole = (f: LambdaFunction) => {
+  f.addToRolePolicy(
+      new PolicyStatement({
+        actions: ['ssm:GetParameter', 'ssm:GetParameters'],
+        resources: ['*'],
+        effect: Effect.ALLOW,
+      }),
   )
 }

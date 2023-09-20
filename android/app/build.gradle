@@ -10,8 +10,9 @@ apply from: "../gradle/readProps.gradle"
 apply from: "../gradle/buildVersion.gradle"
 
 android {
-    compileSdkVersion compile_sdk_version
-    buildToolsVersion "30.0.3"
+    defaultConfig {
+        compileSdk compile_sdk_version
+    }
 
     defaultConfig {
         applicationId "app.beachist.dev"
@@ -40,7 +41,7 @@ android {
         // todo: https://github.com/jlleitschuh/ktlint-gradle#how-to-use
         // todo: https://github.com/detekt/detekt
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
         }
@@ -67,6 +68,7 @@ dependencies {
     implementation project(':event')
     implementation project(':special-event')
     implementation project(':station-check')
+    implementation project(':weather')
 
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"

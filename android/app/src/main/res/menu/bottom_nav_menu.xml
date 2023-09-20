@@ -16,4 +16,9 @@
         android:icon="@drawable/ic_baseline_warning_24"
         android:title="@string/title_special_events" />
 
+    <item
+        android:id="@+id/navigation_weather"
+        android:icon="@drawable/outline_wb_sunny_24"
+        android:title="@string/title_weather" />
+
 </menu>
