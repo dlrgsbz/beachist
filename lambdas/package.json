@@ -30,8 +30,8 @@
     "typescript": "^4.7.4"
   },
   "dependencies": {
-    "@aws-sdk/client-iot": "^3.154.0",
-    "@aws-sdk/client-iot-data-plane": "^3.154.0",
+    "@aws-sdk/client-iot": "^3.414.0",
+    "@aws-sdk/client-iot-data-plane": "^3.414.0",
     "@aws-sdk/client-ssm": "^3.154.0",
     "axios": "^0.25.0",
     "date-fns": "^2.29.2",
