@@ -12,6 +12,12 @@ on:
   workflow_dispatch:
   push:
     branches: [ main ]
+    paths:
+    - 'lambdas/cdk/**'
+    - 'lambdas/src/**'
+    - 'lambdas/.nvmrc'
+    - 'lambdas/cdk.json'
+    - 'lambdas/package-lock.json'
 
 jobs:
   build:
