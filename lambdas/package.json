@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc --build",
     "deploy": "npm install && npm run build && npx cdk deploy beachist-$STAGE --require-approval never --exclusively -c stage=$STAGE",
-    "deploy-pipeline": "npm install && npm run build && npx cdk deploy beachist-$STAGE-pipeline --require-approval never -c stage=$STAGE",
+    "deploy-only": "npx cdk deploy beachist-$STAGE --require-approval never --exclusively -c stage=$STAGE",
     "lint": "eslint --cache --ext '.js,.ts' ./src/ ./cdk/"
   },
   "author": "",
