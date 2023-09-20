@@ -1,0 +1,33 @@
+name: test lambdas
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+    - 'lambdas/cdk/**'
+    - 'lambdas/src/**'
+    - 'lambdas/.nvmrc'
+    - 'lambdas/cdk.json'
+    - 'lambdas/package-lock.json'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: 'lambdas/.nvmrc'
+          cache: 'npm'
+      - name: install dependencies
+        run: npm ci
+        working-directory: lambdas
+      - name: test
+        run: npm run lint
+        working-directory: lambdas
+      - name: test
+        run: npm test
+        working-directory: lambdas
+      - name: build
+        run: npm run build
+        working-directory: lambdas
