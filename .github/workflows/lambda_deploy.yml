@@ -57,6 +57,7 @@ jobs:
           cache: 'npm'
       - name: install dependencies
         run: npm ci
+        working-directory: lambdas
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
@@ -68,5 +69,6 @@ jobs:
           echo "lowercase_env=$(echo "${{ matrix.stage }}" | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
       - name: cdk deploy
         run: npm run deploy-only
+        working-directory: lambdas
         env:
           STAGE: ${{ steps.get_lowercase_env.outputs.lowercase_env }}
