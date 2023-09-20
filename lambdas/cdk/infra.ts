@@ -1,10 +1,11 @@
+import * as fs from 'fs'
 import * as path from 'path'
 
 import { Effect, PolicyDocument, PolicyStatement } from 'aws-cdk-lib/aws-iam'
 import { Rule as EventRule, Schedule } from 'aws-cdk-lib/aws-events'
 import { IotRepublishMqttAction, LambdaFunctionAction, MqttQualityOfService } from '@aws-cdk/aws-iot-actions-alpha'
 import { IotSql, TopicRule } from '@aws-cdk/aws-iot-alpha'
-import { Function as LambdaFunction, Runtime } from 'aws-cdk-lib/aws-lambda'
+import { Function as LambdaFunction, Runtime, RuntimeFamily } from 'aws-cdk-lib/aws-lambda'
 import { Stage, Timeouts, environmentProps } from './config'
 
 import { CfnPolicy } from 'aws-cdk-lib/aws-iot'
@@ -26,6 +27,8 @@ interface LambdaEnvs {
 export class InfraStack extends Stack {
   private readonly props: StackProps
 
+  private readonly nodeVersion: string
+
   private readonly lambdaEnvs: LambdaEnvs
 
   private readonly getThingShadowRoleArn: string
@@ -33,6 +36,8 @@ export class InfraStack extends Stack {
   constructor(scope: Construct, id: string, props: StackProps) {
     super(scope, id)
     this.props = props
+
+    this.nodeVersion = fs.readFileSync(path.join(__dirname, '../', '.nvmrc'), 'utf-8').replace('\n', '');
 
     this.getThingShadowRoleArn = `'arn:aws:iam::${this.account}:role/get-thing-shadow'`
 
@@ -397,7 +402,7 @@ export class InfraStack extends Stack {
     return new NodejsFunction(this, name, {
       functionName: name,
       entry: path.join(__dirname, '../src/', dir, 'index.ts'),
-      runtime: Runtime.NODEJS_14_X,
+      runtime: new Runtime(`nodejs${this.nodeVersion}.x`, RuntimeFamily.NODEJS),
       handler,
       memorySize: 1024,
       timeout: Timeouts.lambdaTimeout,
