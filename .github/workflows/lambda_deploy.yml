@@ -11,7 +11,7 @@ concurrency:
 on:
   workflow_dispatch:
   push:
-    branches: [ deploy_workflow, main ]
+    branches: [ main ]
 
 jobs:
   build:
