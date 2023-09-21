@@ -16,7 +16,7 @@ jobs:
       changes: ${{ steps.changes.outputs.android }}
     steps:
       - name: Checkout the code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - uses: dorny/paths-filter@v2
         id: changes
         with:
@@ -38,7 +38,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Tag release
         if: matrix.env == 'STAGING'
