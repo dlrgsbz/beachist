@@ -22,7 +22,7 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Checkout the code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - uses: actions/setup-java@v3
         with:
           distribution: 'zulu' # See 'Supported distributions' for available options
@@ -44,7 +44,7 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Checkout the code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - uses: actions/setup-java@v3
         with:
           distribution: 'zulu' # See 'Supported distributions' for available options
