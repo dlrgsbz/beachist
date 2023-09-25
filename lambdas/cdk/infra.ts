@@ -1,6 +1,7 @@
 import * as fs from 'fs'
 import * as path from 'path'
 
+import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from 'aws-cdk-lib/custom-resources'
 import { Effect, PolicyDocument, PolicyStatement } from 'aws-cdk-lib/aws-iam'
 import { Rule as EventRule, Schedule } from 'aws-cdk-lib/aws-events'
 import { IotRepublishMqttAction, LambdaFunctionAction, MqttQualityOfService } from '@aws-cdk/aws-iot-actions-alpha'
@@ -46,7 +47,7 @@ export class InfraStack extends Stack {
     this.lambdaEnvs = {
       STAGE: environmentProps.stage,
       BACKEND_URL: environmentProps.backendUrl,
-      IOT_DATA_ENDPOINT: environmentProps.awsConfig.iotDataEndpoint,
+      IOT_DATA_ENDPOINT: this.getIotEndpoint(),
       LOG_LEVEL: environmentProps.logLevel,
       AWS_ACCOUNT_ID: Stack.of(this).account,
       IOT_POLICY_NAME: iotPolicy.policyName!,
@@ -412,6 +413,22 @@ export class InfraStack extends Stack {
         sourceMap: this.props.stage === Stage.DEV,
       },
     })
+  }
+
+  private getIotEndpoint(): string {
+    const resource = new AwsCustomResource(this, 'IoTEndpoint', {
+      onCreate: {
+          service: 'Iot',
+          action: 'describeEndpoint',
+          physicalResourceId: PhysicalResourceId.fromResponse('endpointAddress'),
+          parameters: {
+            endpointType: "iot:Data-ATS"
+          }
+      },
+      policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE})
+    });
+
+    return resource.getResponseField('endpointAddress')
   }
 }
 

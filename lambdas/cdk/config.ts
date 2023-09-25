@@ -19,7 +19,6 @@ export interface EnvironmentProps {
     backendUrl: string
     awsConfig: {
         region: string
-        iotDataEndpoint: string
     }
 }
 
@@ -35,7 +34,6 @@ const PROD: EnvironmentProps = {
     backendUrl: requireEnv('BACKEND_URL'),
     awsConfig: {
         region: 'eu-central-1',
-        iotDataEndpoint: requireEnv('IOT_DATA_ENDPOINT'),
     }
 }
 
@@ -45,7 +43,6 @@ const STAGING: EnvironmentProps = {
     backendUrl: requireEnv('BACKEND_URL'),
     awsConfig: {
         region: 'eu-central-1',
-        iotDataEndpoint: requireEnv('IOT_DATA_ENDPOINT'),
     }
 }
 
@@ -55,7 +52,6 @@ const DEV: EnvironmentProps = {
     backendUrl: requireEnv('BACKEND_URL'),
     awsConfig: {
         region: 'eu-central-1',
-        iotDataEndpoint: requireEnv('IOT_DATA_ENDPOINT'),
     }
 }
 
