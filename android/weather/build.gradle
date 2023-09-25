@@ -5,12 +5,8 @@ apply plugin: 'kotlinx-serialization'
 android {
     namespace 'app.beachist.weather'
 
-    defaultConfig {
-        javaCompileOptions {
-            annotationProcessorOptions {
-                arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
-            }
-        }
+    ksp {
+        arg("room.schemaLocation", "$projectDir/schemas".toString())
     }
 
     buildFeatures {
@@ -38,7 +34,7 @@ dependencies {
     implementation "androidx.room:room-ktx:$room_version"
     implementation "androidx.room:room-rxjava2:$room_version"
     implementation 'androidx.core:core-i18n:1.0.0-alpha01'
-    kapt "androidx.room:room-compiler:$room_version"
+    ksp "androidx.room:room-compiler:$room_version"
 
     implementation "androidx.compose.runtime:runtime:$compose_version"
     implementation "androidx.compose.ui:ui:$compose_version"
