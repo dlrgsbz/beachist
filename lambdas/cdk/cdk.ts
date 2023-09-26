@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 import { App } from 'aws-cdk-lib';
-import { CodebuildStack } from './pipeline';
 import { InfraStack } from './infra';
 import { Stage } from './config';
 
@@ -27,7 +26,6 @@ const setup = async () => {
         stage,
     };
 
-    new CodebuildStack(app, `${stackProps.prefix}-pipeline`, stackProps);
     new InfraStack(app, stackProps.prefix, stackProps);
 };
 
