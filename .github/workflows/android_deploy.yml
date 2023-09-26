@@ -51,7 +51,7 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           distribution: 'zulu' # See 'Supported distributions' for available options
-          java-version: '11'
+          java-version: '17'
 
       - name: Setup configs
         working-directory: android
