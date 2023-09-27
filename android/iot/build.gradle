@@ -19,7 +19,7 @@ dependencies {
     implementation "io.reactivex.rxjava2:rxkotlin:$rxkotlin_version"
     implementation "io.reactivex.rxjava2:rxandroid:$rxandroid_version"
 
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.1"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:$kotlinx_coroutines_core_version"
 
     implementation "com.jakewharton.timber:timber:$timber_version"
 
@@ -27,5 +27,5 @@ dependencies {
     implementation "io.insert-koin:koin-android:$koin_version"
 
     implementation "com.google.code.gson:gson:$gson_version"
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation "androidx.constraintlayout:constraintlayout:$constraint_layout_version"
 }
