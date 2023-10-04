@@ -325,12 +325,6 @@ export class InfraStack extends Stack {
       policyName: `${this.props.prefix}-iot-policy`,
       policyDocument: new PolicyDocument({
         statements: [
-          // todo: this should not be here
-          new PolicyStatement({
-            effect: Effect.ALLOW,
-            actions: ['iot:*'],
-            resources: ['*'],
-          }),
           new PolicyStatement({
             effect: Effect.ALLOW,
             actions: ['iot:GetThingShadow'],
@@ -345,15 +339,15 @@ export class InfraStack extends Stack {
             effect: Effect.ALLOW,
             actions: ['iot:Publish', 'iot:Receive'],
             resources: [
-              `arn:aws:iot:${Stack.of(this).region}:${Stack.of(this).account}:topicfilter/$aws/things/\${iot:ClientId}/*`,
-              `arn:aws:iot:${Stack.of(this).region}:${Stack.of(this).account}:topicfilter/\${iot:ClientId}/*`,
+              `arn:aws:iot:${Stack.of(this).region}:${Stack.of(this).account}:topic/$aws/things/\${iot:ClientId}/*`,
+              `arn:aws:iot:${Stack.of(this).region}:${Stack.of(this).account}:topic/\${iot:ClientId}/*`,
             ],
           }),
           new PolicyStatement({
             effect: Effect.ALLOW,
             actions: ['iot:Receive'],
             resources: [
-              `arn:aws:iot:${Stack.of(this).region}:${Stack.of(this).account}:topicfilter/shared/*`,
+              `arn:aws:iot:${Stack.of(this).region}:${Stack.of(this).account}:topic/shared/*`,
             ],
           }),
           new PolicyStatement({
