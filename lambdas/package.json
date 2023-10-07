@@ -15,14 +15,14 @@
   "devDependencies": {
     "@aws-cdk/aws-iot-actions-alpha": "^2.20.0-alpha.0",
     "@aws-cdk/aws-iot-alpha": "^2.20.0-alpha.0",
-    "@types/aws-lambda": "^8.10.122",
-    "@types/node": "^20.7.2",
-    "@typescript-eslint/eslint-plugin": "~6.7.3",
-    "@typescript-eslint/parser": "~6.7.3",
-    "aws-cdk": "~2.99.0",
-    "aws-cdk-lib": "~2.99.0",
+    "@types/aws-lambda": "^8.10.124",
+    "@types/node": "^20.8.3",
+    "@typescript-eslint/eslint-plugin": "~6.7.4",
+    "@typescript-eslint/parser": "~6.7.4",
+    "aws-cdk": "~2.100.0",
+    "aws-cdk-lib": "~2.100.0",
     "constructs": "^10.2.70",
-    "eslint": "^8.50.0",
+    "eslint": "^8.51.0",
     "import-sort-cli": "~6.0.0",
     "import-sort-parser-babylon": "~6.0.0",
     "import-sort-parser-typescript": "~6.0.0",
@@ -31,13 +31,13 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "@aws-sdk/client-iot": "^3.421.0",
-    "@aws-sdk/client-iot-data-plane": "^3.421.0",
-    "@aws-sdk/client-ssm": "^3.421.0",
+    "@aws-sdk/client-iot": "^3.427.0",
+    "@aws-sdk/client-iot-data-plane": "^3.427.0",
+    "@aws-sdk/client-ssm": "^3.427.0",
     "axios": "^1.5.1",
     "date-fns": "^2.30.0",
     "winston": "^3.10.0",
-    "zod": "^3.22.2"
+    "zod": "^3.22.4"
   },
   "lint-staged": {
     "src/**/*.{js,ts}": [
