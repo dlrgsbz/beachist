@@ -22,7 +22,7 @@
     "aws-cdk": "~2.100.0",
     "aws-cdk-lib": "~2.100.0",
     "constructs": "^10.2.70",
-    "eslint": "^8.51.0",
+    "eslint": "^8.52.0",
     "import-sort-cli": "~6.0.0",
     "import-sort-parser-babylon": "~6.0.0",
     "import-sort-parser-typescript": "~6.0.0",
