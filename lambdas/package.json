@@ -34,7 +34,7 @@
     "@aws-sdk/client-iot": "^3.427.0",
     "@aws-sdk/client-iot-data-plane": "^3.427.0",
     "@aws-sdk/client-ssm": "^3.427.0",
-    "axios": "^1.5.1",
+    "axios": "^1.6.0",
     "date-fns": "^2.30.0",
     "winston": "^3.10.0",
     "zod": "^3.22.4"
