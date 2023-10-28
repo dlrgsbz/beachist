@@ -14,7 +14,7 @@
     "axios": "^0.26.1",
     "classnames": "^2.3.1",
     "i18next": "^21.9.1",
-    "jwt-decode": "^3.1.2",
+    "jwt-decode": "^4.0.0",
     "mobx": "^5.15.7",
     "mobx-react-lite": "^2.2.2",
     "moment": "^2.29.4",
