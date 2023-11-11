@@ -15,7 +15,7 @@
   "devDependencies": {
     "@aws-cdk/aws-iot-actions-alpha": "^2.20.0-alpha.0",
     "@aws-cdk/aws-iot-alpha": "^2.20.0-alpha.0",
-    "@types/aws-lambda": "^8.10.125",
+    "@types/aws-lambda": "^8.10.126",
     "@types/node": "^20.8.9",
     "@typescript-eslint/eslint-plugin": "~6.9.0",
     "@typescript-eslint/parser": "~6.9.0",
