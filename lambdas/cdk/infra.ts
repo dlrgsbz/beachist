@@ -317,6 +317,8 @@ export class InfraStack extends Stack {
       resources: ['*'],
     }))
 
+    addIotShadowUpdateRole(f)
+
     // todo: add function URL
   }
 
