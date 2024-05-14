@@ -424,7 +424,7 @@ export class InfraStack extends Stack {
       policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE})
     });
 
-    return resource.getResponseField('endpointAddress')
+    return `https://${resource.getResponseField('endpointAddress')}/`
   }
 }
 
