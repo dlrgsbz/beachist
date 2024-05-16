@@ -83,7 +83,7 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           ssh_private_key: ${{ secrets.SFTP_PRIVATE_KEY }}
           local_path: './android/app/build/outputs/bundle/release/app-release.aab'
-          remote_path: '${{ secrets.FTP_PATH }}/beachist-${{ matrix.env }}-${{ github.run_number }}.aab'
+          remote_path: '${{ secrets.FTP_PATH }}/dl/beachist-${{ matrix.env }}-${{ github.run_number }}.aab'
 
       - name: Teams Notification
         if: matrix.env == 'STAGING'
