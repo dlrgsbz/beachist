@@ -41,7 +41,7 @@ android {
         // todo: https://github.com/jlleitschuh/ktlint-gradle#how-to-use
         // todo: https://github.com/detekt/detekt
         release {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
         }
