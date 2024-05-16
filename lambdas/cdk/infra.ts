@@ -352,7 +352,7 @@ export class InfraStack extends Stack {
               `arn:aws:iot:${Stack.of(this).region}:${Stack.of(this).account}:topic/shared/*`,
               `arn:aws:iot:${Stack.of(this).region}:${Stack.of(this).account}:topic/fields/\${iot:ClientId}`,
               `arn:aws:iot:${Stack.of(this).region}:${Stack.of(this).account}:topic/events/\${iot:ClientId}`,
-              `arn:aws:iot:${Stack.of(this).region}:${Stack.of(this).account}:topic/special-event/\${iot:ClientId}`,
+              `arn:aws:iot:${Stack.of(this).region}:${Stack.of(this).account}:topic/special-event/\${iot:ClientId}/*`,
             ],
           }),
           new PolicyStatement({
@@ -364,7 +364,7 @@ export class InfraStack extends Stack {
               `arn:aws:iot:${Stack.of(this).region}:${Stack.of(this).account}:topicfilter/shared/*`,
               `arn:aws:iot:${Stack.of(this).region}:${Stack.of(this).account}:topicfilter/fields/\${iot:ClientId}`,
               `arn:aws:iot:${Stack.of(this).region}:${Stack.of(this).account}:topicfilter/events/\${iot:ClientId}`,
-              `arn:aws:iot:${Stack.of(this).region}:${Stack.of(this).account}:topicfilter/special-event/\${iot:ClientId}`,
+              `arn:aws:iot:${Stack.of(this).region}:${Stack.of(this).account}:topicfilter/special-event/\${iot:ClientId}/*`,
             ],
           }),
         ],
