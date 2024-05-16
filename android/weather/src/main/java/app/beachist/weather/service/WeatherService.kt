@@ -15,6 +15,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
@@ -72,7 +73,11 @@ class WeatherService(
                     Timber.tag("WeatherService").d("Subscribed to $topic with $status")
                 }) { airInfo ->
                     Timber.tag("WeatherService").d("Got air info: $airInfo")
-                    onAirInfo(airInfo)
+                    try {
+                        onAirInfo(airInfo)
+                    } catch (e: Exception) {
+                        Timber.tag("WeatherService").e(e, "Error in onAirInfo")
+                    }
                 }
             }
             .mapLatest {
@@ -81,7 +86,11 @@ class WeatherService(
                     Timber.tag("WeatherService").d("Subscribed to $topic with $status")
                 }) { waterInfo ->
                     Timber.tag("WeatherService").d("Got water info: $waterInfo")
-                    onWaterInfo(waterInfo)
+                    try {
+                        onWaterInfo(waterInfo)
+                    } catch (e: Exception) {
+                        Timber.tag("WeatherService").e(e, "Error in onWaterInfo")
+                    }
                 }
             }
             .mapLatest {
@@ -90,8 +99,15 @@ class WeatherService(
                     Timber.tag("WeatherService").d("Subscribed to $topic with $status")
                 }) { uvInfo ->
                     Timber.tag("WeatherService").d("Got UV info: $uvInfo")
-                    onUvInfo(uvInfo)
+                    try {
+                        onUvInfo(uvInfo)
+                    } catch (e: Exception) {
+                        Timber.tag("WeatherService").e(e, "Error in onUvInfo")
+                    }
                 }
+            }
+            .catch {
+                Timber.tag("WeatherService").e(it, "Error in subscribe")
             }
             .launchIn(this)
 
