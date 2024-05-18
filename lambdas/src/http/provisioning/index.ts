@@ -86,6 +86,7 @@ const handler = async (event: ProvisioningHandlerInput, iotClient: IotClient): P
   const { stationId } = result.data
 
   const thingName = `station-${config.STAGE}-${event.station}`
+  logger.info(`Provisioning ${thingName}`)
   const thingArn = await iotClient.getOrCreateThing(thingName)
 
   if (!thingArn) {
