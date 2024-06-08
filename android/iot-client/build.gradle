@@ -21,8 +21,8 @@ dependencies {
     implementation "io.insert-koin:koin-core:$koin_version"
     implementation "io.insert-koin:koin-android:$koin_version"
 
-    implementation 'com.amazonaws:aws-android-sdk-core:2.43.0'
-    implementation 'com.amazonaws:aws-android-sdk-iot:2.43.0'
+    implementation 'com.amazonaws:aws-android-sdk-core:2.75.1'
+    implementation 'com.amazonaws:aws-android-sdk-iot:2.75.1'
 
     implementation "com.google.code.gson:gson:$gson_version"
 }
