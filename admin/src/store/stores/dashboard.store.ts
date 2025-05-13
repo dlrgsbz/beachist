@@ -10,7 +10,7 @@ import {
   StationInfo,
   StationInfoMap,
 } from 'dtos'
-import { action, computed, observable, runInAction } from 'mobx'
+import { action, computed, observable, runInAction, makeObservable } from 'mobx';
 import moment, { Moment } from 'moment'
 
 import { DashboardService } from 'services'
@@ -43,7 +43,9 @@ class DashboardStore {
      */
     private apiClient: ApiClient,
     private dashboardService: DashboardService,
-  ) {}
+  ) {
+    makeObservable(this);
+  }
 
   @action.bound
   async reloadData(): Promise<void> {

@@ -1,4 +1,4 @@
-import { action, observable } from 'mobx'
+import { action, observable, makeObservable } from 'mobx';
 import { AsyncState, createAsyncState, runWithAsyncState } from 'lib'
 import { User, UserInfo } from 'dtos'
 import { ApiClient, fetchAvailableUsers } from 'modules/data'
@@ -9,6 +9,7 @@ export class AuthStore {
   @observable loginToken: AsyncState<string | undefined> = createAsyncState(undefined)
 
   constructor(private apiClient: ApiClient) {
+    makeObservable(this);
   }
 
   @action.bound

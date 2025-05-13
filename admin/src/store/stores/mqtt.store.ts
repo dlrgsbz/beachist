@@ -1,4 +1,4 @@
-import { action, observable } from 'mobx'
+import { action, observable, makeObservable } from 'mobx';
 import { MqttService } from 'services/mqttService'
 import { MqttMessage } from '../../dtos/mqtt'
 import { AsyncState, createAsyncState, runWithAsyncState } from '../../lib'
@@ -6,7 +6,9 @@ import { AsyncState, createAsyncState, runWithAsyncState } from '../../lib'
 class MqttStore {
   @observable messagesState: AsyncState<MqttMessage[]> = createAsyncState([])
 
-  constructor(private readonly mqttService: MqttService) {}
+  constructor(private readonly mqttService: MqttService) {
+    makeObservable(this);
+  }
 
   @action.bound
   async reloadData(): Promise<void> {
