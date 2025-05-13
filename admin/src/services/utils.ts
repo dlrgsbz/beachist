@@ -24,18 +24,18 @@ export interface EnrichedStationsOutput {
 
 export const enrichStations = (
   input: StationInfo[],
-  stationsInfoMap: StationInfoMap,
+  // stationsInfoMap: StationInfoMap,
   crewInfo: CrewInfo[],
 ): EnrichedStationsOutput => {
   const stationMap = new Map<string, StationInfo>()
   const crews = new Map<string, string>()
   const stations = input.map(station => {
     stationMap.set(station.id, station)
-    const crew = crewInfo.find(val => val.station === station.id)
+    const crew = crewInfo.find(val => val.stationId === station.id)
     if (crew) {
       crews.set(station.id, crew.crew)
     }
-    return { ...station, ...stationsInfoMap[station.id] }
+    return { ...station, }
   })
 
   return { stations, stationMap, crews }

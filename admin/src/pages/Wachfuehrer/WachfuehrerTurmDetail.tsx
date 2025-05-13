@@ -7,6 +7,7 @@ import { Moment } from 'moment'
 import { StationState } from 'interfaces'
 import classNames from 'classnames'
 import { useGeneratedId } from 'lib'
+import Skeleton from 'react-loading-skeleton'
 
 interface WachfuehrerTurmDetailProps {
   title: string
@@ -58,6 +59,24 @@ const Title: React.FC<TitleProps> = ({ title, isVisible, setVisible, stationStat
   )
 }
 
+export const WachfuehrerTurmDetailSkeleton: React.VFC = () => {
+  const id = useGeneratedId('card')
+  const bodyId = useGeneratedId('cardBody')
+  const className = classNames('collapse')
+  const h5ClassName = classNames('mb-0', 'turm-detail__skeleton')
+
+  return <div className="card">
+    <div className="card-header" id={id}>
+      <h5 className={h5ClassName}><SquareEmpty /> <Skeleton inline={true} width="100px" /></h5>
+    </div>
+    <div id={bodyId} className={className} aria-labelledby={id} data-parent="#accordion">
+      <div className="card-body">
+        This is a Skeleton
+      </div>
+    </div>
+  </div>
+}
+
 export const WachfuehrerTurmDetail: React.FC<WachfuehrerTurmDetailProps> = ({
   title,
   stationState,
@@ -97,6 +116,10 @@ export const WachfuehrerTurmDetail: React.FC<WachfuehrerTurmDetailProps> = ({
 }
 
 const OnlineStatus: React.VFC<OnlineStatusProps> = ({ onlineStateSince, isOnline }) => {
+  if (typeof onlineStateSince === 'undefined' ) {
+    return <></>
+  }
+
   const label = isOnline ? 'online' : 'offline'
   const Icon = isOnline ? ConnectedIcon : DisconnectedIcon
   const timeFrame = onlineStateSince?.fromNow(false) ?? 'noch nie gesehen'

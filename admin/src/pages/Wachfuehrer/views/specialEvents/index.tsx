@@ -7,10 +7,19 @@ type SpecialEventViewProps = {
   type: SpecialEventType
 }
 
-const SpecialEvents: React.FC<SpecialEventViewProps> = ({ type }) => {
-  const adminStore = useDashboardStore()
+const useStores = () => {
+  const dashboardStore = useDashboardStore()
 
-  const accessor = type === SpecialEventType.event ? adminStore.specialEvents : adminStore.damages
+  return useObserver(() => ({
+    damages: dashboardStore.specialEvents.data.damage,
+    specialEvents: dashboardStore.specialEvents.data.special,
+  }))
+}
+
+const SpecialEvents: React.FC<SpecialEventViewProps> = ({ type }) => {
+  const { specialEvents, damages } = useStores()
+
+  const accessor = type === SpecialEventType.event ? specialEvents : damages
 
   return useObserver(() => (
     <>
@@ -26,7 +35,7 @@ const SpecialEvents: React.FC<SpecialEventViewProps> = ({ type }) => {
           <div className="card-footer text-muted">
             <div className="row">
               <div className="col">{event.notifier}</div>
-              <div className="col text-center">{event.station.name}</div>
+              <div className="col text-center">{event.station}</div>
               <div className="col text-right">{event.date.format('LT')}</div>
             </div>
           </div>

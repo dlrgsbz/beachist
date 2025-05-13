@@ -1,4 +1,5 @@
 import { Moment } from 'moment'
+import { SpecialEvent } from './specialEvent'
 
 export interface StationInfo {
   id: string
@@ -43,7 +44,12 @@ export interface FieldValue {
 }
 
 export interface CrewInfo {
-  station: string
+  stationId: string
   crew: string
   date: Moment
+}
+
+export interface SpecialEventMap {
+  special: SpecialEvent[]
+  damage: SpecialEvent[]
 }

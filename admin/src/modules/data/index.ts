@@ -1,11 +1,11 @@
 import { AccessTokenNotFound, AuthService } from 'context/AuthServiceContext'
-import { ApiProvisioningRequest, ApiStationInfo } from './dtos'
+import { ApiMqttMessage, ApiProvisioningRequest, ApiStationInfo, Paginated } from './dtos'
 import {
   CrewInfo,
   EventEntry,
   Field,
   NetworkEntry,
-  NetworkSpecialEvent,
+  NetworkSpecialEvent, Permission,
   SpecialEvent,
   StationInfo,
   UserInfo,
@@ -15,6 +15,7 @@ import {
 import axios from 'axios'
 import moment from 'moment'
 import { removeTokens } from 'lib/token'
+import jwtDecode from 'jwt-decode'
 
 export interface HttpHeaders {
   [header: string]: string
@@ -97,6 +98,11 @@ export class ApiClient {
     return data.data
   }
 
+  public async fetchMqttMessages(): Promise<ApiMqttMessage[]> {
+    const data = await this.get<Paginated<ApiMqttMessage>>(`/api/mqtt?page_size=25`)
+    return data.data.results
+  }
+
   public async fetchFields(): Promise<Field[]> {
     const data = await this.get<Field[]>('/api/field')
     return data.data
@@ -135,16 +141,20 @@ export class ApiClient {
   }
 }
 
+type NetworkUserInfo = {
+  description: string
+  permissions: Permission[]
+  user_id: string
+  username: string
+}
+
 export async function getUserData(token: string): Promise<UserInfo> {
-  try {
-    const response = await axios.get('/api/me', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    return response.data
-  } catch (error) {
-    throw error
+  const { description, permissions, user_id, username } = jwtDecode<NetworkUserInfo>(token)
+  return {
+    name: username,
+    description,
+    roles: permissions,
+    id: user_id,
   }
 }
 
@@ -159,7 +169,7 @@ export async function fetchAvailableUsers(): Promise<UserInfo[]> {
 
 export async function login(name: string, password: string): Promise<UserInfoWithToken> {
   try {
-    const response = await axios.post('/auth/login', { username: name, password })
+    const response = await axios.post('/auth/login', { name, password })
     return response.data
   } catch (error) {
     throw error
@@ -174,7 +184,7 @@ export function sendEventToWukos(event: SpecialEvent): void {
   form.target = '_blank'
 
   const text = event.note
-  const title = `${event.title} (${event.station.name})`
+  const title = `${event.title} (${event.station})`
 
   const fields = new Map<string, string>([
     ['quelle', ''],

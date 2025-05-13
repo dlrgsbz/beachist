@@ -10,9 +10,10 @@ export interface User {
 
 export interface UserInfo extends User {
   description: string
-  permissions: Permission[]
+  roles: Permission[]
+  id: string
 }
 
 export interface UserInfoWithToken extends UserInfo {
-  token: string
+  access: string
 }

@@ -5,6 +5,7 @@ import { Footer } from './components/Footer'
 import Navigation from './components/Navigation'
 import React from 'react'
 import Wachfuehrer from './pages/Wachfuehrer'
+import { MqttView } from './pages/Mqtt'
 
 const RedirectComponent = () => <Navigate to="/wachfuehrer" replace />
 
@@ -22,6 +23,7 @@ export const AuthenticatedApp: React.VFC = () => {
                 <Routes>
                   <Route path="/wachfuehrer/" element={<Wachfuehrer />} />
                   <Route path="/admin/station" element={<AdminStation />} />
+                  <Route path="/admin/mqtt" element={<MqttView />} />
                   <Route path="/" element={<RedirectComponent />} />
                 </Routes>
               </div>

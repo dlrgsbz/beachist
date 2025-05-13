@@ -6,6 +6,7 @@ import { AuthStore } from './stores/auth.store'
 import DashboardStore from 'store/stores/dashboard.store'
 import RootStore from './stores/root.store'
 import { useAuthService } from '../context/AuthServiceContext'
+import MqttStore from './stores/mqtt.store'
 
 const StoreContext = React.createContext<RootStore | null>(null)
 
@@ -35,6 +36,10 @@ export function useAdminStore(): AdminStore {
 
 export function useDashboardStore(): DashboardStore {
   return useStore().dashboardStore
+}
+
+export function useMqttStore(): MqttStore {
+  return useStore().mqttStore
 }
 
 export function useAuthStore(): AuthStore {

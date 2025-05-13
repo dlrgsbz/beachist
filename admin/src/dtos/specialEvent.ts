@@ -15,7 +15,7 @@ export interface NetworkSpecialEvent extends BaseSpecialEvent {
 }
 
 export interface SpecialEvent extends BaseSpecialEvent{
-  station: StationInfo
+  station: string
 }
 
 export enum SpecialEventType {

@@ -14,20 +14,45 @@ import moment from 'moment'
 import { useDashboardStore } from 'store'
 import { useObserver } from 'mobx-react-lite'
 
-const Wachfuehrer: React.FC = () => {
+const useStores = () => {
   const dashboardStore = useDashboardStore()
 
-  useEffect(() => {
-    dashboardStore.reloadData()
-  }, [dashboardStore])
+  return useObserver(() => ({
+    specialEventsLoading: dashboardStore.specialEvents.status === 'pending',
+    specialEvents: dashboardStore.specialEvents.data,
+    reloadData: dashboardStore.reloadData,
+    date: dashboardStore.selectedDate,
+    onDateChange: dashboardStore.changeSelectedDate,
+    autoUpdateEnabled: dashboardStore.autoUpdateEnabled,
+    toggleAutoUpdate: dashboardStore.toggleAutoUpdate,
+    view: dashboardStore.view,
+    showStationInfo: dashboardStore.showStationInfo,
+    showDamages: dashboardStore.showDamages,
+    showSpecialEvents: dashboardStore.showSpecialEvents,
+  }))
+}
 
-  const date = dashboardStore.selectedDate
-  const onDateChange = dashboardStore.changeSelectedDate
+const Wachfuehrer: React.FC = () => {
+  const {
+    specialEvents: { damage: damages, special: specialEvents },
+    reloadData,
+    date,
+    onDateChange,
+    autoUpdateEnabled,
+    toggleAutoUpdate,
+    view,
+    showStationInfo,
+    showDamages,
+    showSpecialEvents,
+  } = useStores()
+
+  useEffect(() => {
+    reloadData()
+  }, [reloadData])
 
   return useObserver(() => (
     <div>
       <h1>Wachführer*innen-Dashboard</h1>
-      {dashboardStore.loading && <Loading />}
       <div>
         <DatePicker
           label="Datum"
@@ -38,14 +63,14 @@ const Wachfuehrer: React.FC = () => {
         />
         <div className="btn-group-toggle float-sm-right" data-toggle="buttons">
           {
-            <label className={classNames('btn btn-primary', { active: dashboardStore.autoUpdateEnabled })}>
+            <label className={classNames('btn btn-primary', { active: autoUpdateEnabled })}>
               <input
                 type="checkbox"
-                checked={dashboardStore.autoUpdateEnabled}
+                checked={autoUpdateEnabled}
                 autoComplete="off"
-                onChange={dashboardStore.toggleAutoUpdate}
+                onChange={toggleAutoUpdate}
               />
-              {dashboardStore.autoUpdateEnabled ? <CheckedBox /> : <EmptyCheckbox />}
+              {autoUpdateEnabled ? <CheckedBox /> : <EmptyCheckbox />}
               &nbsp;Automatisch aktualisieren
             </label>
           }
@@ -56,31 +81,31 @@ const Wachfuehrer: React.FC = () => {
             <ul className="nav nav-tabs card-header-tabs">
               <li className="nav-item">
                 <button
-                  onClick={dashboardStore.showStationInfo}
-                  className={classNames({ 'nav-link': true, active: dashboardStore.view === AdminView.stations })}
+                  onClick={showStationInfo}
+                  className={classNames({ 'nav-link': true, active: view === AdminView.stations })}
                 >
                   Stations-Info
                 </button>
               </li>
               <li className="nav-item">
                 <button
-                  onClick={dashboardStore.showDamages}
-                  className={classNames({ 'nav-link': true, active: dashboardStore.view === AdminView.damages })}
+                  onClick={showDamages}
+                  className={classNames({ 'nav-link': true, active: view === AdminView.damages })}
                 >
                   Schadenmeldungen{' '}
-                  {dashboardStore.damages.length > 0 && (
-                    <span className="badge badge-danger">{dashboardStore.damages.length}</span>
+                  {damages.length > 0 && (
+                    <span className="badge badge-danger">{damages.length}</span>
                   )}
                 </button>
               </li>
               <li className="nav-item">
                 <button
-                  onClick={dashboardStore.showSpecialEvents}
-                  className={classNames({ 'nav-link': true, active: dashboardStore.view === AdminView.specialEvents })}
+                  onClick={showSpecialEvents}
+                  className={classNames({ 'nav-link': true, active: view === AdminView.specialEvents })}
                 >
                   Besondere Vorkommnisse{' '}
-                  {dashboardStore.specialEvents.length > 0 && (
-                    <span className="badge badge-warning">{dashboardStore.specialEvents.length}</span>
+                  {specialEvents.length > 0 && (
+                    <span className="badge badge-warning">{specialEvents.length}</span>
                   )}
                 </button>
               </li>
@@ -88,9 +113,9 @@ const Wachfuehrer: React.FC = () => {
           </div>
 
           <div className="card-body">
-            {dashboardStore.view === AdminView.stations && <StationInfo />}
-            {dashboardStore.view === AdminView.damages && <SpecialEvents type={SpecialEventType.damage} />}
-            {dashboardStore.view === AdminView.specialEvents && <SpecialEvents type={SpecialEventType.event} />}
+            {view === AdminView.stations && <StationInfo />}
+            {view === AdminView.damages && <SpecialEvents type={SpecialEventType.damage} />}
+            {view === AdminView.specialEvents && <SpecialEvents type={SpecialEventType.event} />}
           </div>
         </div>
       </div>

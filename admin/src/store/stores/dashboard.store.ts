@@ -1,27 +1,36 @@
 import { AdminView, StationState } from 'interfaces'
 import { ApiClient, sendEventToWukos } from 'modules/data'
-import { Entry, Field, NetworkEntry, NetworkSpecialEvent, SpecialEvent, SpecialEventType, StationInfo } from 'dtos'
-import { action, observable, runInAction } from 'mobx'
+import {
+  Entry, EventEntry,
+  Field,
+  NetworkEntry,
+  NetworkSpecialEvent,
+  SpecialEvent, SpecialEventMap,
+  SpecialEventType,
+  StationInfo,
+  StationInfoMap,
+} from 'dtos'
+import { action, computed, observable, runInAction } from 'mobx'
 import moment, { Moment } from 'moment'
 
 import { DashboardService } from 'services'
+import { AsyncState, createAsyncState, runWithAsyncState } from '../../lib'
+import { create } from '@mui/material/styles/createTransitions'
 
 // noinspection PointlessArithmeticExpressionJS
 const AUTO_UPDATE_TIMEOUT = 1 * 60 * 1000
 
 class DashboardStore {
-  @observable selectedDate: Moment = moment()
+  @observable selectedDate: Moment = moment('2025-05-04')
   @observable feldListe = new Map<string, string>()
   @observable felder = new Map<string, Field>()
-  @observable firstAid = 0
-  @observable search = 0
-  @observable loading = false
-  @observable stations: StationInfo[] = []
+  @observable stations: AsyncState<StationInfo[]> = createAsyncState<StationInfo[]>([])
+  @observable events: AsyncState<EventEntry | undefined> = createAsyncState(undefined)
   @observable fields: Field[] = []
-  @observable entries = new Map<string, Entry[]>()
-  @observable crews = new Map<string, string>()
-  @observable damages: SpecialEvent[] = []
-  @observable specialEvents: SpecialEvent[] = []
+  @observable entries = createAsyncState(new Map<string, Entry[]>())
+  @observable crews = createAsyncState(new Map<string, string>())
+  @observable specialEvents: AsyncState<SpecialEventMap> = createAsyncState({ special: [], damage: [] })
+  @observable stationOnlineState: AsyncState<StationInfoMap> = createAsyncState({})
 
   @observable autoUpdateEnabled = true
   @observable view: AdminView = AdminView.stations
@@ -36,40 +45,53 @@ class DashboardStore {
     private dashboardService: DashboardService,
   ) {}
 
+  @action.bound
   async reloadData(): Promise<void> {
-    this.setLoading(true)
-    const [networkEntries, events, enrichedStations, fields, networkSpecialEvents] = await Promise.all([
-      this.apiClient.fetchEntries(this.selectedDate),
-      this.apiClient.fetchEvents(this.selectedDate),
-      this.dashboardService.getStationsAndInfo(this.selectedDate),
-      this.apiClient.fetchFields(),
-      this.apiClient.fetchSpecialEvents(this.selectedDate),
+    // this.setLoading(true)
+    await Promise.all([
+      runWithAsyncState(this.stations, async () => this.dashboardService.getStations()),
+      runWithAsyncState(this.crews, async () => this.dashboardService.getCrewInfo(this.selectedDate)),
+      runWithAsyncState(this.entries, async () => this.dashboardService.getEntries(this.selectedDate)),
+      runWithAsyncState(this.stationOnlineState, async () => this.dashboardService.getStationInfo()),
+      runWithAsyncState(this.events, async () => this.dashboardService.getEvents(this.selectedDate)),
+      runWithAsyncState(this.specialEvents, async () => this.dashboardService.getSpecialEvents(this.selectedDate))
     ])
 
-    const { stations, stationMap, crews } = enrichedStations
-    const fieldMap = new Map<string, Field>()
-    fields.forEach(field => fieldMap.set(field.id, field))
-
-    const entries = createEntryMap(networkEntries, stationMap, fieldMap)
-
-    const specialEvents = createSpecialEventMap(networkSpecialEvents, stationMap)
-
     runInAction(() => {
-      this.firstAid = events.firstAid
-      this.search = events.search
-      this.stations = stations
-      this.fields = fields
-      this.entries = entries
-      this.crews = crews
-      this.specialEvents = specialEvents.special
-      this.damages = specialEvents.damage
       this.view = AdminView.stations
-      this.setLoading(false)
     })
 
     if (this.autoUpdateEnabled) {
       this.timeout = window.setTimeout(() => this.reloadData(), AUTO_UPDATE_TIMEOUT)
     }
+  }
+
+  @computed
+  get firstAid() {
+    return this.events.data?.firstAid ?? 0
+  }
+
+  @computed
+  get search() {
+    return this.events.data?.search ?? 0
+  }
+
+  @action.bound
+  async loadStationInfo(): Promise<void> {
+    const infos = await this.dashboardService.getStationInfo()
+    
+    const stations = this.stations.data.map(station => {
+      const info = infos[station.id]
+      if (!info) { return station }
+      return {
+        ...station,
+        ...info,
+      }
+    })
+
+    runInAction(() => {
+      this.stations.data = stations
+    })
   }
 
   @action.bound
@@ -80,13 +102,9 @@ class DashboardStore {
     }
   }
 
-  @action
-  setLoading(loading: boolean): void {
-    this.loading = loading
-  }
-
+  @action.bound
   stationState(id: string): StationState {
-    const entries = this.entries.get(id)
+    const entries = this.entries.data.get(id)
 
     if (!entries || entries.length === 0) {
       return StationState.missing
@@ -95,8 +113,9 @@ class DashboardStore {
     return entries.filter(e => !e.state).length === 0 ? StationState.okay : StationState.notOkay
   }
 
+  @action.bound
   stationEntries(id: string): Entry[] {
-    return this.entries.get(id) || []
+    return this.entries.data.get(id) || []
   }
 
   @action.bound
@@ -129,66 +148,6 @@ class DashboardStore {
   sendEventToWukos(event: SpecialEvent): void {
     sendEventToWukos(event)
   }
-}
-
-function createEntryMap(
-  entries: NetworkEntry[],
-  stationMap: Map<string, StationInfo>,
-  fieldMap: Map<string, Field>,
-): Map<string, Entry[]> {
-  const theEntries: Entry[] = entries.flatMap(entry => {
-    const station = stationMap.get(entry.station)
-    const field = fieldMap.get(entry.field)
-    if (!station || !field) {
-      return []
-    }
-    return [{ ...entry, station, field }]
-  })
-
-  const entryMap = new Map<string, Entry[]>()
-  theEntries.forEach(entry => {
-    let stationEntries = entryMap.get(entry.station.id)
-    if (!stationEntries) {
-      stationEntries = []
-    }
-
-    stationEntries.push(entry)
-    entryMap.set(entry.station.id, stationEntries)
-  })
-
-  return entryMap
-}
-
-interface SpecialEventMap {
-  special: SpecialEvent[]
-  damage: SpecialEvent[]
-}
-
-function createSpecialEventMap(
-  specialEvents: NetworkSpecialEvent[],
-  stationMap: Map<string, StationInfo>,
-): SpecialEventMap {
-  const map: SpecialEventMap = { special: [], damage: [] }
-
-  specialEvents.forEach(event => {
-    const stationId = event.station
-    const station = stationMap.get(stationId)
-    if (!station) {
-      return
-    }
-
-    const specialEvent = { ...event, station }
-    switch (event.type) {
-      case SpecialEventType.damage:
-        map.damage.push(specialEvent)
-        break
-      case SpecialEventType.event:
-        map.special.push(specialEvent)
-        break
-    }
-  })
-
-  return map
 }
 
 export default DashboardStore

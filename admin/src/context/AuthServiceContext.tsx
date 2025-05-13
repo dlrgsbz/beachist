@@ -8,8 +8,9 @@ import { useConstant } from 'lib'
 
 export class AuthService {
   public async login(username: string, password: string): Promise<UserInfo> {
-    const { token, ...user } = await login(username, password)
+    const { access: token } = await login(username, password)
     setToken(token)
+    const user = await getUserData(token)
     return user
   }
 

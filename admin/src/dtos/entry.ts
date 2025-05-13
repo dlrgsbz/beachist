@@ -29,6 +29,7 @@ export interface EventEntry {
 }
 
 export interface Entry extends BaseEntry {
-  station: StationInfo
+  // station: StationInfo
+  station: string
   field: Field
 }

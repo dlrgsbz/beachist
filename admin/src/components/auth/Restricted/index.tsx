@@ -18,5 +18,5 @@ export const Restricted: React.FC<RestrictedProps> = ({ permission, fallback, ch
 }
 
 const authorizedFor = (user: UserInfo | null, permission: Permission): boolean => {
-  return !!user && user.permissions.includes(permission)
+  return !!user && user.roles.includes(permission)
 }

@@ -1,34 +1,57 @@
 import Legend from '../../Legend'
 import React from 'react'
-import { WachfuehrerTurmDetail } from '../../WachfuehrerTurmDetail'
+import { WachfuehrerTurmDetail, WachfuehrerTurmDetailSkeleton } from '../../WachfuehrerTurmDetail'
 import { useDashboardStore } from 'store'
 import { useObserver } from 'mobx-react-lite'
 import { useTranslation } from 'react-i18next'
 
+const useStores = () => {
+  const dashboardStore = useDashboardStore()
+
+  return useObserver(() => ({
+    stationsLoading: dashboardStore.stations.status === 'pending',
+    stations: dashboardStore.stations.data,
+    crewsLoading: dashboardStore.crews.status === 'pending',
+    crews: dashboardStore.crews.data,
+    stationOnlineLoading: dashboardStore.stationOnlineState.status === 'pending',
+    stationOnlineState: dashboardStore.stationOnlineState.data,
+    stationState: dashboardStore.stationState,
+    entriesLoading: dashboardStore.entries.status === 'pending',
+    stationEntries: dashboardStore.stationEntries,
+    firstAid: dashboardStore.firstAid,
+    search: dashboardStore.search,
+  }))
+}
+
 const StationInfo: React.FC = () => {
-  const adminStore = useDashboardStore()
+  const { stationsLoading, entriesLoading, crewsLoading, stations, crews, stationState, stationEntries, firstAid, search, stationOnlineState } = useStores()
 
   const { t } = useTranslation()
 
   return useObserver(() => (
     <>
-      <p>EH-Leistungen heute: {adminStore.firstAid}</p>
-      <p>Suchmeldungen heute: {adminStore.search}</p>
+      <p>EH-Leistungen heute: {firstAid}</p>
+      <p>Suchmeldungen heute: {search}</p>
 
       <Legend />
 
       <div className="accordion">
-        {adminStore.stations.map(station => (
+        {(stationsLoading || entriesLoading) && stations.length === 0 ?
+        <>
+          <WachfuehrerTurmDetailSkeleton />
+          <WachfuehrerTurmDetailSkeleton />
+          <WachfuehrerTurmDetailSkeleton />
+        </>
+        : stations.map(station => (
           <WachfuehrerTurmDetail
             key={station.id}
             title={station.name}
-            stationState={adminStore.stationState(station.id)}
-            crew={adminStore.crews.get(station.id)}
-            onlineStateSince={station.onlineStateSince}
-            isOnline={station.online}
+            stationState={stationState(station.id)}
+            crew={crews.get(station.id)}
+            onlineStateSince={stationOnlineState?.[station.id]?.onlineStateSince}
+            isOnline={stationOnlineState?.[station.id]?.online}
           >
-            {adminStore
-              .stationEntries(station.id)
+            {stationEntries(station.id)
               .filter(entry => !entry.state)
               .map(entry => (
                 <li key={entry.id}>

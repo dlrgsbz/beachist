@@ -52,6 +52,7 @@ const Navigation = () => {
           <Navlink target="/wachfuehrer">Wachführer*innen-Dashboard</Navlink>
           <Restricted permission={Permission.admin}>
             <Navlink target="/admin/station">Stationsverwaltung</Navlink>
+            <Navlink target="/admin/mqtt">MQTT-Debug</Navlink>
           </Restricted>
         </ul>
         <ul className="nav navbar-nav flex-row justify-content-between ml-auto">
