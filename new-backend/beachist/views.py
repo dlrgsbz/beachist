@@ -7,6 +7,7 @@ from functools import reduce
 from typing import List
 from uuid import UUID
 
+from django.contrib.auth.models import AnonymousUser
 from django.db.models import Window, F
 from django.db.models.functions import RowNumber
 from rest_framework import status, authentication, exceptions
@@ -16,6 +17,9 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.authentication import JWTStatelessUserAuthentication
+from rest_framework_simplejwt.models import TokenUser
+from rest_framework_simplejwt.tokens import AccessToken
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .ca.certificates import generate_client_cert
 from .models import Station, User, AppInfo, CrewInfo, Entry, Event, SpecialEvent, Field, StationProvisioningRequest, \
@@ -335,3 +339,29 @@ class MqttMessageListView(APIView):
         result_page = paginator.paginate_queryset(items, request)
         serializer = MqttMessageSerializer(result_page, many=True)
         return paginator.get_paginated_response(serializer.data)
+
+class TemporaryTokenObtainView(TokenObtainPairView):
+    authentication_classes = [JWTStatelessUserAuthentication]
+    # todo: require ROLE_QR
+    permission_classes = [IsAdminUser]
+
+    def _allowed_methods(self):
+        return ['get']
+
+    def get(self, request, *args, **kwargs):
+        # todo: move this somewhere sane
+        user = User()
+        user.username='temporary'
+        user.description='Temporärer User'
+        user.roles=['ROLE_USER']
+        token = AccessToken.for_user(user)
+        token['username'] = user.username
+        token['description'] = user.description
+        token['permissions'] = user.roles
+        token['is_staff'] = user.is_staff
+        token.set_exp(from_time=token.current_time, lifetime=timedelta(hours=4))
+
+        return Response({'token': str(token)}, status=status.HTTP_200_OK)
+
+    def post(self, request, *args, **kwargs):
+        return Response('', status=status.HTTP_405_METHOD_NOT_ALLOWED)

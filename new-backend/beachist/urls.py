@@ -22,7 +22,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .views import ProvisionCreateApiView, CrewListApiView, EntryListApiView, EventInfoApiView, FieldListApiView, \
     SpecialEventListApiView, \
     StationListApiView, StationInfoListApiView, StationDetailApiView, UserListApiView, FieldDetailApiView, MeApiView, \
-    ProvisionListApiView, MqttMessageListView
+    ProvisionListApiView, MqttMessageListView, TemporaryTokenObtainView
 
 urlpatterns = [
     path('api/station', StationListApiView.as_view()),
@@ -41,5 +41,6 @@ urlpatterns = [
     path('api/provision', ProvisionListApiView.as_view()),
     path('auth/login', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('auth/refresh', TokenRefreshView.as_view(), name='token_refresh'),
+    path('auth/link', TemporaryTokenObtainView.as_view(), name='temporary_obtain_token'),
     path('api/mqtt', MqttMessageListView.as_view()),
 ]
