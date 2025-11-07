@@ -76,14 +76,14 @@ jobs:
         run: |
           ./gradlew app:bundleRelease
 
-      - name: deployment to server
-        uses: tjarksaul/SFTP-Deploy-Action@1f9d3f7e125f06dc57760d081a04bca1d49a6dc1
-        with:
-          server: '${{ secrets.FTP_SERVER }}'
-          username: ${{ secrets.FTP_USERNAME }}
-          ssh_private_key: ${{ secrets.SFTP_PRIVATE_KEY }}
-          local_path: './android/app/build/outputs/bundle/release/app-release.aab'
-          remote_path: '${{ secrets.FTP_PATH }}/dl/beachist-${{ matrix.env }}-${{ github.run_number }}.aab'
+      # - name: deployment to server
+      #   uses: tjarksaul/SFTP-Deploy-Action@1f9d3f7e125f06dc57760d081a04bca1d49a6dc1
+      #   with:
+      #     server: '${{ secrets.FTP_SERVER }}'
+      #     username: ${{ secrets.FTP_USERNAME }}
+      #     ssh_private_key: ${{ secrets.SFTP_PRIVATE_KEY }}
+      #     local_path: './android/app/build/outputs/bundle/release/app-release.aab'
+      #     remote_path: '${{ secrets.FTP_PATH }}/dl/beachist-${{ matrix.env }}-${{ github.run_number }}.aab'
 
       - name: Teams Notification
         if: matrix.env == 'STAGING'
