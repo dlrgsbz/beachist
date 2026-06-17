@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.io.File
 import java.nio.charset.Charset
 
 
@@ -71,33 +72,7 @@ class IotClient(private val gson: Gson, private val tempDirectory: String) : Cor
 
                 val keystoreName = "keystore"
                 val keystorePassword = "verysecret"
-                if (!AWSIotKeystoreHelper.isKeystorePresent(tempDirectory, keystoreName)) {
-                    AWSIotKeystoreHelper.saveCertificateAndPrivateKey(
-                        config.certificateId,
-                        config.certificatePem,
-                        config.privateKey,
-                        tempDirectory,
-                        keystoreName,
-                        keystorePassword,
-                    )
-                }
-
-                if (!AWSIotKeystoreHelper.keystoreContainsAlias(
-                        config.certificateId,
-                        tempDirectory,
-                        keystoreName,
-                        keystorePassword,
-                    )
-                ) {
-                    AWSIotKeystoreHelper.saveCertificateAndPrivateKey(
-                        config.certificateId,
-                        config.certificatePem,
-                        config.privateKey,
-                        tempDirectory,
-                        keystoreName,
-                        keystorePassword,
-                    )
-                }
+                ensureKeystore(config, keystoreName, keystorePassword)
 
                 val keystore = AWSIotKeystoreHelper.getIotKeystore(
                     config.certificateId,
@@ -109,6 +84,52 @@ class IotClient(private val gson: Gson, private val tempDirectory: String) : Cor
                 // todo: retry this?
                 connection?.connect(keystore, connectionCallback)
             }
+        }
+    }
+
+    /**
+     * Ensures a valid keystore containing the certificate exists on disk. If the keystore is
+     * missing, does not contain the certificate, or is corrupt/unreadable (e.g. a truncated file
+     * from a previously interrupted write, which would otherwise throw while loading it), it is
+     * deleted and recreated from the config.
+     */
+    @Suppress("TooGenericExceptionCaught")
+    private fun ensureKeystore(config: IotConfig, keystoreName: String, keystorePassword: String) {
+        val keystoreContainsCertificate = try {
+            AWSIotKeystoreHelper.isKeystorePresent(tempDirectory, keystoreName) &&
+                AWSIotKeystoreHelper.keystoreContainsAlias(
+                    config.certificateId,
+                    tempDirectory,
+                    keystoreName,
+                    keystorePassword,
+                )
+        } catch (e: Exception) {
+            Timber.tag(LOG_TAG).w(e, "Existing keystore is unreadable/corrupt, recreating it")
+            deleteKeystore(keystoreName)
+            false
+        }
+
+        if (!keystoreContainsCertificate) {
+            AWSIotKeystoreHelper.saveCertificateAndPrivateKey(
+                config.certificateId,
+                config.certificatePem,
+                config.privateKey,
+                tempDirectory,
+                keystoreName,
+                keystorePassword,
+            )
+        }
+    }
+
+    @Suppress("TooGenericExceptionCaught")
+    private fun deleteKeystore(keystoreName: String) {
+        try {
+            val keystoreFile = File(tempDirectory, keystoreName)
+            if (keystoreFile.exists() && !keystoreFile.delete()) {
+                Timber.tag(LOG_TAG).w("Failed to delete corrupt keystore at ${keystoreFile.path}")
+            }
+        } catch (e: Exception) {
+            Timber.tag(LOG_TAG).w(e, "Error while deleting corrupt keystore")
         }
     }
 
