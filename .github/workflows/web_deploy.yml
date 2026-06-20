@@ -25,14 +25,14 @@ jobs:
 
     - name: Tag release
       if: ${{ matrix.env }} == 'STAGING'
-      uses: mathieudutour/github-tag-action@v6.1
+      uses: mathieudutour/github-tag-action@v6.2
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         custom_tag: ${{ format('web/{0}', github.run_number) }}
         tag_prefix: ''
 
     - name: install node
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: '14.x'
 
@@ -45,7 +45,7 @@ jobs:
       working-directory: admin
 
     - name: Cache Composer dependencies
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: backend/vendor
         key: ${{ runner.os }}-${{ hashFiles('**/composer.lock') }}
