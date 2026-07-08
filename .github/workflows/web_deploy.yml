@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        env: ['STAGING', 'PROD']
+        env: ['PROD']
       fail-fast: true
       max-parallel: 1
     environment: ${{ matrix.env }}
