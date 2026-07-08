@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace App\Repository;
 
 
+use App\Entity\Field;
+use App\Entity\Station;
 use App\Entity\StationField;
 use App\Interfaces\StationFieldReader;
 use App\Interfaces\StationFieldWriter;
@@ -32,5 +34,66 @@ class StationFieldRepository extends EntityRepository implements StationFieldRea
             return null;
         }
         return $field;
+    }
+
+    function getForField(string $fieldId): array {
+        return $this->findBy(['field' => $fieldId]);
+    }
+
+    function findAssignment(string $fieldId, ?string $stationId): ?StationField {
+        $criteria = [
+            'field' => $fieldId,
+            'station' => $stationId,
+        ];
+
+        $assignment = $this->findOneBy($criteria);
+        if (!$assignment instanceof StationField) {
+            return null;
+        }
+        return $assignment;
+    }
+
+    function assign(string $fieldId, ?string $stationId, ?int $required = null, ?string $note = null): StationField {
+        if ($stationId === null) {
+            // A global assignment supersedes any station-specific rows.
+            $this->unassignAllForField($fieldId);
+        }
+
+        $existing = $this->findAssignment($fieldId, $stationId);
+        if ($existing instanceof StationField) {
+            $existing->required = $required;
+            $existing->note = $note;
+            $this->_em->flush();
+            return $existing;
+        }
+
+        $assignment = new StationField();
+        $assignment->field = $this->_em->getReference(Field::class, $fieldId);
+        $assignment->station = $stationId === null ? null : $this->_em->getReference(Station::class, $stationId);
+        $assignment->required = $required;
+        $assignment->note = $note;
+
+        $this->_em->persist($assignment);
+        $this->_em->flush();
+
+        return $assignment;
+    }
+
+    function unassign(string $fieldId, ?string $stationId): void {
+        $assignment = $this->findAssignment($fieldId, $stationId);
+        if (!$assignment instanceof StationField) {
+            return;
+        }
+
+        $this->_em->remove($assignment);
+        $this->_em->flush();
+    }
+
+    function unassignAllForField(string $fieldId): void {
+        $assignments = $this->findBy(['field' => $fieldId]);
+        foreach ($assignments as $assignment) {
+            $this->_em->remove($assignment);
+        }
+        $this->_em->flush();
     }
 }

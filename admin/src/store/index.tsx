@@ -4,6 +4,7 @@ import AdminStore from './stores/admin.store'
 import { ApiClient } from '../modules/data'
 import { AuthStore } from './stores/auth.store'
 import DashboardStore from 'store/stores/dashboard.store'
+import ItemsStore from './stores/items.store'
 import RootStore from './stores/root.store'
 import { useAuthService } from '../context/AuthServiceContext'
 
@@ -31,6 +32,10 @@ function useStore(): RootStore {
 
 export function useAdminStore(): AdminStore {
   return useStore().adminStore
+}
+
+export function useItemsStore(): ItemsStore {
+  return useStore().itemsStore
 }
 
 export function useDashboardStore(): DashboardStore {

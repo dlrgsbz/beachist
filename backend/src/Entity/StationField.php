@@ -6,6 +6,7 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use JsonSerializable;
 use Ramsey\Uuid\Doctrine\UuidGenerator;
+use Ramsey\Uuid\UuidInterface;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\StationFieldRepository")
@@ -17,7 +18,7 @@ class StationField implements JsonSerializable {
      * @ORM\GeneratedValue(strategy="CUSTOM")
      * @ORM\CustomIdGenerator(class=UuidGenerator::class)
      */
-    public string $id;
+    public ?UuidInterface $id;
 
     /**
      * @ORM\ManyToOne(targetEntity="Station")
@@ -52,7 +53,8 @@ class StationField implements JsonSerializable {
     public function jsonSerialize() {
         return [
             'id' => $this->field->id,
-            'internalId' => $this->id,
+            'internalId' => $this->id ? $this->id->toString() : null,
+            'station' => $this->station ? $this->station->id : null,
             'name' => $this->field->name,
             'parent' => $this->field->parent ? $this->field->parent->id : null,
             'sortId' => $this->field->sortId,

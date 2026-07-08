@@ -36,6 +36,11 @@ class Field implements JsonSerializable {
     public ?Field $parent;
 
     /**
+     * @ORM\Column(type="boolean", options={"default": false})
+     */
+    public bool $deleted = false;
+
+    /**
      * Station constructor.
      *
      * @param string $id
@@ -58,7 +63,9 @@ class Field implements JsonSerializable {
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'sortId' => $this->sortId,
             'parent' => $this->parent ? $this->parent->id : null,
+            'deleted' => $this->deleted,
         ];
     }
 }

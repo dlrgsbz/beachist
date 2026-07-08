@@ -25,7 +25,20 @@ export type StationInfoMap = Record<string, StationInfoData | null>
 export interface Field {
   id: string
   name: string
-  parent: string
+  parent?: string | null
+  sortId?: number | null
+  required?: number
+  note?: string
+  deleted?: boolean
+}
+
+export interface FieldAssignment {
+  id: string
+  internalId: string
+  station: string | null // null: all stations
+  name: string
+  parent?: string | null
+  sortId?: number | null
   required?: number
   note?: string
 }

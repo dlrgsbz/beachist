@@ -51,6 +51,9 @@ const Navigation = () => {
         <ul className="navbar-nav mr-auto mt-2 mt-lg-0">
           <Navlink target="/wachfuehrer">Wachführer*innen-Dashboard</Navlink>
           <Restricted permission={Permission.admin}>
+            <Navlink target="/admin/items">Checkliste verwalten</Navlink>
+          </Restricted>
+          <Restricted permission={Permission.admin}>
             <Navlink target="/admin/station">Stationsverwaltung</Navlink>
           </Restricted>
         </ul>

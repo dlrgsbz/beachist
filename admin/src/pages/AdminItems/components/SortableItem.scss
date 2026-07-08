@@ -1,0 +1,16 @@
+.sortable-item {
+  opacity: 1;
+  padding: 0.75rem 1rem !important;
+}
+
+.sortable-item--dragging {
+  opacity: 0.4;
+}
+
+.dragging-indicator {
+  cursor: grab;
+  margin-right: .75rem;
+  user-select: none;
+  font-size: 1.125rem;
+  line-height: 1;
+}

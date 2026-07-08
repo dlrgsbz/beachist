@@ -4,6 +4,7 @@ import {
   CrewInfo,
   EventEntry,
   Field,
+  FieldAssignment,
   NetworkEntry,
   NetworkSpecialEvent,
   SpecialEvent,
@@ -34,7 +35,11 @@ export interface HttpResponse<T> {
 export class ApiClient {
   constructor(private authService: AuthService) {}
 
-  private async request<T>(url: string, method: 'POST' | 'GET', options?: HttpOptions): Promise<HttpResponse<T>> {
+  private async request<T>(
+    url: string,
+    method: 'POST' | 'GET' | 'PUT' | 'DELETE',
+    options?: HttpOptions,
+  ): Promise<HttpResponse<T>> {
     let token = ''
     try {
       token = this.authService.getAndValidateToken()
@@ -52,6 +57,7 @@ export class ApiClient {
 
     const requestOptions = {
       params: options?.params,
+      data: options?.body,
       headers,
       method,
       url,
@@ -77,6 +83,18 @@ export class ApiClient {
     return this.request(url, 'POST', requestOptions)
   }
 
+  private async put<T>(url: string, data?: object, options?: HttpOptions): Promise<HttpResponse<T>> {
+    const requestOptions = {
+      ...options,
+      body: data,
+    }
+    return this.request(url, 'PUT', requestOptions)
+  }
+
+  private async delete<T>(url: string, options?: HttpOptions): Promise<HttpResponse<T>> {
+    return this.request(url, 'DELETE', options)
+  }
+
   public async fetchStations(): Promise<StationInfo[]> {
     const data = await this.get<StationInfo[]>('/api/station')
     return data.data
@@ -100,6 +118,59 @@ export class ApiClient {
   public async fetchFields(): Promise<Field[]> {
     const data = await this.get<Field[]>('/api/field')
     return data.data
+  }
+
+  public async createField(payload: { name: string; sortId?: number | null; parent?: string | null }): Promise<Field> {
+    const data = await this.post<Field>('/api/field', payload)
+    return data.data
+  }
+
+  public async updateField(
+    id: string,
+    payload: { name: string; sortId?: number | null; parent?: string | null },
+  ): Promise<Field> {
+    const data = await this.put<Field>(`/api/field/${id}`, payload)
+    return data.data
+  }
+
+  public async deleteField(id: string): Promise<void> {
+    await this.delete(`/api/field/${id}`)
+  }
+
+  public async fetchAssignments(): Promise<FieldAssignment[]> {
+    const data = await this.get<FieldAssignment[]>('/api/assignment')
+    return data.data
+  }
+
+  public async assignFieldToStation(stationId: string, fieldId: string): Promise<void> {
+    await this.post(`/api/station/${stationId}/field/${fieldId}`)
+  }
+
+  public async unassignFieldFromStation(stationId: string, fieldId: string): Promise<void> {
+    await this.delete(`/api/station/${stationId}/field/${fieldId}`)
+  }
+
+  public async assignFieldGlobally(fieldId: string): Promise<void> {
+    await this.post(`/api/field/${fieldId}/global`)
+  }
+
+  public async unassignFieldGlobally(fieldId: string): Promise<void> {
+    await this.delete(`/api/field/${fieldId}/global`)
+  }
+
+  public async reorderFields(ids: string[]): Promise<Field[]> {
+    const data = await this.put<Field[]>('/api/field/reorder', { ids })
+    return data.data
+  }
+
+  public async setFieldAssignments(
+    fieldId: string,
+    global: boolean,
+    stations: string[],
+    required?: number | null,
+    note?: string | null,
+  ): Promise<void> {
+    await this.put(`/api/field/${fieldId}/assignments`, { global, stations, required, note })
   }
 
   public async fetchEntries(date: moment.Moment): Promise<NetworkEntry[]> {

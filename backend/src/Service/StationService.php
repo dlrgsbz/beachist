@@ -8,10 +8,13 @@ use App\Entity\Station;
 use App\Entity\StationField;
 use App\Entity\StationProvisioningRequest;
 use App\Interfaces\StationFieldReader;
+use App\Interfaces\StationFieldWriter;
 use App\Interfaces\StationReader;
 use App\Interfaces\StationWriter;
 use App\Interfaces\AppInfoReader;
 use App\Interfaces\AppInfoWriter;
+use App\Interfaces\FieldNotFoundException;
+use App\Interfaces\FieldReader;
 use App\Interfaces\StationNotFoundException;
 use App\Repository\ProvisioningRepository;
 use DateTime;
@@ -20,6 +23,8 @@ class StationService {
     private StationReader $stationReader;
     private StationWriter $stationWriter;
     private StationFieldReader $stationFieldReader;
+    private StationFieldWriter $stationFieldWriter;
+    private FieldReader $fieldReader;
     private AppInfoReader $appInfoReader;
     private AppInfoWriter $appInfoWriter;
     private ProvisioningRepository $provisioningRepository;
@@ -28,6 +33,8 @@ class StationService {
         StationReader          $stationReader,
         StationWriter          $stationWriter,
         StationFieldReader     $stationFieldReader,
+        StationFieldWriter     $stationFieldWriter,
+        FieldReader            $fieldReader,
         AppInfoReader          $versionReader,
         AppInfoWriter          $versionWriter,
         ProvisioningRepository $provisioningRepository
@@ -35,6 +42,8 @@ class StationService {
         $this->stationReader = $stationReader;
         $this->stationWriter = $stationWriter;
         $this->stationFieldReader = $stationFieldReader;
+        $this->stationFieldWriter = $stationFieldWriter;
+        $this->fieldReader = $fieldReader;
         $this->appInfoReader = $versionReader;
         $this->appInfoWriter = $versionWriter;
         $this->provisioningRepository = $provisioningRepository;
@@ -60,6 +69,90 @@ class StationService {
 
     public function getField(string $stationId, string $fieldId): ?StationField {
         return $this->stationFieldReader->get($stationId, $fieldId);
+    }
+
+    /**
+     * @return StationField[]
+     */
+    public function getAllAssignments(): array {
+        return $this->stationFieldReader->getAll();
+    }
+
+    /**
+     * Assigns a field to a station. A null $stationId assigns the field to all
+     * stations (global assignment).
+     *
+     * @throws StationNotFoundException
+     * @throws FieldNotFoundException
+     */
+    public function assignField(string $fieldId, ?string $stationId): StationField {
+        $this->assertFieldExists($fieldId);
+        $this->assertStationExists($stationId);
+
+        return $this->stationFieldWriter->assign($fieldId, $stationId);
+    }
+
+    /**
+     * @throws StationNotFoundException
+     * @throws FieldNotFoundException
+     */
+    public function unassignField(string $fieldId, ?string $stationId): void {
+        $this->assertFieldExists($fieldId);
+        $this->assertStationExists($stationId);
+
+        $this->stationFieldWriter->unassign($fieldId, $stationId);
+    }
+
+    /**
+     * Replaces all assignments of a field. When $global is true the field is
+     * assigned to all stations (single global row); otherwise it is assigned to
+     * exactly the given stations. The optional required amount and note are
+     * applied to every created assignment row.
+     *
+     * @param string[] $stationIds
+     *
+     * @return StationField[]
+     * @throws StationNotFoundException
+     * @throws FieldNotFoundException
+     */
+    public function setFieldAssignments(string $fieldId, bool $global, array $stationIds, ?int $required = null, ?string $note = null): array {
+        $this->assertFieldExists($fieldId);
+        foreach ($stationIds as $stationId) {
+            $this->assertStationExists($stationId);
+        }
+
+        $this->stationFieldWriter->unassignAllForField($fieldId);
+
+        if ($global) {
+            $this->stationFieldWriter->assign($fieldId, null, $required, $note);
+        } else {
+            foreach (array_unique($stationIds) as $stationId) {
+                $this->stationFieldWriter->assign($fieldId, $stationId, $required, $note);
+            }
+        }
+
+        return $this->stationFieldReader->getForField($fieldId);
+    }
+
+    /**
+     * @throws FieldNotFoundException
+     */
+    private function assertFieldExists(string $fieldId): void {
+        if (!$this->fieldReader->get($fieldId)) {
+            throw new FieldNotFoundException();
+        }
+    }
+
+    /**
+     * @throws StationNotFoundException
+     */
+    private function assertStationExists(?string $stationId): void {
+        if ($stationId === null) {
+            return;
+        }
+        if (!$this->stationReader->getStation($stationId)) {
+            throw new StationNotFoundException();
+        }
     }
 
     /**
