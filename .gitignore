@@ -3,3 +3,4 @@ keystore2
 .DS_Store
 *.pem
 node_modules
+.env
