@@ -20,7 +20,9 @@ export const AuthenticatedApp: React.VFC = () => {
             <main role="main" className="col-md-12">
               <div id="content">
                 <Routes>
-                  <Route path="/wachfuehrer/" element={<Wachfuehrer />} />
+                  <Route path="/wachfuehrer" element={<Wachfuehrer />} />
+                  <Route path="/wachfuehrer/:date" element={<Wachfuehrer />} />
+                  <Route path="/wachfuehrer/:date/:tab" element={<Wachfuehrer />} />
                   <Route path="/admin/station" element={<AdminStation />} />
                   <Route path="/" element={<RedirectComponent />} />
                 </Routes>
