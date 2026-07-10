@@ -99,7 +99,7 @@ const Wachfuehrer: React.FC = () => {
     if (selectedDate === null || currentTab == null) {
       navigate(`/wachfuehrer/${today}/info`, { replace: true })
     }
-  }, [currentTab, navigate])
+  }, [currentTab, navigate, selectedDate, today])
 
   return (
     <div>
