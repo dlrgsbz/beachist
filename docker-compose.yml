@@ -1,15 +1,64 @@
-version: '3.8'
 services:
   database:
     image: mariadb:latest
     environment:
-      MYSQL_ROOT_PASSWORD: hiuSafohFu7chaigh3ohLauquiechohb
-      MYSQL_DATABASE: beachist
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-hiuSafohFu7chaigh3ohLauquiechohb}
+      MYSQL_DATABASE: ${DB_NAME:-beachist}
     # command: sh -c 'sed -i /skip-name-resolve/d /etc/mysql/conf.d/docker.cnf && exec docker-entrypoint.sh mysqld'
     volumes:
       - database:/var/lib/mysql
     ports:
       - "3306:3306"
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/healthcheck.sh", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  api:
+    build:
+      context: ./backend
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      APP_ENV: dev
+      APP_DEBUG: "1"
+      APP_SECRET: ${APP_SECRET:-c39ecd76aaf3e7fd88610f4abf0bd08f}
+      APP_JWT_SECRET: ${APP_JWT_SECRET:-OTNhMDhiNzk5MWE2YTQ4MmZlNDA=}
+      DATABASE_URL: ${DB_URL:-mysql://root:${DB_ROOT_PASSWORD:-hiuSafohFu7chaigh3ohLauquiechohb}@${DB_HOST:-database}:3306/${DB_NAME:-beachist}?serverVersion=mariadb-10.6.0}
+      DATABASE_HOST: ${DB_HOST:-database}
+      DATABASE_PORT: "3306"
+      # Seed example users/stations/items on first start. Set to 1 to enable.
+      SEED_EXAMPLE_DATA: ${SEED_EXAMPLE_DATA:-0}
+    ports:
+      - "${API_PORT:-8001}:8000"
+    volumes:
+      - ./backend:/app
+      # Keep the image-built dependencies instead of shadowing them with the host.
+      - backend_vendor:/app/vendor
+
+  admin:
+    build:
+      context: ./admin
+    depends_on:
+      - api
+    environment:
+      PORT: "3000"
+      WDS_SOCKET_PORT: "3000"
+      DANGEROUSLY_DISABLE_HOST_CHECK: "true"
+      CI: "false"
+      BROWSER: "none"
+      # Forward /api and /auth to the backend on the compose network (see admin/src/setupProxy.js).
+      API_PROXY_TARGET: http://api:8000
+    ports:
+      - "${ADMIN_PORT:-3000}:3000"
+    volumes:
+      - ./admin:/app
+      # Keep the image-built node_modules instead of shadowing them with the host.
+      - admin_node_modules:/app/node_modules
 
 volumes:
   database:
+  backend_vendor:
+  admin_node_modules:

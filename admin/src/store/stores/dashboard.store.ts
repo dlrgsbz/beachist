@@ -10,6 +10,7 @@ import { DashboardService } from 'services'
 const AUTO_UPDATE_TIMEOUT = 1 * 60 * 1000
 
 class DashboardStore {
+  // selectedDate is internal state for the store for auto-update to work, *do not* use this in the UI
   @observable selectedDate: Moment = moment()
   @observable feldListe = new Map<string, string>()
   @observable felder = new Map<string, Field>()
@@ -36,14 +37,17 @@ class DashboardStore {
     private dashboardService: DashboardService,
   ) {}
 
-  async reloadData(): Promise<void> {
+  @action.bound
+  async reloadData(selectedDate: moment.Moment): Promise<void> {
+    window.clearTimeout(this.timeout)
     this.setLoading(true)
+    this.selectedDate = selectedDate
     const [networkEntries, events, enrichedStations, fields, networkSpecialEvents] = await Promise.all([
-      this.apiClient.fetchEntries(this.selectedDate),
-      this.apiClient.fetchEvents(this.selectedDate),
-      this.dashboardService.getStationsAndInfo(this.selectedDate),
+      this.apiClient.fetchEntries(selectedDate),
+      this.apiClient.fetchEvents(selectedDate),
+      this.dashboardService.getStationsAndInfo(selectedDate),
       this.apiClient.fetchFields(),
-      this.apiClient.fetchSpecialEvents(this.selectedDate),
+      this.apiClient.fetchSpecialEvents(selectedDate),
     ])
 
     const { stations, stationMap, crews } = enrichedStations
@@ -68,15 +72,7 @@ class DashboardStore {
     })
 
     if (this.autoUpdateEnabled) {
-      this.timeout = window.setTimeout(() => this.reloadData(), AUTO_UPDATE_TIMEOUT)
-    }
-  }
-
-  @action.bound
-  changeSelectedDate(date: Moment | null): void {
-    if (date) {
-      this.selectedDate = date
-      this.reloadData()
+      this.timeout = window.setTimeout(() => this.reloadData(this.selectedDate), AUTO_UPDATE_TIMEOUT)
     }
   }
 
@@ -119,7 +115,7 @@ class DashboardStore {
     this.autoUpdateEnabled = !this.autoUpdateEnabled
 
     if (this.autoUpdateEnabled) {
-      this.timeout = window.setTimeout(() => this.reloadData(), AUTO_UPDATE_TIMEOUT)
+      this.timeout = window.setTimeout(() => this.reloadData(this.selectedDate), AUTO_UPDATE_TIMEOUT)
     } else {
       window.clearTimeout(this.timeout)
       this.timeout = undefined
