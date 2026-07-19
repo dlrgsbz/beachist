@@ -63,12 +63,8 @@ export class ApiClient {
       url,
     }
 
-    try {
-      const response = await axios.request(requestOptions)
-      return { data: response.data, status: response.status }
-    } catch (error) {
-      throw error
-    }
+    const response = await axios.request(requestOptions)
+    return { data: response.data, status: response.status }
   }
 
   private async get<T>(url: string, options?: HttpOptions): Promise<HttpResponse<T>> {
@@ -207,34 +203,22 @@ export class ApiClient {
 }
 
 export async function getUserData(token: string): Promise<UserInfo> {
-  try {
-    const response = await axios.get('/api/me', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    return response.data
-  } catch (error) {
-    throw error
-  }
+  const response = await axios.get('/api/me', {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  return response.data
 }
 
 export async function fetchAvailableUsers(): Promise<UserInfo[]> {
-  try {
-    const response = await axios.get('/auth/users')
-    return response.data
-  } catch (error) {
-    throw error
-  }
+  const response = await axios.get('/auth/users')
+  return response.data
 }
 
 export async function login(name: string, password: string): Promise<UserInfoWithToken> {
-  try {
-    const response = await axios.post('/auth/login', { username: name, password })
-    return response.data
-  } catch (error) {
-    throw error
-  }
+  const response = await axios.post('/auth/login', { username: name, password })
+  return response.data
 }
 
 export function sendEventToWukos(event: SpecialEvent): void {
@@ -245,7 +229,7 @@ export function sendEventToWukos(event: SpecialEvent): void {
   form.target = '_blank'
 
   const text = event.note
-  const title = `${event.title} (${event.station.name})`
+  const title = `${event.title} (${event.station.id})`
 
   const fields = new Map<string, string>([
     ['quelle', ''],

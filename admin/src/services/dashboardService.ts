@@ -1,26 +1,26 @@
 import { EnrichedStationsOutput, enrichStations, mapStationInfo } from './utils'
+import { StationInfo, StationInfoMap } from '../dtos'
 
 import { ApiClient } from '../modules/data'
-import { StationInfoMap } from '../dtos'
 import moment from 'moment'
 
 export class DashboardService {
   constructor(private apiClient: ApiClient) {}
 
-  public async getStationInfo(): Promise<StationInfoMap> {
-    const data = await this.apiClient.fetchStationInfo()
-    return mapStationInfo(data)
+  public async getStationWithInfo(): Promise<StationInfo[]> {
+    const [stations, data] = await Promise.all([this.apiClient.fetchStations(), this.apiClient.fetchStationInfo()])
+    const basicInfo = mapStationInfo(data)
+
+    return addStationInfoToStations(stations, basicInfo)
   }
 
-  public async getStationsAndInfo(date: moment.Moment): Promise<EnrichedStationsOutput> {
-    const [stations, stationsInfo, crews] = await Promise.all([
-      this.apiClient.fetchStations(),
-      this.apiClient.fetchStationInfo(),
-      this.apiClient.fetchCrews(date),
-    ])
+  public async getStationsWithCrew(date: moment.Moment): Promise<EnrichedStationsOutput> {
+    const [stations, crews] = await Promise.all([this.apiClient.fetchStations(), this.apiClient.fetchCrews(date)])
 
-    const stationsInfoMap = mapStationInfo(stationsInfo)
-
-    return enrichStations(stations, stationsInfoMap, crews)
+    return enrichStations(stations, crews)
   }
+}
+
+const addStationInfoToStations = (stationInfo: StationInfo[], stationInfoMap: StationInfoMap) => {
+  return stationInfo.map(station => ({ ...station, ...stationInfoMap[station.id] }))
 }
