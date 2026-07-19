@@ -9,10 +9,9 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import type { ReactNode } from 'react'
 import { SnackbarProvider } from 'notistack'
 import StoreProvider from 'store'
-import i18n from 'modules/i18n'
 import moment from 'moment'
 
-moment.locale(i18n.language, {
+moment.locale('de', {
   relativeTime: {
     past: 'seit %s',
   },
