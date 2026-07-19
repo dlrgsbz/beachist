@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router'
 
 import { useAuth } from 'context'
 import { useSnackbar } from 'lib'

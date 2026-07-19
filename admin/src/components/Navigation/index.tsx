@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useState } from 'react'
 
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router'
 import { Permission } from 'dtos'
 import { QrButton } from './QrButton'
 import { Restricted } from '../auth/Restricted'

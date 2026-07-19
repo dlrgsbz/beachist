@@ -7,7 +7,7 @@ import globals from 'globals'
 
 export default [
   {
-    ignores: ['build/**', 'dist/**', 'node_modules/**', 'public/**', 'coverage/**', '**/*.config.js', '**/*.config.mjs'],
+    ignores: ['build/**', 'dist/**', 'node_modules/**', 'public/**', 'coverage/**', '.react-router/**', '**/*.config.js', '**/*.config.mjs'],
   },
   js.configs.recommended,
   {

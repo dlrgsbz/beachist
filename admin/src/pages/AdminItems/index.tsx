@@ -1,5 +1,5 @@
 import { AssignmentList, ItemForm, ItemFormValues, SortableItems, StationAssignmentDialog } from './components'
-import { Link, Route, Routes, useLocation } from 'react-router-dom'
+import { Link, Route, Routes, useLocation } from 'react-router'
 import React, { useEffect, useState } from 'react'
 import { isSuccessful, useSnackbar } from 'lib'
 

@@ -1,10 +1,10 @@
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router'
 import React, { useEffect, useMemo } from 'react'
 
 import { AdminView } from 'interfaces'
-import { ReactComponent as CheckedBox } from './img/done.svg'
+import CheckedBox from './img/done.svg?react'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
-import { ReactComponent as EmptyCheckbox } from './img/checkbox.svg'
+import EmptyCheckbox from './img/checkbox.svg?react'
 import Loading from 'components/Loading'
 import { SpecialEventType } from 'dtos'
 import SpecialEvents from './views/specialEvents'
