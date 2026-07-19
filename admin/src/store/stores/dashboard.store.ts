@@ -1,7 +1,7 @@
 import { AdminView, StationState } from 'interfaces'
 import { ApiClient, sendEventToWukos } from 'modules/data'
 import { Entry, Field, NetworkEntry, NetworkSpecialEvent, SpecialEvent, SpecialEventType, StationInfo } from 'dtos'
-import { action, observable, runInAction } from 'mobx'
+import { action, makeObservable, observable, runInAction } from 'mobx'
 import moment, { Moment } from 'moment'
 
 import { DashboardService } from 'services'
@@ -35,7 +35,9 @@ class DashboardStore {
      */
     private apiClient: ApiClient,
     private dashboardService: DashboardService,
-  ) {}
+  ) {
+    makeObservable(this)
+  }
 
   @action.bound
   async reloadData(selectedDate: moment.Moment): Promise<void> {

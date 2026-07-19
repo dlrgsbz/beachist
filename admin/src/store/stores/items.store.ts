@@ -1,8 +1,7 @@
 import { AsyncState, Result, createAsyncState, isSuccessful, runWithAsyncState } from 'lib'
 import { Field, FieldAssignment, StationInfo } from 'dtos'
-import { action, observable, runInAction } from 'mobx'
-
 import { ItemPayload, ItemsService } from 'services'
+import { action, makeObservable, observable, runInAction } from 'mobx'
 
 class ItemsStore {
   @observable itemsState: AsyncState<Field[]> = createAsyncState<Field[]>([])
@@ -10,7 +9,9 @@ class ItemsStore {
   @observable assignmentsState: AsyncState<FieldAssignment[]> = createAsyncState<FieldAssignment[]>([])
   @observable mutationState: AsyncState<unknown> = createAsyncState<unknown>(undefined)
 
-  constructor(private itemsService: ItemsService) {}
+  constructor(private itemsService: ItemsService) {
+    makeObservable(this)
+  }
 
   @action.bound
   async fetchAll(): Promise<void> {
@@ -60,7 +61,11 @@ class ItemsStore {
   }
 
   @action.bound
-  async toggleStationAssignment(fieldId: string, stationId: string, assigned: boolean): Promise<Result<Error, unknown>> {
+  async toggleStationAssignment(
+    fieldId: string,
+    stationId: string,
+    assigned: boolean,
+  ): Promise<Result<Error, unknown>> {
     const result = await runWithAsyncState(this.mutationState, () =>
       this.itemsService.setStationAssignment(fieldId, stationId, assigned),
     )
