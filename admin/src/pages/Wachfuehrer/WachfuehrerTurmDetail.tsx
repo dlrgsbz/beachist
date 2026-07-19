@@ -14,6 +14,7 @@ interface WachfuehrerTurmDetailProps {
   crew?: string
   isOnline?: boolean
   onlineStateSince?: Moment
+  children?: React.ReactNode
 }
 
 interface TitleProps {
@@ -96,7 +97,7 @@ export const WachfuehrerTurmDetail: React.FC<WachfuehrerTurmDetailProps> = ({
   )
 }
 
-const OnlineStatus: React.VFC<OnlineStatusProps> = ({ onlineStateSince, isOnline }) => {
+const OnlineStatus: React.FC<OnlineStatusProps> = ({ onlineStateSince, isOnline }) => {
   const label = isOnline ? 'online' : 'offline'
   const Icon = isOnline ? ConnectedIcon : DisconnectedIcon
   const timeFrame = onlineStateSince?.fromNow(false) ?? 'noch nie gesehen'

@@ -6,7 +6,7 @@ import { UrlLogin } from './pages/UrlLogin'
 
 const RedirectComponent = () => <Navigate to="/" replace />
 
-export const UnauthenticatedApp: React.VFC = () => {
+export const UnauthenticatedApp: React.FC = () => {
   return (
     <Router>
       <Routes>

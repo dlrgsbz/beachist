@@ -1,10 +1,12 @@
 import { Permission, UserInfo } from 'dtos'
 import React, { ReactElement } from 'react'
+
 import { useAuth } from 'context'
 
 interface RestrictedProps {
   permission: Permission
   fallback?: ReactElement
+  children?: React.ReactNode
 }
 
 export const Restricted: React.FC<RestrictedProps> = ({ permission, fallback, children }) => {

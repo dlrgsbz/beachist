@@ -8,6 +8,7 @@ import { useAuth } from 'context'
 
 type NavlinkProps = {
   target: string
+  children?: React.ReactNode
 }
 
 const Navlink: FunctionComponent<NavlinkProps> = ({ target, children }) => (

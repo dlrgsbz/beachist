@@ -1,5 +1,4 @@
 import { Field, StationInfo } from 'dtos'
-
 import React, { useMemo } from 'react'
 
 interface AssignmentListProps {
@@ -13,7 +12,7 @@ interface AssignmentListProps {
   onEdit: (item: Field) => void
 }
 
-export const AssignmentList: React.VFC<AssignmentListProps> = ({
+export const AssignmentList: React.FC<AssignmentListProps> = ({
   items,
   stations,
   isGlobal,
@@ -60,11 +59,7 @@ export const AssignmentList: React.VFC<AssignmentListProps> = ({
           <tr key={item.id}>
             <td>{item.name}</td>
             <td>
-              {isGlobal(item.id) ? (
-                <span className="badge badge-success">Alle Stationen</span>
-              ) : (
-                summary(item.id)
-              )}
+              {isGlobal(item.id) ? <span className="badge badge-success">Alle Stationen</span> : summary(item.id)}
             </td>
             <td>{assignmentRequired(item.id) ?? <span className="text-muted">–</span>}</td>
             <td>

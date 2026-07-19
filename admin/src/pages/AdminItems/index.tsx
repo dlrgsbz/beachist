@@ -1,14 +1,14 @@
 import { AssignmentList, ItemForm, ItemFormValues, SortableItems, StationAssignmentDialog } from './components'
+import { Link, Route, Routes, useLocation } from 'react-router-dom'
 import React, { useEffect, useState } from 'react'
 import { isSuccessful, useSnackbar } from 'lib'
-import classNames from 'classnames'
 
 import { Field } from 'dtos'
 import { ItemPayload } from 'services'
 import { SkeletonRow } from 'components/Skeletons'
+import classNames from 'classnames'
 import { useItemsStore } from 'store'
 import { useObserver } from 'mobx-react-lite'
-import { Link, Route, Routes, useLocation } from 'react-router-dom'
 
 const useStores = () => {
   const itemsStore = useItemsStore()
@@ -32,9 +32,7 @@ const useStores = () => {
       saveAssignments: itemsStore.saveAssignments,
       isGlobal: (fieldId: string): boolean => assignments.some(a => a.id === fieldId && a.station === null),
       assignedStationIds: (fieldId: string): string[] =>
-        assignments
-          .filter(a => a.id === fieldId && a.station !== null)
-          .map(a => a.station as string),
+        assignments.filter(a => a.id === fieldId && a.station !== null).map(a => a.station as string),
       assignmentRequired: (fieldId: string): number | null => {
         const assignment = assignments.find(a => a.id === fieldId)
         return assignment?.required ?? null
@@ -57,7 +55,7 @@ const useCurrentTab = () => {
   }
 }
 
-export const AdminItems: React.VFC = () => {
+export const AdminItems: React.FC = () => {
   const {
     loading,
     mutating,
@@ -148,9 +146,10 @@ export const AdminItems: React.VFC = () => {
     }
   }
 
-  const selectedTab = useCurrentTab();
+  const selectedTab = useCurrentTab()
 
-  return (<div>
+  return (
+    <div>
       <h1>Checkliste verwalten</h1>
 
       <div className="card mt-3">
@@ -162,7 +161,10 @@ export const AdminItems: React.VFC = () => {
               </Link>
             </li>
             <li className="nav-item">
-              <Link className={classNames({ 'nav-link': true, active: selectedTab === 'assignments' })} to="/admin/items/assignments">
+              <Link
+                className={classNames({ 'nav-link': true, active: selectedTab === 'assignments' })}
+                to="/admin/items/assignments"
+              >
                 Stationszuweisung
               </Link>
             </li>
@@ -171,66 +173,77 @@ export const AdminItems: React.VFC = () => {
 
         <div className="card-body">
           <Routes>
-          <Route path="/" element={<>
+            <Route
+              path="/"
+              element={
+                <>
+                  <section className="mb-4">
+                    <h2 className="h4">Neuer Eintrag</h2>
+                    <ItemForm items={items} submitLabel="Hinzufügen" disabled={mutating} onSubmit={onCreate} />
+                  </section>
 
-            <section className="mb-4">
-              <h2 className="h4">Neuer Eintrag</h2>
-              <ItemForm items={items} submitLabel="Hinzufügen" disabled={mutating} onSubmit={onCreate} />
-            </section>
+                  <section className="mb-4">
+                    <h2 className="h4">Einträge</h2>
+                    <p className="text-muted">
+                      Einträge können sortiert werden und werden entsprechend auf den Stationstablets angezeigt. Ziehe
+                      die Einträge per Drag & Drop an die gewünschte Position.
+                    </p>
+                    {loading ? (
+                      <table className="table">
+                        <tbody>
+                          <SkeletonRow rows={3} columns={4} />
+                        </tbody>
+                      </table>
+                    ) : (
+                      <SortableItems
+                        items={items}
+                        editingId={editingId}
+                        disabled={mutating}
+                        onEdit={setEditingId}
+                        onCancelEdit={() => setEditingId(undefined)}
+                        onUpdate={onUpdate}
+                        onDelete={onDelete}
+                        onReorder={onReorder}
+                      />
+                    )}
+                  </section>
+                </>
+              }
+            />
 
-            <section className="mb-4">
-              <h2 className="h4">Einträge</h2>
-              <p className="text-muted">
-                Einträge können sortiert werden und werden entsprechend auf den Stationstablets angezeigt.
-                Ziehe die Einträge per Drag & Drop an die gewünschte Position.
-              </p>
-              {loading ? (
-                <table className="table">
-                  <tbody>
-                  <SkeletonRow rows={3} columns={4} />
-                  </tbody>
-                </table>
-              ) : (
-                <SortableItems
-                  items={items}
-                  editingId={editingId}
-                  disabled={mutating}
-                  onEdit={setEditingId}
-                  onCancelEdit={() => setEditingId(undefined)}
-                  onUpdate={onUpdate}
-                  onDelete={onDelete}
-                  onReorder={onReorder}
-                />
-              )}
-            </section>
-          </>} />
-
-          <Route path="/assignments" element={<>
-            <section className="mb-4">
-              <h2 className="h4">Zuweisung zu Stationen</h2>
-              <p className="text-muted">
-                Einträge können entweder mehreren Stationen im einzelnen oder aber allen Stationen zugewiesen werden.
-                Bei der Zuweisung kann jeweils eine Mindestanzahl sowie eine Notiz hinterlegt werden, die auf den Stationstablets angezeigt wird.
-              </p>
-              {loading ? (
-                <table className="table">
-                  <tbody>
-                  <SkeletonRow rows={3} columns={4} />
-                  </tbody>
-                </table>
-              ) : (
-                <AssignmentList
-                  items={items}
-                  stations={stations}
-                  isGlobal={isGlobal}
-                  assignedStationIds={assignedStationIds}
-                  assignmentRequired={assignmentRequired}
-                  assignmentNote={assignmentNote}
-                  disabled={mutating}
-                  onEdit={setDialogItem}
-                />
-              )}
-            </section></>} />
+            <Route
+              path="/assignments"
+              element={
+                <>
+                  <section className="mb-4">
+                    <h2 className="h4">Zuweisung zu Stationen</h2>
+                    <p className="text-muted">
+                      Einträge können entweder mehreren Stationen im einzelnen oder aber allen Stationen zugewiesen
+                      werden. Bei der Zuweisung kann jeweils eine Mindestanzahl sowie eine Notiz hinterlegt werden, die
+                      auf den Stationstablets angezeigt wird.
+                    </p>
+                    {loading ? (
+                      <table className="table">
+                        <tbody>
+                          <SkeletonRow rows={3} columns={4} />
+                        </tbody>
+                      </table>
+                    ) : (
+                      <AssignmentList
+                        items={items}
+                        stations={stations}
+                        isGlobal={isGlobal}
+                        assignedStationIds={assignedStationIds}
+                        assignmentRequired={assignmentRequired}
+                        assignmentNote={assignmentNote}
+                        disabled={mutating}
+                        onEdit={setDialogItem}
+                      />
+                    )}
+                  </section>
+                </>
+              }
+            />
           </Routes>
           {dialogItem && (
             <StationAssignmentDialog

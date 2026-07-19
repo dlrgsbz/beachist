@@ -35,7 +35,7 @@ const getLoginState = async (authService: AuthService): Promise<UserInfo | null>
   return userData
 }
 
-export const AuthProvider: React.FC = props => {
+export const AuthProvider: React.FC<React.PropsWithChildren> = props => {
   const [user, setUser] = useState<UserInfo | null>(null)
   const [loading, setLoading] = useState<boolean>(false)
   const [idle, setIdle] = useState<boolean>(true)
@@ -57,7 +57,7 @@ export const AuthProvider: React.FC = props => {
       })
       .catch(e => {
         if (mounted) {
-          // eslint-disable-next-line no-console
+           
           console.log('error', e)
         }
       })

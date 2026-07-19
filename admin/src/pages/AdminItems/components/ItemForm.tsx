@@ -1,5 +1,6 @@
-import { Field } from 'dtos'
 import React, { useMemo, useState } from 'react'
+
+import { Field } from 'dtos'
 
 export interface ItemFormValues {
   name: string
@@ -18,7 +19,7 @@ interface ItemFormProps {
 
 export const emptyItemForm: ItemFormValues = { name: '', parent: '' }
 
-export const ItemForm: React.VFC<ItemFormProps> = ({
+export const ItemForm: React.FC<ItemFormProps> = ({
   items,
   initialValues = emptyItemForm,
   submitLabel,

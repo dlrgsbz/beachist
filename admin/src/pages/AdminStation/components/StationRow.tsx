@@ -12,7 +12,7 @@ interface StationRowProps {
   setModal: (data: ProvisioningModalProps | undefined) => void
 }
 
-export const StationRow: React.VFC<StationRowProps> = ({
+export const StationRow: React.FC<StationRowProps> = ({
   station,
   provisionLoading,
   provision,

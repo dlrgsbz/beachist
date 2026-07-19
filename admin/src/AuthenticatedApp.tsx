@@ -9,7 +9,7 @@ import Wachfuehrer from './pages/Wachfuehrer'
 
 const RedirectComponent = () => <Navigate to="/wachfuehrer" replace />
 
-export const AuthenticatedApp: React.VFC = () => {
+export const AuthenticatedApp: React.FC = () => {
   return (
     <Router>
       <div className="container">

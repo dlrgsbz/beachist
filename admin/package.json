@@ -4,33 +4,33 @@
   "private": true,
   "proxy": "http://localhost:8001",
   "dependencies": {
-    "@date-io/moment": "^2.14.0",
-    "@emotion/react": "^11.10.0",
-    "@emotion/styled": "^11.10.0",
-    "@mui/icons-material": "^5.8.4",
-    "@mui/lab": "^5.0.0-alpha.95",
-    "@mui/material": "^5.10.1",
-    "@mui/x-date-pickers": "^5.0.0-beta.6",
+    "@date-io/moment": "^3.2.0",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^9.2.0",
+    "@mui/lab": "^9.0.0-beta.6",
+    "@mui/material": "^9.2.0",
+    "@mui/x-date-pickers": "^9.9.0",
     "axios": "^1.18.1",
-    "classnames": "^2.3.1",
-    "i18next": "^21.9.1",
-    "jwt-decode": "^3.1.2",
-    "mobx": "^6.13.7",
-    "mobx-react-lite": "^4.1.0",
-    "moment": "^2.29.4",
-    "notistack": "2.0.3",
-    "qrcode.react": "^3.1.0",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "react-hook-form": "^7.34.2",
-    "react-i18next": "^11.18.4",
-    "react-loading-skeleton": "^3.1.0",
-    "react-portal": "^4.2.2",
-    "react-router-dom": "^6.30.4",
+    "classnames": "^2.5.1",
+    "i18next": "^26.3.6",
+    "jwt-decode": "^4.0.0",
+    "mobx": "^6.16.1",
+    "mobx-react-lite": "^4.1.1",
+    "moment": "^2.30.1",
+    "notistack": "3.0.2",
+    "qrcode.react": "^4.2.0",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "react-hook-form": "^7.81.0",
+    "react-i18next": "^17.0.9",
+    "react-loading-skeleton": "^3.5.0",
+    "react-portal": "^4.3.0",
+    "react-router-dom": "^7.18.1",
     "react-scripts": "^5.0.1",
     "sass": "^1.101.0",
-    "typescript": "^4.7.4",
-    "uuid": "^8.3.2"
+    "typescript": "^5.9.3",
+    "uuid": "^14.0.1"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -38,11 +38,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+  "overrides": {
+    "fork-ts-checker-webpack-plugin": "6.5.3"
   },
   "browserslist": {
     "production": [
@@ -57,27 +54,31 @@
     ]
   },
   "devDependencies": {
-    "@types/classnames": "^2.3.1",
-    "@types/qrcode.react": "^1.0.2",
-    "@types/react": "^17.0.48",
-    "@types/react-dom": "^17.0.17",
-    "@types/react-router-dom": "^5.3.3",
-    "@types/uuid": "^8.3.4",
-    "@typescript-eslint/eslint-plugin": "~5.19.0",
-    "@typescript-eslint/parser": "~5.19.0",
-    "eslint-plugin-react": "~7.29.4",
-    "eslint-plugin-react-hooks": "~4.4.0",
+    "@eslint/js": "^9.39.4",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@typescript-eslint/eslint-plugin": "~8.63.0",
+    "@typescript-eslint/parser": "~8.63.0",
+    "eslint": "^9.39.4",
+    "eslint-plugin-react": "~7.37.5",
+    "eslint-plugin-react-hooks": "~7.1.1",
+    "globals": "^17.7.0",
     "import-sort-cli": "~6.0.0",
     "import-sort-parser-babylon": "~6.0.0",
     "import-sort-parser-typescript": "~6.0.0",
     "import-sort-style-module": "~6.0.0",
-    "prettier": "~2.6.2"
+    "prettier": "~3.9.5"
   },
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx}": [
       "import-sort --write",
       "prettier --write",
-      "eslint --cache --ext '.js,.jsx,.ts,.tsx' --fix"
+      "eslint --cache --fix"
     ]
+  },
+  "jest": {
+    "moduleNameMapper": {
+      "^react-router/dom$": "react-router/dist/development/dom-export.js"
+    }
   }
 }

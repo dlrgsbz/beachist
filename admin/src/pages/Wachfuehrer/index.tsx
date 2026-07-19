@@ -1,5 +1,5 @@
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import React, { useEffect, useMemo } from 'react'
-import { TextField, TextFieldProps } from '@mui/material'
 
 import { AdminView } from 'interfaces'
 import { ReactComponent as CheckedBox } from './img/done.svg'
@@ -9,12 +9,11 @@ import Loading from 'components/Loading'
 import { SpecialEventType } from 'dtos'
 import SpecialEvents from './views/specialEvents'
 import StationInfo from './views/stationInfo'
+import { UndoIcon } from './img/UndoIcon'
 import classNames from 'classnames'
 import moment from 'moment'
 import { useDashboardStore } from 'store'
 import { useObserver } from 'mobx-react-lite'
-import { Link, useNavigate, useParams } from 'react-router-dom'
-import { UndoIcon } from './img/UndoIcon'
 
 const useStores = () => {
   const dashboardStore = useDashboardStore()
@@ -52,7 +51,7 @@ const useSelectedDate = (): [moment.Moment | null, (newDate: moment.Moment | nul
   const { date, tab } = useParams()
   const navigate = useNavigate()
 
-  const selectedDate = useMemo(() => date ? moment(date) : null, [date])
+  const selectedDate = useMemo(() => (date ? moment(date) : null), [date])
 
   const changeSelectedDate = (newDate: moment.Moment | null) => {
     if (newDate) {
@@ -64,24 +63,17 @@ const useSelectedDate = (): [moment.Moment | null, (newDate: moment.Moment | nul
 }
 
 const Wachfuehrer: React.FC = () => {
-  const {
-    loading,
-    reloadData,
-    autoUpdateEnabled,
-    toggleAutoUpdate,
-    damages,
-    specialEvents
-  } = useStores();
+  const { loading, reloadData, autoUpdateEnabled, toggleAutoUpdate, damages, specialEvents } = useStores()
 
-  const [selectedDate, changeSelectedDate] = useSelectedDate();
+  const [selectedDate, changeSelectedDate] = useSelectedDate()
 
-  const hasDamages = damages.length > 0;
-  const hasSpecialEvents = specialEvents.length > 0;
+  const hasDamages = damages.length > 0
+  const hasSpecialEvents = specialEvents.length > 0
 
   const currentTab = useCurrentTab()
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
-  const formattedDate = selectedDate ? selectedDate.format('YYYY-MM-DD') : null;
+  const formattedDate = selectedDate ? selectedDate.format('YYYY-MM-DD') : null
   const today = moment().format('YYYY-MM-DD')
   const isToday = selectedDate ? selectedDate.isSame(moment(), 'day') : false
 
@@ -108,34 +100,28 @@ const Wachfuehrer: React.FC = () => {
       <div>
         <div className="d-flex justify-content-between">
           <div className="d-flex">
-          <DatePicker
-            label="Datum"
-            onChange={changeSelectedDate}
-            maxDate={moment().endOf('day')}
-            value={selectedDate}
-            renderInput={(params: TextFieldProps) => <TextField {...params} />}
-          />
-          {!isToday && (
-            <button
-              onClick={resetToToday}
-              className="btn btn-outline-secondary ml-2 h-100 d-flex gap-1 justify-content-center align-items-center"
-              // todo: move to utility class
-              style={{ gap: '0.5rem' }}
-            >
-              <UndoIcon />
-              Zurück zu heute
-            </button>
-          )}
+            <DatePicker
+              label="Datum"
+              onChange={changeSelectedDate}
+              maxDate={moment().endOf('day')}
+              value={selectedDate}
+            />
+            {!isToday && (
+              <button
+                onClick={resetToToday}
+                className="btn btn-outline-secondary ml-2 h-100 d-flex gap-1 justify-content-center align-items-center"
+                // todo: move to utility class
+                style={{ gap: '0.5rem' }}
+              >
+                <UndoIcon />
+                Zurück zu heute
+              </button>
+            )}
           </div>
           <div className="btn-group-toggle float-sm-right" data-toggle="buttons">
             {
               <label className={classNames('btn btn-primary', { active: autoUpdateEnabled })}>
-                <input
-                  type="checkbox"
-                  checked={autoUpdateEnabled}
-                  autoComplete="off"
-                  onChange={toggleAutoUpdate}
-                />
+                <input type="checkbox" checked={autoUpdateEnabled} autoComplete="off" onChange={toggleAutoUpdate} />
                 {autoUpdateEnabled ? <CheckedBox /> : <EmptyCheckbox />}
                 &nbsp;Automatisch aktualisieren
               </label>
@@ -159,10 +145,7 @@ const Wachfuehrer: React.FC = () => {
                   to={`/wachfuehrer/${formattedDate}/schaden`}
                   className={classNames({ 'nav-link': true, active: currentTab === AdminView.damages })}
                 >
-                  Schadenmeldungen{' '}
-                  {hasDamages && (
-                    <span className="badge badge-danger">{damages.length}</span>
-                  )}
+                  Schadenmeldungen {hasDamages && <span className="badge badge-danger">{damages.length}</span>}
                 </Link>
               </li>
               <li className="nav-item">
@@ -171,18 +154,16 @@ const Wachfuehrer: React.FC = () => {
                   className={classNames({ 'nav-link': true, active: currentTab === AdminView.specialEvents })}
                 >
                   Besondere Vorkommnisse{' '}
-                  {hasSpecialEvents && (
-                    <span className="badge badge-warning">{specialEvents.length}</span>
-                  )}
+                  {hasSpecialEvents && <span className="badge badge-warning">{specialEvents.length}</span>}
                 </Link>
               </li>
             </ul>
           </div>
 
           <div className="card-body">
-            {currentTab === AdminView.stations && (<StationInfo />)}
-            {currentTab === AdminView.damages && (<SpecialEvents type={SpecialEventType.damage} />)}
-            {currentTab === AdminView.specialEvents && (<SpecialEvents type={SpecialEventType.event} />)}
+            {currentTab === AdminView.stations && <StationInfo />}
+            {currentTab === AdminView.damages && <SpecialEvents type={SpecialEventType.damage} />}
+            {currentTab === AdminView.specialEvents && <SpecialEvents type={SpecialEventType.event} />}
           </div>
         </div>
       </div>
