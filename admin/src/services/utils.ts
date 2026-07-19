@@ -18,13 +18,13 @@ export const mapStationInfo = (data: Record<string, ApiStationInfo | null>): Sta
 
 export interface EnrichedStationsOutput {
   stations: StationInfo[]
-  stationMap: Map<string, StationInfo>
+  // stationMap: Map<string, StationInfo>
   crews: Map<string, string>
 }
 
 export const enrichStations = (
   input: StationInfo[],
-  stationsInfoMap: StationInfoMap,
+  // stationsInfoMap: StationInfoMap,
   crewInfo: CrewInfo[],
 ): EnrichedStationsOutput => {
   const stationMap = new Map<string, StationInfo>()
@@ -35,8 +35,8 @@ export const enrichStations = (
     if (crew) {
       crews.set(station.id, crew.crew)
     }
-    return { ...station, ...stationsInfoMap[station.id] }
+    return { ...station }
   })
 
-  return { stations, stationMap, crews }
+  return { stations, crews }
 }

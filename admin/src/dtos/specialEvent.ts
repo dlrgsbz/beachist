@@ -1,5 +1,5 @@
+import { BasicStation } from './station'
 import { Moment } from 'moment'
-import { StationInfo } from './station'
 
 export interface BaseSpecialEvent {
   id: string
@@ -14,8 +14,8 @@ export interface NetworkSpecialEvent extends BaseSpecialEvent {
   station: string
 }
 
-export interface SpecialEvent extends BaseSpecialEvent{
-  station: StationInfo
+export interface SpecialEvent extends BaseSpecialEvent {
+  station: BasicStation
 }
 
 export enum SpecialEventType {

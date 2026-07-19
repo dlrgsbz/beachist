@@ -47,23 +47,30 @@ class DashboardStore {
     const [networkEntries, events, enrichedStations, fields, networkSpecialEvents] = await Promise.all([
       this.apiClient.fetchEntries(selectedDate),
       this.apiClient.fetchEvents(selectedDate),
-      this.dashboardService.getStationsAndInfo(selectedDate),
+      this.dashboardService.getStationsWithCrew(selectedDate),
       this.apiClient.fetchFields(),
       this.apiClient.fetchSpecialEvents(selectedDate),
     ])
+    // this is purposefully not awaited as it's very long running and shouldn't
+    //  have an influence on this.loading
+    //  also it's not critical if it fails
+    this.dispatchFetchStationInfo()
 
-    const { stations, stationMap, crews } = enrichedStations
+    const { stations, crews } = enrichedStations
     const fieldMap = new Map<string, Field>()
     fields.forEach(field => fieldMap.set(field.id, field))
 
-    const entries = createEntryMap(networkEntries, stationMap, fieldMap)
+    const entries = createEntryMap(networkEntries, fieldMap)
 
-    const specialEvents = createSpecialEventMap(networkSpecialEvents, stationMap)
+    const specialEvents = createSpecialEventMap(networkSpecialEvents)
 
     runInAction(() => {
       this.firstAid = events.firstAid
       this.search = events.search
-      this.stations = stations
+      if (this.stations.length === 0) {
+        // might already be set by `dispatchFetchStationInfo`
+        this.stations = stations
+      }
       this.fields = fields
       this.entries = entries
       this.crews = crews
@@ -81,6 +88,16 @@ class DashboardStore {
   @action
   setLoading(loading: boolean): void {
     this.loading = loading
+  }
+
+  @action.bound
+  async dispatchFetchStationInfo(): Promise<void> {
+    const result = await this.dashboardService.getStationWithInfo()
+    const info = Object.values(result).filter(val => val) as StationInfo[]
+
+    runInAction(() => {
+      this.stations = info
+    })
   }
 
   stationState(id: string): StationState {
@@ -129,18 +146,13 @@ class DashboardStore {
   }
 }
 
-function createEntryMap(
-  entries: NetworkEntry[],
-  stationMap: Map<string, StationInfo>,
-  fieldMap: Map<string, Field>,
-): Map<string, Entry[]> {
+function createEntryMap(entries: NetworkEntry[], fieldMap: Map<string, Field>): Map<string, Entry[]> {
   const theEntries: Entry[] = entries.flatMap(entry => {
-    const station = stationMap.get(entry.station)
     const field = fieldMap.get(entry.field)
-    if (!station || !field) {
+    if (!field) {
       return []
     }
-    return [{ ...entry, station, field }]
+    return [{ ...entry, field, station: { id: entry.station } }]
   })
 
   const entryMap = new Map<string, Entry[]>()
@@ -162,20 +174,13 @@ interface SpecialEventMap {
   damage: SpecialEvent[]
 }
 
-function createSpecialEventMap(
-  specialEvents: NetworkSpecialEvent[],
-  stationMap: Map<string, StationInfo>,
-): SpecialEventMap {
+function createSpecialEventMap(specialEvents: NetworkSpecialEvent[]): SpecialEventMap {
   const map: SpecialEventMap = { special: [], damage: [] }
 
   specialEvents.forEach(event => {
     const stationId = event.station
-    const station = stationMap.get(stationId)
-    if (!station) {
-      return
-    }
 
-    const specialEvent = { ...event, station }
+    const specialEvent = { ...event, station: { id: stationId } }
     switch (event.type) {
       case SpecialEventType.damage:
         map.damage.push(specialEvent)

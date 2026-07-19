@@ -18,7 +18,7 @@ class RootStore {
   constructor(private apiClient: ApiClient) {
     this.dashboardStore = new DashboardStore(this.apiClient, new DashboardService(this.apiClient))
     this.authStore = new AuthStore(this.apiClient)
-    this.adminStore = new AdminStore(new AdminService(this.apiClient))
+    this.adminStore = new AdminStore(new AdminService(this.apiClient), new DashboardService(this.apiClient))
     this.itemsStore = new ItemsStore(new ItemsService(this.apiClient))
   }
 }
