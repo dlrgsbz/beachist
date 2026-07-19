@@ -11,7 +11,7 @@ import { SnackbarProvider } from 'notistack'
 import StoreProvider from 'store'
 import moment from 'moment'
 
-moment.locale('de', {
+moment.updateLocale('de', {
   relativeTime: {
     past: 'seit %s',
   },
