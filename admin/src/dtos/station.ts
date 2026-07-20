@@ -1,5 +1,9 @@
 import { Moment } from 'moment'
 
+export interface BasicStation {
+  id: string
+}
+
 export interface StationInfo {
   id: string
   name: string
