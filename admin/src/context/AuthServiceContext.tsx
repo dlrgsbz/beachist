@@ -3,7 +3,7 @@ import { getUserData, login } from 'modules/data'
 
 import React from 'react'
 import { UserInfo } from '../dtos'
-import jwtDecode from 'jwt-decode'
+import { jwtDecode } from 'jwt-decode'
 import { useConstant } from 'lib'
 
 export class AuthService {
@@ -37,6 +37,7 @@ export class AuthService {
 
     try {
       return getUserData(token)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
       throw new Error('Something bad happened')
     }
@@ -67,7 +68,7 @@ export class AuthService {
 
 const AuthServiceContext = React.createContext<AuthService>({} as AuthService)
 
-export const AuthServiceProvider: React.FC = props => {
+export const AuthServiceProvider: React.FC<React.PropsWithChildren> = props => {
   const authService = useConstant<AuthService>(() => new AuthService())
 
   return <AuthServiceContext.Provider value={authService} {...props} />
@@ -79,6 +80,7 @@ function isTokenExpired(token: string) {
   try {
     const { exp } = jwtDecode<{ exp: number }>(token)
     return exp * 1000 < Date.now()
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (e) {
     return true
   }

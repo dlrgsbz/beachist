@@ -9,7 +9,7 @@ interface ProvisioningInfoProps {
   setModal: () => void
 }
 
-export const ProvisioningInfo: React.VFC<ProvisioningInfoProps> = ({
+export const ProvisioningInfo: React.FC<ProvisioningInfoProps> = ({
   createProvisioning,
   setModal,
   loading,

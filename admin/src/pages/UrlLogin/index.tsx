@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router'
 
 import { useAuth } from 'context'
 import { useSnackbar } from 'lib'
@@ -35,19 +35,22 @@ const useParseLocationHash = () => {
     }
 
     const items = hash.split('&')
-    return items.reduce((prev, item) => {
-      const split = item.split('=')
-      if (split.length === 0) {
+    return items.reduce(
+      (prev, item) => {
+        const split = item.split('=')
+        if (split.length === 0) {
+          return prev
+        }
+        const key = split.reverse().pop()
+        prev[key!] = split.join('=')
         return prev
-      }
-      const key = split.reverse().pop()
-      prev[key!] = split.join('=')
-      return prev
-    }, {} as Record<string, string>)
+      },
+      {} as Record<string, string>,
+    )
   }, [location.hash])()
 }
 
-export const UrlLogin: React.VFC = () => {
+export const UrlLogin: React.FC = () => {
   useUrlLogin()
 
   return <></>

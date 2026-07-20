@@ -8,7 +8,7 @@ interface SkeletonRowProps {
   columns: number
 }
 
-export const SkeletonRow: React.VFC<SkeletonRowProps> = ({ rows, columns }) => (
+export const SkeletonRow: React.FC<SkeletonRowProps> = ({ rows, columns }) => (
   <>
     {Array.from({ length: rows }).map((_, i) => (
       <tr key={i}>

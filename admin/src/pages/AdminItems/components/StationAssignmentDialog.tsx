@@ -13,7 +13,7 @@ interface StationAssignmentDialogProps {
   onClose: () => void
 }
 
-export const StationAssignmentDialog: React.VFC<StationAssignmentDialogProps> = ({
+export const StationAssignmentDialog: React.FC<StationAssignmentDialogProps> = ({
   item,
   stations,
   initialGlobal,
@@ -106,8 +106,8 @@ export const StationAssignmentDialog: React.VFC<StationAssignmentDialogProps> = 
 
           {global ? (
             <p className="text-muted mb-0">
-              Dieser Eintrag ist allen Stationen zugewiesen. Einzelne Stationen können ausgewählt werden, sobald „global“
-              deaktiviert ist.
+              Dieser Eintrag ist allen Stationen zugewiesen. Einzelne Stationen können ausgewählt werden, sobald
+              „global“ deaktiviert ist.
             </p>
           ) : (
             <>
@@ -127,7 +127,9 @@ export const StationAssignmentDialog: React.VFC<StationAssignmentDialogProps> = 
                 </button>
               </div>
 
-              <div className="text-muted small mb-2">{selected.size} von {stations.length} Stationen ausgewählt</div>
+              <div className="text-muted small mb-2">
+                {selected.size} von {stations.length} Stationen ausgewählt
+              </div>
 
               <div style={{ maxHeight: '40vh', overflowY: 'auto' }}>
                 {filteredStations.map(station => (

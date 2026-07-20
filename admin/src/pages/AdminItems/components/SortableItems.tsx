@@ -2,9 +2,9 @@ import './SortableItem.scss'
 
 import { ItemForm, ItemFormValues } from './ItemForm'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
-import classNames from 'classnames'
 
 import { Field } from 'dtos'
+import classNames from 'classnames'
 
 interface TreeNode {
   field: Field
@@ -58,7 +58,8 @@ const move = (ids: string[], draggingId: string, overId: string): string[] => {
   return next
 }
 
-const sameOrder = (a: string[], b: string[]): boolean => a.length === b.length && a.every((value, index) => value === b[index])
+const sameOrder = (a: string[], b: string[]): boolean =>
+  a.length === b.length && a.every((value, index) => value === b[index])
 
 interface SortableListProps {
   ids: string[]
@@ -67,7 +68,7 @@ interface SortableListProps {
   renderRow: (id: string) => React.ReactNode
 }
 
-const SortableList: React.VFC<SortableListProps> = ({ ids, disabled, onReorder, renderRow }) => {
+const SortableList: React.FC<SortableListProps> = ({ ids, disabled, onReorder, renderRow }) => {
   const [order, setOrder] = useState<string[]>(ids)
   const [draggingId, setDraggingId] = useState<string | null>(null)
   const orderRef = useRef<string[]>(order)
@@ -103,11 +104,9 @@ const SortableList: React.VFC<SortableListProps> = ({ ids, disabled, onReorder, 
       {order.map(id => (
         <li
           key={id}
-          className={
-            classNames("list-group-item", "d-flex", "align-items-center","sortable-item", {
-              "sortable-item--dragging": draggingId === id,
-            })
-          }
+          className={classNames('list-group-item', 'd-flex', 'align-items-center', 'sortable-item', {
+            'sortable-item--dragging': draggingId === id,
+          })}
           onDragOver={event => handleDragOver(event, id)}
           onDrop={event => event.preventDefault()}
           style={{ opacity: draggingId === id ? 0.4 : 1 }}
@@ -144,7 +143,7 @@ interface TreeLevelProps {
   onDelete: (item: Field) => void
 }
 
-const TreeLevel: React.VFC<TreeLevelProps> = ({
+const TreeLevel: React.FC<TreeLevelProps> = ({
   nodes,
   parentId,
   items,
@@ -237,7 +236,7 @@ interface SortableItemsProps {
   onReorder: (orderedIds: string[]) => void
 }
 
-export const SortableItems: React.VFC<SortableItemsProps> = ({
+export const SortableItems: React.FC<SortableItemsProps> = ({
   items,
   editingId,
   disabled,

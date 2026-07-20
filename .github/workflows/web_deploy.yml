@@ -34,7 +34,7 @@ jobs:
     - name: install node
       uses: actions/setup-node@v3
       with:
-        node-version: '14.x'
+        node-version: '24.x'
 
     - name: npm ci
       run: npm ci
@@ -67,7 +67,7 @@ jobs:
     - name: move files around
       run: |
         mkdir dist
-        cp -r admin/build/* dist
+        cp -r admin/build/client/* dist
         cp -r backend/config dist
         cp -r backend/public/* dist
         cp -r backend/src dist

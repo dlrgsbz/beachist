@@ -10,7 +10,7 @@ export interface ProvisioningModalProps {
   onClose: () => void
 }
 
-export const ProvisioningModal: React.VFC<ProvisioningModalProps> = ({ stationName, provisioningRequest, onClose }) => {
+export const ProvisioningModal: React.FC<ProvisioningModalProps> = ({ stationName, provisioningRequest, onClose }) => {
   const { expiresAt, password } = provisioningRequest
   return (
     <Modal title={<>Zuweisung {stationName}</>} onClose={() => onClose()}>

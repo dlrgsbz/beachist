@@ -44,15 +44,10 @@ services:
     depends_on:
       - api
     environment:
-      PORT: "3000"
-      WDS_SOCKET_PORT: "3000"
-      DANGEROUSLY_DISABLE_HOST_CHECK: "true"
-      CI: "false"
-      BROWSER: "none"
-      # Forward /api and /auth to the backend on the compose network (see admin/src/setupProxy.js).
+      # Forward /api and /auth to the backend on the compose network (see admin/vite.config.ts).
       API_PROXY_TARGET: http://api:8000
     ports:
-      - "${ADMIN_PORT:-3000}:3000"
+      - "${ADMIN_PORT:-3000}:5173"
     volumes:
       - ./admin:/app
       # Keep the image-built node_modules instead of shadowing them with the host.

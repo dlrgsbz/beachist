@@ -21,7 +21,7 @@ const useStores = () => {
   }))
 }
 
-export const AdminStation: React.VFC = () => {
+export const AdminStation: React.FC = () => {
   const [modal, setModal] = useState<ProvisioningModalProps | undefined>(undefined)
   const {
     loading,

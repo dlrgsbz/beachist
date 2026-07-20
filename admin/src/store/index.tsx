@@ -14,7 +14,7 @@ type StoreProviderProps = {
   children?: ReactNode
 }
 
-const StoreProvider = ({ children }: StoreProviderProps): JSX.Element => {
+const StoreProvider = ({ children }: StoreProviderProps): React.JSX.Element => {
   const authService = useAuthService()
   const apiClient = new ApiClient(authService)
   const rootStore = new RootStore(apiClient)
