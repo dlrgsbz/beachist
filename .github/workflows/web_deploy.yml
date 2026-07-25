@@ -1,115 +1,159 @@
 name: web_deploy
 
-concurrency: 
-  group: ${{ github.workflow }}
-  cancel-in-progress: true
+# Deploys to PROD are decoupled from approval so that a run approved during the
+# day is only actually deployed inside the nightly maintenance window (22:00-08:00
+# Europe/Berlin).
+#
+#  * gate   -> runs on push to main, uses the gated PROD environment (Required
+#              Reviewers). Once a reviewer approves, it only records the approved
+#              commit as "pending" (ref refs/deploy/prod-pending). It does NOT deploy.
+#  * deploy -> runs on a schedule inside the maintenance window (and on manual
+#              dispatch). It builds and deploys the latest approved-but-not-yet-
+#              deployed commit, using the non-gated PROD_DEPLOY environment so that
+#              no second approval is required at night.
 
 on:
   push:
     branches: [ main ]
+  schedule:
+    # Cron is UTC. We always assume summer time (CEST, UTC+2), so the crons below
+    # cover 22:00-07:00 Berlin time and thus fire only inside the deploy window.
+    - cron: '0 20-23 * * *'
+    - cron: '0 0-5 * * *'
+  workflow_dispatch:
 
 jobs:
-  deploy:
+  gate:
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        env: ['PROD']
-      fail-fast: true
-      max-parallel: 1
-    environment: ${{ matrix.env }}
+    # Keep the human PROD approval (Required Reviewers) as the authorization step.
+    environment: PROD
+    permissions:
+      contents: write
+    concurrency:
+      group: web-deploy-gate
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: mark commit as approved for prod deploy
+        run: |
+          git push origin ${{ github.sha }}:refs/deploy/prod-pending --force
+          echo "Commit ${{ github.sha }} marked as pending for the next deploy window."
+
+  deploy:
+    if: github.event_name != 'push'
+    runs-on: ubuntu-latest
+    # Non-gated environment holding the FTP/SFTP secrets so the nightly deploy
+    # runs without a second approval. See setup note in this file's PR/description.
+    environment: PROD_DEPLOY
+    permissions:
+      contents: write
+    concurrency:
+      # Never cancel an in-progress deploy (e.g. when the next hourly cron fires).
+      group: web-deploy-prod
+      cancel-in-progress: false
 
     steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 2
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-    - name: Tag release
-      if: ${{ matrix.env }} == 'STAGING'
-      uses: mathieudutour/github-tag-action@v6.2
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        custom_tag: ${{ format('web/{0}', github.run_number) }}
-        tag_prefix: ''
+      - name: determine pending commit
+        id: pending
+        run: |
+          pending=$(git ls-remote origin refs/deploy/prod-pending | awk '{print $1}')
+          deployed=$(git ls-remote origin refs/deploy/prod-deployed | awk '{print $1}')
+          if [ -z "$pending" ]; then
+            echo "No commit is pending for deployment."
+            echo "deploy=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if [ "$pending" = "$deployed" ]; then
+            echo "Pending commit $pending is already deployed."
+            echo "deploy=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "Deploying commit $pending."
+          echo "sha=$pending" >> "$GITHUB_OUTPUT"
+          echo "deploy=true" >> "$GITHUB_OUTPUT"
 
-    - name: install node
-      uses: actions/setup-node@v4
-      with:
-        node-version: '24.x'
+      - name: checkout pending commit
+        if: steps.pending.outputs.deploy == 'true'
+        run: git checkout ${{ steps.pending.outputs.sha }}
 
-    - name: npm ci
-      run: npm ci
-      working-directory: admin
+      - name: Tag release
+        uses: mathieudutour/github-tag-action@v6.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          custom_tag: ${{ format('web/{0}', github.run_number) }}
+          tag_prefix: ''
 
-    - name: npm build
-      run: npm run build
-      working-directory: admin
+      - name: install node
+        if: steps.pending.outputs.deploy == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24.x'
 
-    - name: Cache Composer dependencies
-      uses: actions/cache@v4
-      with:
-        path: backend/vendor
-        key: ${{ runner.os }}-${{ hashFiles('**/composer.lock') }}
-    
-    - name: composer install
-      uses: php-actions/composer@v6
-      with:
-        php_version: 7.4
-        version: 1
-        working_dir: backend
-        dev: no
-        args: --optimize-autoloader
-      env:
-        APP_ENV: prod
+      - name: npm ci
+        if: steps.pending.outputs.deploy == 'true'
+        run: npm ci
+        working-directory: admin
 
-    - name: use alpine
-      uses: docker://alpine:latest
-    
-    - name: move files around
-      run: |
-        mkdir dist
-        cp -r admin/build/client/* dist
-        cp -r backend/config dist
-        cp -r backend/public/* dist
-        cp -r backend/src dist
-        mkdir dist/var
-        cp -r backend/composer.* dist
-        cp -r backend/.env dist
-        sed -i 's/dirname(__DIR__)/__DIR__/' dist/index.php
+      - name: npm build
+        if: steps.pending.outputs.deploy == 'true'
+        run: npm run build
+        working-directory: admin
 
-    # This did not work for quite some while, so disabling it for time being
-    # - name: Extract branch name
-    #   shell: bash
-    #   run: echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >>$GITHUB_OUTPUT
-    #   id: extract_branch
+      - name: Cache Composer dependencies
+        if: steps.pending.outputs.deploy == 'true'
+        uses: actions/cache@v4
+        with:
+          path: backend/vendor
+          key: ${{ runner.os }}-${{ hashFiles('**/composer.lock') }}
 
-    # # todo: replace this action bc it uses node 12 and set-output commands
-    # - uses: nrwl/last-successful-commit-action@v1
-    #   id: last_successful_commit
-    #   name: check last successful run
-    #   with:
-    #     branch: ${{ steps.extract_branch.outputs.branch }}
-    #     workflow_id: 'main.yml'
-    #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: composer install
+        if: steps.pending.outputs.deploy == 'true'
+        uses: php-actions/composer@v6
+        with:
+          php_version: 7.4
+          version: 1
+          working_dir: backend
+          dev: no
+          args: --optimize-autoloader
+        env:
+          APP_ENV: prod
 
-    # - name: check if composer neeeds to run
-    #   id: check_composer
-    #   run: |
-    #     git fetch --all
-    #     git diff-tree --no-commit-id --name-only -r ${{ steps.last_successful_commit.outputs.commit_hash }}..${{ github.sha }} | grep composer > /dev/null \
-    #       && echo "exit_code=0" >> $GITHUB_OUTPUT \
-    #       || echo "exit_code=1" >> $GITHUB_OUTPUT
+      - name: use alpine
+        if: steps.pending.outputs.deploy == 'true'
+        uses: docker://alpine:latest
 
-    - name: move composer dependencies
-      # if: steps.check_composer.outputs.exit_code == 0
-      run: cp -r backend/vendor dist
+      - name: move files around
+        if: steps.pending.outputs.deploy == 'true'
+        run: |
+          mkdir dist
+          cp -r admin/build/client/* dist
+          cp -r backend/config dist
+          cp -r backend/public/* dist
+          cp -r backend/src dist
+          mkdir dist/var
+          cp -r backend/vendor dist
+          cp -r backend/composer.* dist
+          cp -r backend/.env dist
+          sed -i 's/dirname(__DIR__)/__DIR__/' dist/index.php
 
-    - name: deployment to server
-      uses: tjarksaul/SFTP-Deploy-Action@1f9d3f7e125f06dc57760d081a04bca1d49a6dc1
-      with:
-        server: '${{ secrets.FTP_SERVER }}'
-        username: ${{ secrets.FTP_USERNAME }}
-        ssh_private_key: ${{ secrets.SFTP_PRIVATE_KEY }}
-        local_path: './dist/'
-        remote_path: '${{ secrets.FTP_PATH }}'
+      - name: deployment to server
+        if: steps.pending.outputs.deploy == 'true'
+        uses: tjarksaul/SFTP-Deploy-Action@1f9d3f7e125f06dc57760d081a04bca1d49a6dc1
+        with:
+          server: '${{ secrets.FTP_SERVER }}'
+          username: ${{ secrets.FTP_USERNAME }}
+          ssh_private_key: ${{ secrets.SFTP_PRIVATE_KEY }}
+          local_path: './dist/'
+          remote_path: '${{ secrets.FTP_PATH }}'
+
+      - name: mark commit as deployed
+        if: steps.pending.outputs.deploy == 'true'
+        run: git push origin ${{ steps.pending.outputs.sha }}:refs/deploy/prod-deployed --force
 
 # todo: run migrations
