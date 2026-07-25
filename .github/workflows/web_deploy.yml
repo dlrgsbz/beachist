@@ -74,15 +74,27 @@ jobs:
             echo "deploy=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
+          if [ -z "$deployed" ] || ! git cat-file -e "${deployed}^{commit}" 2>/dev/null; then
+            echo "No usable previous deployment recorded; composer dependencies will be installed."
+            composer_changed=true
+          elif [ -n "$(git diff --name-only "$deployed" "$pending" -- backend/composer.json backend/composer.lock)" ]; then
+            echo "Composer dependencies changed since last deployment."
+            composer_changed=true
+          else
+            echo "Composer dependencies unchanged since last deployment; skipping composer install."
+            composer_changed=false
+          fi
           echo "Deploying commit $pending."
           echo "sha=$pending" >> "$GITHUB_OUTPUT"
           echo "deploy=true" >> "$GITHUB_OUTPUT"
+          echo "composer_changed=$composer_changed" >> "$GITHUB_OUTPUT"
 
       - name: checkout pending commit
         if: steps.pending.outputs.deploy == 'true'
         run: git checkout ${{ steps.pending.outputs.sha }}
 
       - name: Tag release
+        if: steps.pending.outputs.deploy == 'true'
         uses: mathieudutour/github-tag-action@v6.2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -106,14 +118,13 @@ jobs:
         working-directory: admin
 
       - name: Cache Composer dependencies
-        if: steps.pending.outputs.deploy == 'true'
+        if: steps.pending.outputs.deploy == 'true' && steps.pending.outputs.composer_changed == 'true'
         uses: actions/cache@v4
         with:
           path: backend/vendor
           key: ${{ runner.os }}-${{ hashFiles('**/composer.lock') }}
 
       - name: composer install
-        if: steps.pending.outputs.deploy == 'true'
         uses: php-actions/composer@v6
         with:
           php_version: 7.4
@@ -137,10 +148,13 @@ jobs:
           cp -r backend/public/* dist
           cp -r backend/src dist
           mkdir dist/var
-          cp -r backend/vendor dist
           cp -r backend/composer.* dist
           cp -r backend/.env dist
           sed -i 's/dirname(__DIR__)/__DIR__/' dist/index.php
+
+      - name: copy composer dependencies
+        if: steps.pending.outputs.deploy == 'true' && steps.pending.outputs.composer_changed == 'true'
+        run: cp -r backend/vendor dist
 
       - name: deployment to server
         if: steps.pending.outputs.deploy == 'true'
