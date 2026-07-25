@@ -10,6 +10,7 @@ import type { ReactNode } from 'react'
 import { SnackbarProvider } from 'notistack'
 import StoreProvider from 'store'
 import moment from 'moment'
+import { useInfoMessage } from 'lib/hooks'
 
 moment.updateLocale('de', {
   relativeTime: {
@@ -39,6 +40,8 @@ export function Layout({ children }: { children: ReactNode }) {
 }
 
 export default function App() {
+  useInfoMessage()
+
   return (
     <LocalizationProvider dateAdapter={AdapterMoment}>
       <SnackbarProvider>
