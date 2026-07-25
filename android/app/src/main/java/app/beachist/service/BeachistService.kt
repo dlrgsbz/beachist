@@ -26,7 +26,15 @@ class BeachistService: LifecycleService(), KoinComponent {
         super.onBind(intent)
         Timber.tag("BeachistService").d("Bind")
         stopForeground(true)
-        startService(intent)
+        // The service is bound with BIND_AUTO_CREATE, so it stays alive while a client is bound.
+        // Starting it here additionally keeps it alive after unbind, but on Android 12+ this throws
+        // BackgroundServiceStartNotAllowedException when onBind is delivered while the app is in the
+        // background. In that case we simply skip the start and rely on the binding to keep it alive.
+        try {
+            startService(intent)
+        } catch (e: IllegalStateException) {
+            Timber.tag("BeachistService").w(e, "Could not start service from background")
+        }
 
         return binder
     }
