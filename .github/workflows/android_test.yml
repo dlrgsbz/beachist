@@ -19,7 +19,7 @@ jobs:
   test:
     needs: determine_changes
     if: needs.determine_changes.outputs.changes == 'true'
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
         uses: actions/checkout@v4
@@ -41,7 +41,7 @@ jobs:
   emulator_test:
     needs: determine_changes
     if: needs.determine_changes.outputs.changes == 'true'
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
         uses: actions/checkout@v4
@@ -49,6 +49,12 @@ jobs:
         with:
           distribution: 'zulu' # See 'Supported distributions' for available options
           java-version: '17'
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
 
       - name: Setup configs
         working-directory: android
@@ -60,9 +66,10 @@ jobs:
         with:
           arch: x86_64
           force-avd-creation: false
-          avd-name: macOS-avd-x86_64-31
+          avd-name: ubuntu-avd-x86_64-31
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          emulator-boot-timeout: 720
           disable-animations: true
-          api-level: 30
+          api-level: 31
           script: ./gradlew connectedDebugAndroidTest --stacktrace
           working-directory: android
