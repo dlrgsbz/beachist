@@ -112,8 +112,13 @@ jobs:
         run: npm ci
         working-directory: admin
 
+      - name: Set Build Datetime
+        run: echo "VITE_BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_ENV
+
       - name: npm build
         if: steps.pending.outputs.deploy == 'true'
+        env:
+          VITE_APP_VERSION: ${{ format('web/{0}', github.run_number) }}
         run: npm run build
         working-directory: admin
 
