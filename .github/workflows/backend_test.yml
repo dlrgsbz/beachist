@@ -32,7 +32,7 @@ jobs:
       uses: php-actions/composer@v6
       with:
         php_version: 7.4
-        version: 1
+        version: 2.2
         working_dir: backend
         dev: yes
       env:
