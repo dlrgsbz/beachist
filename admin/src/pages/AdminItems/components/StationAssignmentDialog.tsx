@@ -25,7 +25,7 @@ export const StationAssignmentDialog: React.FC<StationAssignmentDialogProps> = (
   onClose,
 }) => {
   const [global, setGlobal] = useState(initialGlobal)
-  const [selected, setSelected] = useState<Set<string>>(new Set(initialStationIds))
+  const [selected, setSelected] = useState<Set<string>>(() => new Set(initialStationIds))
   const [search, setSearch] = useState('')
   const [required, setRequired] = useState(
     initialRequired === null || initialRequired === undefined ? '' : String(initialRequired),

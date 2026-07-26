@@ -46,8 +46,10 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = props => {
     if (!mounted) {
       return
     }
+    /* eslint-disable @eslint-react/set-state-in-effect */
     setLoading(true)
     setIdle(false)
+    /* eslint-enable @eslint-react/set-state-in-effect */
 
     getLoginState(authService)
       .then(userData => {
@@ -57,7 +59,6 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = props => {
       })
       .catch(e => {
         if (mounted) {
-           
           console.log('error', e)
         }
       })
@@ -94,11 +95,11 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = props => {
     return <Loading />
   }
 
-  return <AuthContext.Provider value={value} {...props} />
+  return <AuthContext value={value} {...props} />
 }
 
 export const useAuth = () => {
-  const context = React.useContext(AuthContext)
+  const context = React.use(AuthContext)
   if (context === undefined) {
     throw new Error(`useAuth must be used within a AuthProvider`)
   }

@@ -19,11 +19,11 @@ const StoreProvider = ({ children }: StoreProviderProps): React.JSX.Element => {
   const apiClient = new ApiClient(authService)
   const rootStore = new RootStore(apiClient)
 
-  return <StoreContext.Provider value={rootStore}>{children}</StoreContext.Provider>
+  return <StoreContext value={rootStore}>{children}</StoreContext>
 }
 
 function useStore(): RootStore {
-  const store = React.useContext(StoreContext)
+  const store = React.use(StoreContext)
   if (!store) {
     throw new Error('useStore: !store, did you forget StoreProvider?')
   }

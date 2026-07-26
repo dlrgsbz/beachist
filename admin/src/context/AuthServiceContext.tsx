@@ -71,10 +71,10 @@ const AuthServiceContext = React.createContext<AuthService>({} as AuthService)
 export const AuthServiceProvider: React.FC<React.PropsWithChildren> = props => {
   const authService = useConstant<AuthService>(() => new AuthService())
 
-  return <AuthServiceContext.Provider value={authService} {...props} />
+  return <AuthServiceContext value={authService} {...props} />
 }
 
-export const useAuthService = () => React.useContext(AuthServiceContext)
+export const useAuthService = () => React.use(AuthServiceContext)
 
 function isTokenExpired(token: string) {
   try {

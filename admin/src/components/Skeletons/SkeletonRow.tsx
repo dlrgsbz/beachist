@@ -1,3 +1,5 @@
+/* eslint-disable @eslint-react/no-array-index-key */
+
 import 'react-loading-skeleton/dist/skeleton.css'
 
 import React from 'react'
