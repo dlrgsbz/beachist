@@ -3,54 +3,80 @@ version: 2
 updates:
 - directory: '/admin'
   package-ecosystem: 'npm'
+  cooldown:
+    default-days: 7
+    semver-major-days: 21
   schedule:
     interval: 'weekly'
     time: '08:00'
     day: 'saturday'
     timezone: 'Europe/Berlin'
   groups:
-    npm-dependencies-frontend:
+    npm-dependencies-frontend-minor:
       patterns:
         - '*'
+      update-types:
+        - "minor"
+        - "patch"
 
 - directory: '/lambdas'
   package-ecosystem: 'npm'
+  cooldown:
+    default-days: 7
+    semver-major-days: 21
   schedule:
     interval: 'weekly'
     time: '08:00'
     day: 'saturday'
     timezone: 'Europe/Berlin'
   groups:
-    npm-dependencies-lambdas:
+    npm-dependencies-lambda-minor:
       patterns:
         - '*'
+      update-types:
+        - "minor"
+        - "patch"
 
 - directory: '/backend'
   package-ecosystem: 'composer'
+  cooldown:
+    default-days: 7
+    semver-major-days: 21
   schedule:
     interval: 'weekly'
     time: '08:00'
     day: 'saturday'
     timezone: 'Europe/Berlin'
   groups:
-    composer-dependencies:
+    composer-dependencies-minor:
       patterns:
         - '*'
+      update-types:
+        - "minor"
+        - "patch"
     
 - directory: '/android'
   package-ecosystem: 'gradle'
+  cooldown:
+    default-days: 14
+    semver-major-days: 28
   schedule:
     interval: 'weekly'
     time: '08:00'
     day: 'saturday'
     timezone: 'Europe/Berlin'
   groups:
-    gradle-dependencies:
+    gradle-dependencies-minor:
       patterns:
         - '*'
+      update-types:
+        - "minor"
+        - "patch"
 
 - directory: '/'
   package-ecosystem: 'github-actions'
+  cooldown:
+    default-days: 14
   schedule:
     interval: 'monthly'
   groups:
