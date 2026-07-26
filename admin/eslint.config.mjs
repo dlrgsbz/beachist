@@ -1,8 +1,7 @@
 import js from '@eslint/js'
 import tsParser from '@typescript-eslint/parser'
 import tsPlugin from '@typescript-eslint/eslint-plugin'
-import reactPlugin from 'eslint-plugin-react'
-import reactHooks from 'eslint-plugin-react-hooks'
+import eslintReact from '@eslint-react/eslint-plugin'
 import globals from 'globals'
 
 export default [
@@ -27,20 +26,17 @@ export default [
     },
     plugins: {
       '@typescript-eslint': tsPlugin,
-      react: reactPlugin,
-      'react-hooks': reactHooks,
+      '@eslint-react': eslintReact,
     },
     settings: {
       react: { version: 'detect' },
     },
     rules: {
       ...tsPlugin.configs.recommended.rules,
-      ...reactPlugin.configs.recommended.rules,
+      ...eslintReact.configs.recommended.rules,
       'no-undef': 'off',
-      'react/react-in-jsx-scope': 'off',
-      'react/prop-types': 'off',
-      'react-hooks/rules-of-hooks': 'error',
-      'react-hooks/exhaustive-deps': 'warn',
+      '@eslint-react/rules-of-hooks': 'error',
+      '@eslint-react/exhaustive-deps': 'warn',
     },
   },
 ]

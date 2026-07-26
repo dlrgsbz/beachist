@@ -1,12 +1,12 @@
 import React, { useState } from 'react'
-import { SquareEmpty, SquareX, SquareCheck } from '../components'
+import { SquareCheck, SquareEmpty, SquareX } from '../components'
 
 const Legend: React.FC = () => {
-  const [isVisible, setVisible] = useState(true)
+  const [isVisible, setIsVisible] = useState(true)
 
   return (
     <div className="card">
-      <div className="card-header" id="headerLegend" onClick={() => setVisible(!isVisible)}>
+      <div className="card-header" id="headerLegend" onClick={() => setIsVisible(!isVisible)}>
         <h5 className="mb-0">Legende</h5>
       </div>
       <div

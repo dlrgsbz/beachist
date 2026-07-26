@@ -1,7 +1,7 @@
 import './SortableItem.scss'
 
 import { ItemForm, ItemFormValues } from './ItemForm'
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useMemo, useRef, useState } from 'react'
 
 import { Field } from 'dtos'
 import classNames from 'classnames'
@@ -74,11 +74,9 @@ const SortableList: React.FC<SortableListProps> = ({ ids, disabled, onReorder, r
   const orderRef = useRef<string[]>(order)
   orderRef.current = order
 
-  useEffect(() => {
-    if (!draggingId) {
-      setOrder(ids)
-    }
-  }, [ids, draggingId])
+  if (!draggingId && !sameOrder(order, ids)) {
+    setOrder(ids)
+  }
 
   const handleDragOver = (event: React.DragEvent, overId: string) => {
     if (!draggingId) {

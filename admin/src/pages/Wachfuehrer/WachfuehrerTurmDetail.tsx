@@ -67,7 +67,7 @@ export const WachfuehrerTurmDetail: React.FC<WachfuehrerTurmDetailProps> = ({
   onlineStateSince,
   children,
 }) => {
-  const [isVisible, setVisible] = useState(false)
+  const [isVisible, setIsVisible] = useState(false)
 
   const id = useGeneratedId('card')
   const bodyId = useGeneratedId('cardBody')
@@ -75,13 +75,13 @@ export const WachfuehrerTurmDetail: React.FC<WachfuehrerTurmDetailProps> = ({
 
   return (
     <div className="card">
-      <div className="card-header" id={id} onClick={() => setVisible(!isVisible)}>
+      <div className="card-header" id={id} onClick={() => setIsVisible(!isVisible)}>
         <h5 className="mb-0">
           <Title
             title={title}
             stationState={stationState}
             isVisible={isVisible}
-            setVisible={setVisible}
+            setVisible={setIsVisible}
             bodyId={bodyId}
           />
         </h5>

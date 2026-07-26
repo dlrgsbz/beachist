@@ -20,7 +20,7 @@ const Navlink: FunctionComponent<NavlinkProps> = ({ target, children }) => (
 )
 
 const Navigation = () => {
-  const [isExpanded, setExpanded] = useState(false)
+  const [isExpanded, setIsExpanded] = useState(false)
 
   const { logout } = useAuth()
 
@@ -41,7 +41,7 @@ const Navigation = () => {
         type="button"
         data-toggle="collapse"
         data-target="#navbarNav"
-        onClick={() => setExpanded(!isExpanded)}
+        onClick={() => setIsExpanded(!isExpanded)}
         aria-controls="navbarNav"
         aria-expanded={isExpanded}
         aria-label="Toggle navigation"
