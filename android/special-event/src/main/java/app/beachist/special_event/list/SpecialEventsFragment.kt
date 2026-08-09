@@ -50,6 +50,12 @@ class SpecialEventsFragment : Fragment() {
         setupBindings()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        disposables.clear()
+        _binding = null
+    }
+
     private fun setupView() {
         binding.specialEventList.adapter = adapter
     }
