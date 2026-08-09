@@ -60,6 +60,12 @@ class StationCheckFragment : Fragment() {
         actions.onNext(StationCheckAction.Refresh)
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        disposable.clear()
+        _binding = null
+    }
+
     private fun setupView() {
         binding.stationCheckList.adapter = adapter
     }

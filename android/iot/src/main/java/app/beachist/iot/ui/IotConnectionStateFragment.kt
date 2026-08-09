@@ -36,6 +36,7 @@ class IotConnectionStateFragment : Fragment(), KoinComponent {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        disposable.clear()
         _binding = null
     }
 
