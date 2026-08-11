@@ -28,7 +28,11 @@ class CrashInfoValueUpdater(
             .onEach {
                 val thingName = it.certificate?.thingName
                 Timber.tag("CrashInfoValueUpdater").d("Updating thing name to $thingName")
-                crashRecorder.setCustomKey("station", thingName ?: "none")
+                crashRecorder.setCustomKey("station_id", thingName ?: "none")
+                crashRecorder.setCustomKey(
+                    "station_number",
+                    thingName?.substringAfterLast("-") ?: "none",
+                )
             }
             .launchIn(this)
     }

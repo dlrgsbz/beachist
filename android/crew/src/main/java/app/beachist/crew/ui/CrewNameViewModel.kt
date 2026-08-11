@@ -82,7 +82,10 @@ internal sealed class CrewNameViewAction : ViewModelAction() {
     object UpdateDate : CrewNameViewAction()
     object Submit : CrewNameViewAction()
 
-    data class UpdateCrewName(val name: String) : CrewNameViewAction()
+    data class UpdateCrewName(val name: String) : CrewNameViewAction() {
+        // Crew names are personal data (GDPR); never expose them in logs/breadcrumbs.
+        override fun toString(): String = "UpdateCrewName(name=REDACTED)"
+    }
 }
 
 internal sealed class CrewNameViewEffect : ViewModelEffect() {

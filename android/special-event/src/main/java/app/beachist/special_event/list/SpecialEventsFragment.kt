@@ -76,7 +76,9 @@ class SpecialEventsFragment : Fragment() {
     }
 
     private fun onShowCreateEventView() {
-        val transaction = requireActivity().supportFragmentManager.beginTransaction()
+        val activity = activity ?: return
+        if (!isAdded) return
+        val transaction = activity.supportFragmentManager.beginTransaction()
         transaction.replace(
             android.R.id.content,
             AddSpecialEventFragment(),

@@ -89,7 +89,8 @@ class StationCheckFragment : Fragment() {
     }
 
     private fun showNoteInput(itemId: String) {
-        val activity = requireActivity()
+        val activity = activity ?: return
+        if (!isAdded) return
         val builder: AlertDialog.Builder = AlertDialog.Builder(activity)
         builder.setTitle(getString(R.string.station_check_note_description))
 
@@ -112,7 +113,8 @@ class StationCheckFragment : Fragment() {
     }
 
     private fun showAmountInput(itemId: String) {
-        val activity = requireActivity()
+        val activity = activity ?: return
+        if (!isAdded) return
         val builder: AlertDialog.Builder = AlertDialog.Builder(activity)
         builder.setTitle(getText(R.string.station_check_amount_description))
 
