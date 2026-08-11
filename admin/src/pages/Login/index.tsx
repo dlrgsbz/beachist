@@ -1,9 +1,10 @@
 import './index.scss'
 
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { AxiosError } from 'axios'
 import Loading from 'components/Loading'
+import classNames from 'classnames'
 import { useAuth } from '../../context'
 import { useAuthStore } from 'store'
 import { useForm } from 'react-hook-form'
@@ -29,6 +30,8 @@ export const Login = () => {
   const { availableUsers, availableUsersLoading, loadUsers } = useStores()
   const { login } = useAuth()
   const { errorSnackbar, successSnackbar } = useSnackbar()
+
+  const [showUserField, setShowUserField] = useState(false)
 
   const { register, reset, formState, handleSubmit, setValue, getValues } = useForm<LoginFormData>({
     defaultValues: { name: '', password: '' },
@@ -79,18 +82,28 @@ export const Login = () => {
           <h5>Anmeldung bei Beachist</h5>
           <p className="text-muted">Willkommen zurück. Bitte gib dein Passwort ein, um dich anzumelden.</p>
           <form action="" onSubmit={handleSubmit(onSubmit)}>
-            <div className="form-group">
+            <div
+              className={classNames('form-group', 'login--user-field', {
+                'login--user-field-hidden': !showUserField,
+              })}
+            >
               <label htmlFor="userSelect">Nutzer</label>
-              <select {...register('name')} className="form-control" id="userSelect">
+              <input
+                {...register('name')}
+                type="text"
+                autoComplete="username"
+                list="userOptions"
+                className="form-control"
+                id="userSelect"
+              />
+              <datalist id="userOptions">
                 {availableUsers.map(user => (
                   <option key={user.name} value={user.name}>
                     {user.description}
                   </option>
                 ))}
-              </select>
-              <small id="emailHelp" className="form-text text-muted">
-                Bitte auswählen.
-              </small>
+              </datalist>
+              <small className="form-text text-muted">Nur bei Bedarf ändern.</small>
             </div>
 
             <div className="form-group">
@@ -98,10 +111,20 @@ export const Login = () => {
               <input
                 {...register('password')}
                 type="password"
+                autoComplete="current-password"
                 placeholder="Geheim"
                 className="form-control"
                 id="password"
               />
+            </div>
+            <div className="login--container--form--toggle">
+              <button
+                type="button"
+                className="btn btn-link login--user-toggle"
+                onClick={() => setShowUserField(value => !value)}
+              >
+                {showUserField ? 'Nutzerauswahl ausblenden' : 'Anderer Nutzer / Admin'}
+              </button>
             </div>
             <div className="login--container--form--button-container">
               <button disabled={formState.isSubmitting || !formState.isDirty} type="submit" className="btn btn-primary">
