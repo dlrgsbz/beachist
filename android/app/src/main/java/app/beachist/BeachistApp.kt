@@ -3,6 +3,8 @@ package app.beachist
 import android.app.Application
 import app.beachist.auth.authModule
 import app.beachist.crew.crewModule
+import app.beachist.debug.CrashReportingTree
+import app.beachist.debug.CrashRecorder
 import app.beachist.event.eventsModule
 import app.beachist.iot.iotModule
 import app.beachist.iot_client.iotClientModule
@@ -13,6 +15,7 @@ import app.beachist.special_event.specialEventsModule
 import app.beachist.station_check.stationCheckModule
 import app.beachist.weather.weatherModule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.koin.android.ext.android.get
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 import timber.log.Timber
@@ -41,5 +44,8 @@ class BeachistApp : Application() {
         }
 
         Timber.plant(Timber.DebugTree())
+        if (!BuildConfig.DEBUG) {
+            Timber.plant(CrashReportingTree(get<CrashRecorder>()))
+        }
     }
 }
