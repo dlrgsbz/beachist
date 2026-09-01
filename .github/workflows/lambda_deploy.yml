@@ -23,8 +23,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version-file: 'lambdas/.nvmrc'
           cache: 'npm'
@@ -35,7 +35,7 @@ jobs:
         run: npm run build
         working-directory: lambdas
       - name: upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: beachist-artifact
           path: lambdas/build
@@ -51,13 +51,13 @@ jobs:
     environment:
       name: ${{ matrix.stage }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: download artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: beachist-artifact
           path: lambdas/build
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version-file: 'lambdas/.nvmrc'
           cache: 'npm'
@@ -65,7 +65,7 @@ jobs:
         run: npm ci
         working-directory: lambdas
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v5
         with:
           audience: sts.amazonaws.com
           role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_ARN }}
