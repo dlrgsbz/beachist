@@ -42,7 +42,7 @@ jobs:
       group: web-deploy-gate
       cancel-in-progress: true
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: mark commit as approved for prod deploy
         run: |
@@ -63,7 +63,7 @@ jobs:
       cancel-in-progress: false
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -111,7 +111,7 @@ jobs:
 
       - name: install node
         if: steps.pending.outputs.deploy == 'true'
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: '24.x'
 
@@ -132,7 +132,7 @@ jobs:
 
       - name: Cache Composer dependencies
         if: steps.pending.outputs.deploy == 'true' && steps.pending.outputs.composer_changed == 'true'
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: backend/vendor
           key: ${{ runner.os }}-${{ hashFiles('**/composer.lock') }}
